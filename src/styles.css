@@ -87,6 +87,26 @@
   font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--border-strong); border-radius: 6px; padding: 4px 6px;
 }
 
+/* Copias de seguridad */
+.mmsz-confirmar {
+  margin-top: 16px; padding: 16px; border: 2px solid var(--brand); border-radius: 10px; background: var(--soft);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.mmsz-comparacion { border-collapse: collapse; max-width: 480px; font-size: 15px; }
+.mmsz-comparacion th, .mmsz-comparacion td { text-align: left; padding: 6px 14px 6px 0; border-bottom: 1px solid var(--border); }
+.mmsz-comparacion th { color: var(--muted); font-weight: 600; }
+.mmsz-copias-titulo { margin: 22px 0 8px; }
+.mmsz-copias { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: 10px; }
+.mmsz-copias li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; }
+.mmsz-copias li + li { border-top: 1px solid var(--border); }
+.mmsz-copias li div { display: flex; flex-direction: column; gap: 2px; }
+.mmsz-aviso-flotante {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 50; max-width: min(640px, 92vw);
+  display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 10px;
+  background: var(--text); color: var(--bg); box-shadow: var(--shadow);
+}
+.mmsz-aviso-flotante button { background: none; border: none; color: inherit; font-size: 16px; }
+
 /* Botón Atrás */
 .mmsz-atras {
   background: none; border: 1px solid var(--border-strong); border-radius: 6px; padding: 6px 12px;

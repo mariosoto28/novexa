@@ -25,6 +25,9 @@ export default function MmszApp() {
     mmszCambiarSesion,
     mmszCambiarCursosOcultos,
     mmszCambiarTema,
+    mmszReemplazar,
+    mmszAviso,
+    mmszCerrarAviso,
   } = mmszUseProgress();
   const [mmszPantalla, setMmszPantalla] = useState<MmszPantalla>({ name: 'panel', seccion: 'cursos' });
   // Pantallas visitadas, para el botón "Atrás".
@@ -53,6 +56,19 @@ export default function MmszApp() {
   const mmszAtrasRef = useRef(() => {});
 
   if (!mmszProgress) return <div className="loading">Cargando…</div>;
+
+  // Aviso flotante (por ejemplo, si se recuperó una copia de seguridad al abrir la app).
+  const mmszCon = (mmszVista: JSX.Element) => (
+    <>
+      {mmszVista}
+      {mmszAviso && (
+        <div className="mmsz-aviso-flotante" role="status">
+          <span>💾 {mmszAviso}</span>
+          <button onClick={mmszCerrarAviso} title="Cerrar">✕</button>
+        </div>
+      )}
+    </>
+  );
 
   const mmszIguales = (a: MmszPantalla, b: MmszPantalla) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -88,7 +104,7 @@ export default function MmszApp() {
   };
 
   if (!mmszProgress.sesionActiva) {
-    return (
+    return mmszCon(
       <MmszBienvenida
         mmszNombre={mmszProgress.nombre}
         mmszEntrar={(mmszNombre) => {
@@ -100,7 +116,7 @@ export default function MmszApp() {
   }
 
   if (mmszPantalla.name === 'course') {
-    return (
+    return mmszCon(
       <MmszCourseMap
         key={`${mmszPantalla.courseId}-${mmszPantalla.unidad ?? ''}`}
         mmszCourse={mmszGetCourse(mmszPantalla.courseId)}
@@ -112,7 +128,7 @@ export default function MmszApp() {
   }
 
   if (mmszPantalla.name === 'item') {
-    return (
+    return mmszCon(
       <MmszVisor
         mmszCourse={mmszGetCourse(mmszPantalla.courseId)}
         mmszLessonId={mmszPantalla.lessonId}
@@ -128,7 +144,7 @@ export default function MmszApp() {
     const mmszCourse = mmszGetCourse(mmszPantalla.courseId);
     const mmszUnidad = mmszCourse.units.findIndex((u) => u.lessons.some((l) => l.id === mmszPantalla.lessonId));
     const mmszLesson = mmszCourse.units[mmszUnidad].lessons.find((l) => l.id === mmszPantalla.lessonId)!;
-    return (
+    return mmszCon(
       <MmszLessonScreen
         key={mmszLesson.id}
         mmszCourse={mmszCourse}
@@ -141,7 +157,7 @@ export default function MmszApp() {
     );
   }
 
-  return (
+  return mmszCon(
     <MmszPanel
       mmszProgreso={mmszProgress}
       mmszSeccion={mmszPantalla.seccion}
@@ -149,6 +165,7 @@ export default function MmszApp() {
       mmszCambiarNombre={mmszCambiarNombre}
       mmszCambiarCursosOcultos={mmszCambiarCursosOcultos}
       mmszCambiarTema={mmszCambiarTema}
+      mmszReemplazar={mmszReemplazar}
       mmszReiniciar={mmszReset}
     />
   );

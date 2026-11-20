@@ -5,6 +5,7 @@ import { mmszCourses, mmszAllLessons } from '../content';
 import { MMSZ_MAX_HEARTS, type MmszProgress } from '../progress';
 import MmszBarraSuperior from '../components/MmszBarraSuperior';
 import { MMSZ_TEMAS } from '../mmszTemas';
+import MmszCopiasSeguridad from '../components/MmszCopiasSeguridad';
 import {
   mmszCalcularNivel,
   mmszIniciales,
@@ -23,6 +24,7 @@ interface MmszProps {
   mmszCambiarNombre: (n: string) => void;
   mmszCambiarCursosOcultos: (mmszIds: string[]) => void;
   mmszCambiarTema: (mmszTema: string) => void;
+  mmszReemplazar: (p: MmszProgress) => void;
   mmszReiniciar: () => void;
 }
 
@@ -306,7 +308,7 @@ function MmszPerfil({ mmszProgreso, mmszNav }: MmszProps) {
 
 /* ---------------- Configuración ---------------- */
 
-function MmszConfiguracion({ mmszProgreso, mmszCambiarNombre, mmszCambiarTema, mmszReiniciar }: MmszProps) {
+function MmszConfiguracion({ mmszProgreso, mmszCambiarNombre, mmszCambiarTema, mmszReemplazar, mmszReiniciar }: MmszProps) {
   const [mmszNombre, setMmszNombre] = useState(mmszProgreso.nombre);
   const [mmszGuardado, setMmszGuardado] = useState(false);
   return (
@@ -365,6 +367,8 @@ function MmszConfiguracion({ mmszProgreso, mmszCambiarNombre, mmszCambiarTema, m
           {mmszGuardado && <span className="muted small">✓ Guardado</span>}
         </div>
       </section>
+
+      <MmszCopiasSeguridad mmszProgreso={mmszProgreso} mmszReemplazar={mmszReemplazar} />
 
       <section className="mmsz-tarjeta">
         <h3>Progreso</h3>

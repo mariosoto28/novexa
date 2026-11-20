@@ -20,11 +20,22 @@ export interface MmszProgress {
 
 export const MMSZ_NOMBRE_PREDETERMINADO = 'Mario Soto Zea';
 
+/** Copia de seguridad guardada (automática o manual). */
+export interface MmszCopia {
+  nombre: string;
+  fecha: string; // ISO
+  datos: MmszProgress;
+}
+
 declare global {
   interface Window {
     api?: {
-      loadProgress: () => Promise<MmszProgress | null>;
+      loadProgress: () => Promise<{ datos: MmszProgress | null; aviso: string | null } | MmszProgress | null>;
       saveProgress: (p: MmszProgress) => Promise<boolean>;
+      listarCopias: () => Promise<MmszCopia[]>;
+      copiaManual: (p: MmszProgress, mmszEtiqueta: string) => Promise<boolean>;
+      exportarProgreso: (mmszContenido: string) => Promise<{ ok: boolean; ruta?: string }>;
+      importarProgreso: () => Promise<{ ok: boolean; contenido?: string; error?: string }>;
     };
   }
 }
@@ -77,21 +88,78 @@ function mmszNormalize(p: MmszProgress): MmszProgress {
   return { ...p, hearts: mmszHearts, heartsUpdatedAt: mmszHeartsUpdatedAt, streak: mmszStreak };
 }
 
-async function mmszLoad(): Promise<MmszProgress> {
+/** Completa los campos que falten (por ejemplo, de versiones anteriores de la app). */
+export function mmszCompletarProgreso(mmszDatos: Partial<MmszProgress> | null | undefined): MmszProgress {
+  return mmszNormalize({ ...mmszFresh(), ...(mmszDatos || {}) });
+}
+
+/* --- Copias en la versión web (en la app de escritorio las hace Electron en disco) --- */
+const MMSZ_PREFIJO_COPIA_WEB = 'novexa-copia-';
+const MMSZ_COPIAS_WEB = 7;
+
+function mmszCopiaWeb(p: MmszProgress, mmszNombre = `progreso-${mmszDayKey()}.json`) {
+  localStorage.setItem(MMSZ_PREFIJO_COPIA_WEB + mmszNombre, JSON.stringify({ fecha: new Date().toISOString(), datos: p }));
+  const mmszDiarias = Object.keys(localStorage)
+    .filter((k) => /^novexa-copia-progreso-\d{4}-\d{2}-\d{2}\.json$/.test(k))
+    .sort()
+    .reverse();
+  mmszDiarias.slice(MMSZ_COPIAS_WEB).forEach((k) => localStorage.removeItem(k));
+}
+
+export async function mmszListarCopias(): Promise<MmszCopia[]> {
+  if (window.api) return window.api.listarCopias();
+  return Object.keys(localStorage)
+    .filter((k) => k.startsWith(MMSZ_PREFIJO_COPIA_WEB))
+    .map((k) => {
+      try {
+        const { fecha, datos } = JSON.parse(localStorage.getItem(k)!);
+        return { nombre: k.slice(MMSZ_PREFIJO_COPIA_WEB.length), fecha, datos } as MmszCopia;
+      } catch {
+        return null;
+      }
+    })
+    .filter((c): c is MmszCopia => c !== null)
+    .sort((a, b) => b.fecha.localeCompare(a.fecha));
+}
+
+/** Copia con nombre propio, por ejemplo antes de importar o restaurar. */
+export async function mmszCopiaManual(p: MmszProgress, mmszEtiqueta: string) {
+  if (window.api) return window.api.copiaManual(p, mmszEtiqueta);
+  const mmszMarca = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  mmszCopiaWeb(p, `progreso-${mmszEtiqueta}-${mmszMarca}.json`);
+  return true;
+}
+
+async function mmszLoad(): Promise<{ progreso: MmszProgress; aviso: string | null }> {
   try {
-    const mmszRaw = window.api
-      ? await window.api.loadProgress()
-      : JSON.parse(localStorage.getItem(MMSZ_STORAGE_KEY) || localStorage.getItem(MMSZ_STORAGE_KEY_ANTERIOR) || 'null');
-    return mmszNormalize({ ...mmszFresh(), ...(mmszRaw || {}) });
+    if (window.api) {
+      const mmszRespuesta = await window.api.loadProgress();
+      // Compatible con la forma anterior (devolvía el progreso directamente).
+      const mmszEnvuelto = mmszRespuesta && 'datos' in mmszRespuesta && 'aviso' in mmszRespuesta;
+      const mmszDatos = mmszEnvuelto ? mmszRespuesta.datos : (mmszRespuesta as MmszProgress | null);
+      return { progreso: mmszCompletarProgreso(mmszDatos), aviso: mmszEnvuelto ? mmszRespuesta.aviso : null };
+    }
+    const mmszTexto = localStorage.getItem(MMSZ_STORAGE_KEY) || localStorage.getItem(MMSZ_STORAGE_KEY_ANTERIOR);
+    try {
+      return { progreso: mmszCompletarProgreso(JSON.parse(mmszTexto || 'null')), aviso: null };
+    } catch {
+      const mmszCopia = (await mmszListarCopias())[0];
+      if (mmszCopia) return { progreso: mmszCompletarProgreso(mmszCopia.datos), aviso: 'Tu progreso estaba dañado. Se recuperó la última copia de seguridad.' };
+      return { progreso: mmszFresh(), aviso: 'Tu progreso estaba dañado y no había copias. Se empezó de nuevo.' };
+    }
   } catch {
-    return mmszFresh();
+    return { progreso: mmszFresh(), aviso: null };
   }
 }
 
 function mmszSave(p: MmszProgress) {
   try {
-    if (window.api) void window.api.saveProgress(p);
-    else localStorage.setItem(MMSZ_STORAGE_KEY, JSON.stringify(p));
+    if (window.api) {
+      void window.api.saveProgress(p);
+    } else {
+      localStorage.setItem(MMSZ_STORAGE_KEY, JSON.stringify(p));
+      mmszCopiaWeb(p);
+    }
   } catch {
     /* si no se puede guardar, la app sigue funcionando */
   }
@@ -105,9 +173,14 @@ export function mmszMinutesToNextHeart(p: MmszProgress): number {
 
 export function mmszUseProgress() {
   const [mmszProgress, mmszSetProgress] = useState<MmszProgress | null>(null);
+  // Mensaje para el estudiante si al abrir la app se recuperó una copia de seguridad.
+  const [mmszAviso, setMmszAviso] = useState<string | null>(null);
 
   useEffect(() => {
-    mmszLoad().then(mmszSetProgress);
+    mmszLoad().then(({ progreso, aviso }) => {
+      mmszSetProgress(progreso);
+      setMmszAviso(aviso);
+    });
     // revisa cada minuto si ya se recuperó alguna vida
     const t = setInterval(() => mmszSetProgress((p) => (p ? mmszNormalize(p) : p)), 60000);
     return () => clearInterval(t);
@@ -155,6 +228,12 @@ export function mmszUseProgress() {
     [mmszUpdate],
   );
 
+  /** Reemplaza todo el progreso (al importar un archivo o restaurar una copia). */
+  const mmszReemplazar = useCallback(
+    (mmszNuevo: MmszProgress) => mmszUpdate(() => mmszCompletarProgreso({ ...mmszNuevo, sesionActiva: true })),
+    [mmszUpdate],
+  );
+
   const mmszCambiarTema = useCallback(
     (mmszTema: string) => mmszUpdate((p) => ({ ...p, tema: mmszTema })),
     [mmszUpdate],
@@ -182,5 +261,8 @@ export function mmszUseProgress() {
     mmszCambiarSesion,
     mmszCambiarCursosOcultos,
     mmszCambiarTema,
+    mmszReemplazar,
+    mmszAviso,
+    mmszCerrarAviso: () => setMmszAviso(null),
   };
 }
