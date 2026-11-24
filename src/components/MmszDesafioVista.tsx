@@ -6,6 +6,8 @@ import type { MmszDesafio } from '../types';
 import { mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
 import MmszEditor from './MmszEditor';
 import MmszMarkdown from './MmszMarkdown';
+import { mmszMismaSalida } from '../mmszComparar';
+import MmszAyudaDesafio from './MmszAyudaDesafio';
 
 interface MmszProps {
   mmszDesafio: MmszDesafio;
@@ -14,7 +16,41 @@ interface MmszProps {
   mmszAlCompletar: () => void;
 }
 
-const mmszNormalizar = (s: string) => s.replace(/\r/g, '').trim().replace(/\s+/g, ' ');
+/**
+ * Si el error es por un nombre que no existe (por ejemplo "Print") y en la solución aparece
+ * el mismo nombre con otras mayúsculas ("print"), lo dice claramente.
+ */
+function mmszPistaDeError(mmszError: string, mmszSolucion: string): string {
+  const mmszGenerico = 'Tu programa tiene un error. Revisa el mensaje en la salida.';
+  const m =
+    mmszError.match(/name '(\w+)' is not defined/) ||
+    mmszError.match(/(\w+) is not defined/) ||
+    mmszError.match(/variable (\w+) does not exist/);
+  if (!m) return mmszGenerico;
+  const mmszEscrito = m[1];
+  const mmszCorrecto = mmszSolucion.match(new RegExp(`\\b${mmszEscrito}\\b`, 'i'))?.[0];
+  if (mmszCorrecto && mmszCorrecto !== mmszEscrito) {
+    return `Revisa las mayúsculas: escribiste \`${mmszEscrito}\`, pero debe ser \`${mmszCorrecto}\`. En el código las mayúsculas sí importan.`;
+  }
+  return mmszGenerico;
+}
+
+/** Explica por qué la salida no coincide, según el caso más común. */
+function mmszPistaDeSalida(mmszObtenida: string, mmszEsperada: string, mmszLang: MmszRunnableLang): string {
+  const mmszMostrar = mmszLang === 'python' ? 'print(...)' : mmszLang === 'javascript' ? 'console.log(...)' : 'cout << ... << endl;';
+  const mmszLineasObt = mmszObtenida.trim() ? mmszObtenida.trim().split('\n').length : 0;
+  const mmszLineasEsp = mmszEsperada.trim().split('\n').length;
+  if (mmszLineasObt === 0) {
+    return `Tu programa no mostró nada. Calcular un valor no basta: para verlo en pantalla usa \`${mmszMostrar}\`.`;
+  }
+  if (mmszLineasObt < mmszLineasEsp) {
+    return `Casi: tu programa muestra ${mmszLineasObt} de ${mmszLineasEsp} líneas. Te falta mostrar ${mmszLineasEsp - mmszLineasObt} con \`${mmszMostrar}\`.`;
+  }
+  if (mmszLineasObt > mmszLineasEsp) {
+    return `Casi: tu programa muestra ${mmszLineasObt} líneas y se esperan ${mmszLineasEsp}. Revisa si sobra algún \`${mmszMostrar}\`.`;
+  }
+  return 'Casi. Tu salida no coincide con la salida esperada; compáralas línea por línea.';
+}
 
 export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompletado, mmszAlCompletar }: MmszProps) {
   const mmszPasos = mmszDesafio.pasos;
@@ -22,7 +58,7 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
   const [mmszCodigo, setMmszCodigo] = useState(mmszPasos[0].inicio ?? '');
   const [mmszResultado, setMmszResultado] = useState<MmszRunResult | null>(null);
   const [mmszCorriendo, setMmszCorriendo] = useState(false);
-  const [mmszMensaje, setMmszMensaje] = useState<{ ok: boolean; texto: string } | null>(null);
+  const [mmszMensaje, setMmszMensaje] = useState<{ ok: boolean; texto: string; info?: boolean } | null>(null);
   const [mmszFallos, setMmszFallos] = useState(0);
   const [mmszTerminado, setMmszTerminado] = useState(false);
 
@@ -39,22 +75,31 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
   }
 
   async function mmszComprobar() {
+    // Lo que el código debe usar (print, for, if...) se revisa exacto: en el código las mayúsculas importan.
     const mmszFaltan = (mmszPaso.requiere ?? []).filter((t) => !mmszCodigo.includes(t));
     if (mmszFaltan.length) {
+      const mmszMinus = mmszCodigo.toLowerCase();
+      const mmszPorMayusculas = mmszFaltan.filter((t) => mmszMinus.includes(t.toLowerCase()));
       setMmszFallos((f) => f + 1);
-      setMmszMensaje({ ok: false, texto: `Tu código todavía no usa: ${mmszFaltan.map((t) => `\`${t}\``).join(', ')}.` });
+      setMmszMensaje({
+        ok: false,
+        texto: mmszPorMayusculas.length
+          ? `Revisa las mayúsculas: en el código deben escribirse así: ${mmszPorMayusculas.map((t) => `\`${t}\``).join(', ')}. (En lo que muestra tu programa no importan, pero en las instrucciones sí.)`
+          : `Tu código todavía no usa: ${mmszFaltan.map((t) => `\`${t}\``).join(', ')}.`,
+      });
       return;
     }
     if (mmszSeEjecuta) {
       const r = await mmszEjecutar();
       if (r.error) {
         setMmszFallos((f) => f + 1);
-        setMmszMensaje({ ok: false, texto: 'Tu programa tiene un error. Revisa el mensaje en la salida.' });
+        setMmszMensaje({ ok: false, texto: mmszPistaDeError(r.error, mmszPaso.solucion) });
         return;
       }
-      if (mmszNormalizar(r.output) !== mmszNormalizar(mmszPaso.salida!)) {
+      // En la salida no importan mayúsculas ni espacios extra.
+      if (!mmszMismaSalida(r.output, mmszPaso.salida!)) {
         setMmszFallos((f) => f + 1);
-        setMmszMensaje({ ok: false, texto: 'Casi. Tu salida no coincide con la salida esperada; compáralas.' });
+        setMmszMensaje({ ok: false, texto: mmszPistaDeSalida(r.output, mmszPaso.salida!, mmszLang) });
         return;
       }
     }
@@ -110,6 +155,7 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
             {mmszPaso.salida !== undefined && (
               <>
                 <b>Salida esperada</b>
+                <small className="muted">No importan mayúsculas ni minúsculas</small>
                 <pre className="mmsz-pista-salida">{mmszPaso.salida}</pre>
               </>
             )}
@@ -160,7 +206,11 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
             className="mmsz-enlace"
             onClick={() => {
               setMmszCodigo(mmszPaso.solucion);
-              setMmszMensaje({ ok: false, texto: 'Te mostramos una solución. Léela, ejecútala y luego presiona “Comprobar paso”.' });
+              setMmszMensaje({
+                ok: false,
+                info: true,
+                texto: 'Te mostramos una solución. Léela (usa 🧭 Paso a paso para entender cada línea), ejecútala y luego presiona “Comprobar paso”.',
+              });
             }}
           >
             Ver una solución
@@ -169,8 +219,21 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
         <span className="small muted">Ctrl + Enter para ejecutar</span>
       </div>
 
+      {!mmszTerminado && !mmszPasoListo && (
+        <MmszAyudaDesafio
+          key={mmszIndice}
+          mmszSolucion={mmszPaso.solucion}
+          mmszLang={mmszLang}
+          mmszCodigo={mmszCodigo}
+          mmszCambiarCodigo={(c) => {
+            setMmszCodigo(c);
+            setMmszMensaje(null);
+          }}
+        />
+      )}
+
       {mmszMensaje && (
-        <div className={`mmsz-mensaje ${mmszMensaje.ok ? 'ok' : 'error'}`}>
+        <div className={`mmsz-mensaje ${mmszMensaje.ok ? 'ok' : mmszMensaje.info ? 'info' : 'error'}`}>
           <MmszMarkdown texto={mmszMensaje.texto} lang={mmszLang} />
         </div>
       )}

@@ -213,7 +213,7 @@ function MmszCodeEditor({ ex, mmszAnswer, mmszOnAnswer, mmszLocked, mmszRun, mms
       </div>
       <div className="console">
         <div className="console-col">
-          <span className="small muted">Salida esperada</span>
+          <span className="small muted">Salida esperada · no importan mayúsculas</span>
           <pre className="out expected">{ex.expectedOutput}</pre>
         </div>
         <div className="console-col">

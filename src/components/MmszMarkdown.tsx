@@ -3,6 +3,7 @@
 // **negrita**, `código` o «código», y bloques ``` o ~~~ (los bloques ~~~run se pueden ejecutar).
 import { Fragment, useState, type ReactNode } from 'react';
 import { mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
+import { mmszExplicarLinea } from '../mmszExplicador';
 
 type MmszBloque =
   | { tipo: 'p' | 'h' | 'nota'; texto: string }
@@ -70,9 +71,30 @@ export function MmszEnLinea({ texto }: { texto: string }) {
 function MmszEjemplo({ codigo, ejecutable, lang }: { codigo: string; ejecutable: boolean; lang: MmszRunnableLang }) {
   const [mmszResultado, setMmszResultado] = useState<MmszRunResult | null>(null);
   const [mmszCorriendo, setMmszCorriendo] = useState(false);
+  const [mmszExplicar, setMmszExplicar] = useState(false);
+  const mmszLineas = codigo.split('\n');
   return (
     <div className="mmsz-ejemplo">
-      <pre className="code">{codigo}</pre>
+      {mmszExplicar ? (
+        <div className="mmsz-explicado">
+          {mmszLineas.map((l, i) => {
+            const mmszTexto = mmszExplicarLinea(l, lang);
+            return (
+              <div key={i} className={`mmsz-explicado-fila ${mmszTexto ? '' : 'vacia'}`}>
+                <pre>{l || ' '}</pre>
+                {mmszTexto && <span>{mmszTexto}</span>}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <pre className="code">{codigo}</pre>
+      )}
+      <div className="mmsz-ejemplo-acciones">
+        <button className="run-btn" onClick={() => setMmszExplicar(!mmszExplicar)}>
+          {mmszExplicar ? '✕ Ocultar explicación' : '🔍 Explicar línea por línea'}
+        </button>
+      </div>
       {ejecutable && (
         <div className="mmsz-ejemplo-acciones">
           <button

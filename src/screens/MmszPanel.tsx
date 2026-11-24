@@ -6,11 +6,13 @@ import { MMSZ_MAX_HEARTS, type MmszProgress } from '../progress';
 import MmszBarraSuperior from '../components/MmszBarraSuperior';
 import { MMSZ_TEMAS } from '../mmszTemas';
 import MmszCopiasSeguridad from '../components/MmszCopiasSeguridad';
+import MmszCursosDinamico from './MmszCursosDinamico';
 import {
   mmszCalcularNivel,
   mmszIniciales,
   mmszLeccionesHechas,
   mmszLeccionesCompletadas,
+  mmszUnidadDe,
   mmszLogros,
   mmszSiguienteLeccion,
   type MmszNav,
@@ -25,6 +27,7 @@ interface MmszProps {
   mmszCambiarCursosOcultos: (mmszIds: string[]) => void;
   mmszCambiarTema: (mmszTema: string) => void;
   mmszReemplazar: (p: MmszProgress) => void;
+  mmszCambiarDiseno: (mmszDinamico: boolean) => void;
   mmszReiniciar: () => void;
 }
 
@@ -122,7 +125,16 @@ export default function MmszPanel(mmszProps: MmszProps) {
         </nav>
 
         <main className="mmsz-contenido">
-          {mmszSeccion === 'cursos' && <MmszCursos {...mmszProps} />}
+          {mmszSeccion === 'cursos' &&
+            (mmszProps.mmszProgreso.disenoDinamico ? (
+              <MmszCursosDinamico
+                mmszProgreso={mmszProps.mmszProgreso}
+                mmszNav={mmszProps.mmszNav}
+                mmszCambiarCursosOcultos={mmszProps.mmszCambiarCursosOcultos}
+              />
+            ) : (
+              <MmszCursos {...mmszProps} />
+            ))}
           {mmszSeccion === 'avance' && <MmszAvance {...mmszProps} />}
           {mmszSeccion === 'perfil' && <MmszPerfil {...mmszProps} />}
           {mmszSeccion === 'configuracion' && <MmszConfiguracion {...mmszProps} />}
@@ -185,13 +197,13 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
 
               <div className="mmsz-curso-cuerpo">
                 <ol className="mmsz-linea">
-                  {c.units.map((u) => {
+                  {c.units.map((u, mmszUi) => {
                     const mmszU = u.lessons.filter((l) => mmszProgreso.completed[l.id]).length;
                     const mmszLista = mmszU === u.lessons.length;
                     return (
                       <li key={u.title} className={mmszLista ? 'hecho' : ''}>
                         <span className="mmsz-circulo">{mmszLista ? '✓' : c.icon}</span>
-                        <button className="mmsz-enlace" onClick={() => mmszNav.abrirCurso(c.id)}>
+                        <button className="mmsz-enlace" onClick={() => mmszNav.abrirCurso(c.id, mmszUi)}>
                           {u.title.replace(/^Unidad \d+ · /, '')}
                         </button>
                         <small>
@@ -202,7 +214,13 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
                   })}
                 </ol>
                 {!mmszEditando && (
-                  <button className="mmsz-btn mmsz-btn-inicio" onClick={() => mmszNav.abrirCurso(c.id)}>
+                  <button
+                    className="mmsz-btn mmsz-btn-inicio"
+                    onClick={() =>
+                      // "Continuar" abre la unidad de la siguiente lección pendiente.
+                      mmszNav.abrirCurso(c.id, mmszSiguiente ? mmszUnidadDe(c, mmszSiguiente.id) : undefined)
+                    }
+                  >
                     {mmszTextoBoton}
                   </button>
                 )}
@@ -248,13 +266,13 @@ function MmszAvance({ mmszProgreso, mmszNav }: MmszProps) {
               <span className="bar-fill" style={{ width: `${mmszPct}%` }} />
             </span>
             <div className="mmsz-avance-unidades">
-              {c.units.map((u) => (
+              {c.units.map((u, mmszUi) => (
                 <div key={u.title}>
                   <b>{u.title}</b>
                   {u.lessons.map((l) => {
                     const mmszVeces = mmszProgreso.completed[l.id] || 0;
                     return (
-                      <button key={l.id} className="mmsz-avance-leccion" onClick={() => mmszNav.abrirCurso(c.id)}>
+                      <button key={l.id} className="mmsz-avance-leccion" onClick={() => mmszNav.abrirCurso(c.id, mmszUi)}>
                         <span>{mmszVeces ? '✅' : '⬜'}</span>
                         {l.title}
                         {mmszVeces > 1 && <small className="muted"> · {mmszVeces} veces</small>}
@@ -308,12 +326,44 @@ function MmszPerfil({ mmszProgreso, mmszNav }: MmszProps) {
 
 /* ---------------- Configuración ---------------- */
 
-function MmszConfiguracion({ mmszProgreso, mmszCambiarNombre, mmszCambiarTema, mmszReemplazar, mmszReiniciar }: MmszProps) {
+function MmszConfiguracion({
+  mmszProgreso,
+  mmszCambiarNombre,
+  mmszCambiarTema,
+  mmszReemplazar,
+  mmszCambiarDiseno,
+  mmszReiniciar,
+}: MmszProps) {
   const [mmszNombre, setMmszNombre] = useState(mmszProgreso.nombre);
   const [mmszGuardado, setMmszGuardado] = useState(false);
   return (
     <>
       <h1>Configuración</h1>
+      <section className="mmsz-tarjeta">
+        <h3>Diseño de cursos</h3>
+        <p className="muted">Cambia cómo se ven “Mis cursos” y la página de cada curso. Tu progreso no cambia.</p>
+        <div className="mmsz-diseno-opciones">
+          {[
+            { id: true, nombre: 'Dinámico', detalle: 'Colores, anillos de progreso, animaciones y siguiente paso recomendado.', icono: '✨' },
+            { id: false, nombre: 'Clásico', detalle: 'Diseño simple y minimalista, con listas y tarjetas blancas.', icono: '📄' },
+          ].map((o) => (
+            <button
+              key={o.nombre}
+              className={`mmsz-tema ${mmszProgreso.disenoDinamico === o.id ? 'activo' : ''}`}
+              onClick={() => mmszCambiarDiseno(o.id)}
+              aria-pressed={mmszProgreso.disenoDinamico === o.id}
+            >
+              <span className="mmsz-diseno-icono">{o.icono}</span>
+              <b>
+                {o.nombre}
+                {mmszProgreso.disenoDinamico === o.id && <span>✓</span>}
+              </b>
+              <small>{o.detalle}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="mmsz-tarjeta">
         <h3>Colores de la app</h3>
         <p className="muted">Elige el tema que más te guste. Se aplica al instante y se guarda para la próxima vez.</p>

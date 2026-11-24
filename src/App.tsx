@@ -1,9 +1,11 @@
 // Autor: MMSZ (Mario Soto Zea)
 import { useEffect, useRef, useState } from 'react';
 import { mmszUseProgress } from './progress';
-import { mmszGetCourse } from './content';
+import { mmszCursoSegunModo, mmszGetCourse } from './content';
 import MmszPanel from './screens/MmszPanel';
 import MmszBienvenida from './screens/MmszBienvenida';
+import MmszPrimerInicio from './screens/MmszPrimerInicio';
+import MmszCursoDinamico from './screens/MmszCursoDinamico';
 import MmszCourseMap from './screens/CourseMap';
 import MmszLessonScreen from './screens/LessonScreen';
 import MmszVisor from './screens/MmszVisor';
@@ -26,6 +28,9 @@ export default function MmszApp() {
     mmszCambiarCursosOcultos,
     mmszCambiarTema,
     mmszReemplazar,
+    mmszCompletarBienvenida,
+    mmszCambiarDiseno,
+    mmszCambiarModo,
     mmszAviso,
     mmszCerrarAviso,
   } = mmszUseProgress();
@@ -89,6 +94,9 @@ export default function MmszApp() {
   };
   mmszAtrasRef.current = mmszAtras;
 
+  // En modo Sin conexión, los cursos se muestran sin los videos de YouTube.
+  const mmszCurso = (mmszId: string) => mmszCursoSegunModo(mmszGetCourse(mmszId), mmszProgress.modoOffline);
+
   const mmszNav: MmszNav = {
     atras: mmszAtras,
     puedeAtras: mmszHistorial.length > 0,
@@ -97,11 +105,25 @@ export default function MmszApp() {
     abrirItem: (mmszCourseId, mmszLessonId, mmszItemId) =>
       mmszIrA({ name: 'item', courseId: mmszCourseId, lessonId: mmszLessonId, itemId: mmszItemId }),
     practicar: (mmszCourseId, mmszLessonId) => mmszIrA({ name: 'lesson', courseId: mmszCourseId, lessonId: mmszLessonId }),
+    cambiarModo: mmszCambiarModo,
     cerrarSesion: () => {
       mmszCambiarSesion(false);
       setMmszPantalla({ name: 'panel', seccion: 'cursos' });
     },
   };
+
+  // Primera vez que se abre Novexa: pedir nombre y cursos.
+  if (!mmszProgress.bienvenidaCompleta) {
+    return mmszCon(
+      <MmszPrimerInicio
+        mmszTerminar={(mmszNombre, mmszOcultos) => {
+          mmszCompletarBienvenida(mmszNombre, mmszOcultos);
+          setMmszPantalla({ name: 'panel', seccion: 'cursos' });
+          setMmszHistorial([]);
+        }}
+      />,
+    );
+  }
 
   if (!mmszProgress.sesionActiva) {
     return mmszCon(
@@ -115,11 +137,23 @@ export default function MmszApp() {
     );
   }
 
+  if (mmszPantalla.name === 'course' && mmszProgress.disenoDinamico) {
+    return mmszCon(
+      <MmszCursoDinamico
+        key={`${mmszPantalla.courseId}-${mmszPantalla.unidad ?? ''}`}
+        mmszCourse={mmszCurso(mmszPantalla.courseId)}
+        mmszProgress={mmszProgress}
+        mmszNav={mmszNav}
+        mmszUnidadElegida={mmszPantalla.unidad}
+      />,
+    );
+  }
+
   if (mmszPantalla.name === 'course') {
     return mmszCon(
       <MmszCourseMap
         key={`${mmszPantalla.courseId}-${mmszPantalla.unidad ?? ''}`}
-        mmszCourse={mmszGetCourse(mmszPantalla.courseId)}
+        mmszCourse={mmszCurso(mmszPantalla.courseId)}
         mmszProgress={mmszProgress}
         mmszNav={mmszNav}
         mmszUnidadElegida={mmszPantalla.unidad}
@@ -130,7 +164,7 @@ export default function MmszApp() {
   if (mmszPantalla.name === 'item') {
     return mmszCon(
       <MmszVisor
-        mmszCourse={mmszGetCourse(mmszPantalla.courseId)}
+        mmszCourse={mmszCurso(mmszPantalla.courseId)}
         mmszLessonId={mmszPantalla.lessonId}
         mmszItemId={mmszPantalla.itemId}
         mmszProgress={mmszProgress}
@@ -141,7 +175,7 @@ export default function MmszApp() {
   }
 
   if (mmszPantalla.name === 'lesson') {
-    const mmszCourse = mmszGetCourse(mmszPantalla.courseId);
+    const mmszCourse = mmszCurso(mmszPantalla.courseId);
     const mmszUnidad = mmszCourse.units.findIndex((u) => u.lessons.some((l) => l.id === mmszPantalla.lessonId));
     const mmszLesson = mmszCourse.units[mmszUnidad].lessons.find((l) => l.id === mmszPantalla.lessonId)!;
     return mmszCon(
@@ -166,6 +200,7 @@ export default function MmszApp() {
       mmszCambiarCursosOcultos={mmszCambiarCursosOcultos}
       mmszCambiarTema={mmszCambiarTema}
       mmszReemplazar={mmszReemplazar}
+      mmszCambiarDiseno={mmszCambiarDiseno}
       mmszReiniciar={mmszReset}
     />
   );

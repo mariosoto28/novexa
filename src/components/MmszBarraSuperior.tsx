@@ -113,11 +113,13 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
                   <button className="mmsz-subtitulo" onClick={() => mmszIr(() => mmszNav.abrirCurso(mmszCursoElegido.id))}>
                     Ir a {mmszCursoElegido.name} →
                   </button>
-                  {mmszCursoElegido.units.map((u) => (
+                  {mmszCursoElegido.units.map((u, mmszUi) => (
                     <div key={u.title} className="mmsz-unidad-lista">
-                      <b>{u.title}</b>
+                      <b>
+                        Unidad {mmszUi + 1} · {u.title}
+                      </b>
                       {u.lessons.map((l) => (
-                        <button key={l.id} onClick={() => mmszIr(() => mmszNav.abrirCurso(mmszCursoElegido.id))}>
+                        <button key={l.id} onClick={() => mmszIr(() => mmszNav.abrirCurso(mmszCursoElegido.id, mmszUi))}>
                           {l.title}
                         </button>
                       ))}
@@ -160,7 +162,7 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
           <div className="mmsz-menu mmsz-resultados">
             {mmszResultados.length === 0 && <p className="mmsz-pista">No encontré lecciones con “{mmszBusqueda}”.</p>}
             {mmszResultados.map((r, i) => (
-              <button key={i} onClick={() => mmszIr(() => mmszNav.abrirCurso(r.cursoId))}>
+              <button key={i} onClick={() => mmszIr(() => mmszNav.abrirCurso(r.cursoId, r.unidad))}>
                 <span className="mmsz-res-icono">{r.icono}</span>
                 <span>
                   <b>{r.titulo}</b>
@@ -186,6 +188,12 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
             setMmszVerNotificaciones(false);
           }}
         >
+          <span
+            className={`mmsz-modo-chip ${mmszProgreso.modoOffline ? 'offline' : 'online'}`}
+            title={mmszProgreso.modoOffline ? 'Modo sin conexión: videos de YouTube ocultos' : 'Modo en línea: con videos de YouTube'}
+          >
+            {mmszProgreso.modoOffline ? '📴 Offline' : '🌐 Online'}
+          </span>
           {mmszProgreso.nombre}
           {mmszAvisos.length > 0 && <span className="mmsz-punto" title={`${mmszAvisos.length} notificaciones`} />}
           <span className="mmsz-flecha">{mmszMenu === 'usuario' ? '▴' : '▾'}</span>
@@ -195,6 +203,33 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
           <div className="mmsz-menu mmsz-menu-usuario">
             {!mmszVerNotificaciones ? (
               <>
+                <div className="mmsz-modo">
+                  <small>Modo de conexión</small>
+                  <div className="mmsz-modo-opciones" role="radiogroup" aria-label="Modo de conexión">
+                    <button
+                      role="radio"
+                      aria-checked={!mmszProgreso.modoOffline}
+                      className={!mmszProgreso.modoOffline ? 'activo' : ''}
+                      onClick={() => mmszNav.cambiarModo(false)}
+                    >
+                      🌐 En línea
+                    </button>
+                    <button
+                      role="radio"
+                      aria-checked={mmszProgreso.modoOffline}
+                      className={mmszProgreso.modoOffline ? 'activo' : ''}
+                      onClick={() => mmszNav.cambiarModo(true)}
+                    >
+                      📴 Sin conexión
+                    </button>
+                  </div>
+                  <small className="muted">
+                    {mmszProgreso.modoOffline
+                      ? 'Los videos de YouTube están ocultos. Todo lo demás funciona sin internet.'
+                      : `Se muestran los videos de YouTube (necesitan internet${navigator.onLine ? '' : '; ahora no hay conexión'}).`}
+                  </small>
+                </div>
+                <hr />
                 <button className="mmsz-item fuerte" onClick={() => setMmszVerNotificaciones(true)}>
                   <span>
                     Notificaciones {mmszAvisos.length > 0 && <span className="mmsz-contador">{mmszAvisos.length}</span>}
@@ -227,7 +262,7 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
                     key={n.id}
                     className="mmsz-aviso"
                     disabled={!n.cursoId}
-                    onClick={() => n.cursoId && mmszIr(() => mmszNav.abrirCurso(n.cursoId!))}
+                    onClick={() => n.cursoId && mmszIr(() => mmszNav.abrirCurso(n.cursoId!, n.unidad))}
                   >
                     <span>{n.icono}</span>
                     <span>{n.texto}</span>

@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 /** Convierte el texto con formato en frases para leer en voz alta. */
-function mmszTextoHablado(mmszMarkdown: string): string[] {
+export function mmszTextoHablado(mmszMarkdown: string): string[] {
   const mmszSinCodigo = mmszMarkdown.replace(/(```|~~~)[\s\S]*?\1/g, '\nA continuación hay un ejemplo de código.\n');
   const mmszLimpio = mmszSinCodigo
     .replace(/[«»`*]/g, '')
@@ -22,7 +22,7 @@ function mmszTextoHablado(mmszMarkdown: string): string[] {
     .filter(Boolean);
 }
 
-function mmszVozEspanol(): SpeechSynthesisVoice | undefined {
+export function mmszVozEspanol(): SpeechSynthesisVoice | undefined {
   const mmszVoces = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('es'));
   return (
     mmszVoces.find((v) => /es-(MX|US|PE|419)/i.test(v.lang)) ??

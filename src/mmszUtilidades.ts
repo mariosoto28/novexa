@@ -15,6 +15,7 @@ export interface MmszNav {
   abrirCurso: (mmszCursoId: string, mmszUnidad?: number) => void;
   abrirItem: (mmszCursoId: string, mmszLeccionId: string, mmszItemId: string) => void;
   practicar: (mmszCursoId: string, mmszLeccionId: string) => void;
+  cambiarModo: (mmszOffline: boolean) => void; // En línea (con videos) o Sin conexión
   cerrarSesion: () => void;
 }
 
@@ -37,6 +38,12 @@ export function mmszIniciales(mmszNombre: string): string {
     .join('');
 }
 
+/** Índice de la unidad que contiene una lección (para abrir el curso justo en esa unidad). */
+export function mmszUnidadDe(mmszCurso: MmszCourse, mmszLeccionId: string): number | undefined {
+  const i = mmszCurso.units.findIndex((u) => u.lessons.some((l) => l.id === mmszLeccionId));
+  return i === -1 ? undefined : i;
+}
+
 /** Cuántas prácticas de lección completaste en todos los cursos. */
 export function mmszLeccionesCompletadas(mmszProgreso: MmszProgress): number {
   return mmszCourses.flatMap((c) => mmszAllLessons(c)).filter((l) => mmszProgreso.completed[l.id]).length;
@@ -56,6 +63,7 @@ export interface MmszNotificacion {
   icono: string;
   texto: string;
   cursoId?: string; // si existe, al hacer clic se abre ese curso
+  unidad?: number; // ...en esta unidad
 }
 
 /** Avisos calculados a partir del progreso actual. */
@@ -92,6 +100,7 @@ export function mmszNotificaciones(mmszProgreso: MmszProgress): MmszNotificacion
         icono: mmszCurso.icon,
         texto: `Te espera “${mmszSiguiente.title}” en ${mmszCurso.name}.`,
         cursoId: mmszCurso.id,
+        unidad: mmszUnidadDe(mmszCurso, mmszSiguiente.id),
       });
     }
     if (!mmszSiguiente) {
@@ -128,6 +137,7 @@ export interface MmszResultado {
   icono: string;
   titulo: string;
   detalle: string;
+  unidad?: number; // unidad donde está la lección encontrada
 }
 
 const mmszSinTildes = (s: string) =>
@@ -142,10 +152,17 @@ export function mmszBuscar(mmszTexto: string): MmszResultado[] {
     if (mmszSinTildes(c.name).includes(mmszQ)) {
       mmszResultados.push({ cursoId: c.id, cursoNombre: c.name, icono: c.icon, titulo: c.name, detalle: 'Curso' });
     }
-    for (const u of c.units) {
+    for (const [mmszUi, u] of c.units.entries()) {
       for (const l of u.lessons) {
         if (mmszSinTildes(`${l.title} ${l.intro}`).includes(mmszQ)) {
-          mmszResultados.push({ cursoId: c.id, cursoNombre: c.name, icono: c.icon, titulo: l.title, detalle: `${c.name} · ${u.title}` });
+          mmszResultados.push({
+            cursoId: c.id,
+            cursoNombre: c.name,
+            icono: c.icon,
+            titulo: l.title,
+            detalle: `${c.name} · Unidad ${mmszUi + 1}: ${u.title}`,
+            unidad: mmszUi,
+          });
         }
       }
     }

@@ -10,7 +10,12 @@ const mmszReloj = (s: number) => {
   return h ? `${h}:${String(m).padStart(2, '0')}:${seg}` : `${m}:${seg}`;
 };
 
-export default function MmszVideoVista({ mmszVideo }: { mmszVideo: MmszVideo }) {
+interface MmszProps {
+  mmszVideo: MmszVideo;
+  mmszAlternativa?: () => void; // abre la lección animada (offline) de la misma lección
+}
+
+export default function MmszVideoVista({ mmszVideo, mmszAlternativa }: MmszProps) {
   const [mmszEnLinea, setMmszEnLinea] = useState(navigator.onLine);
 
   useEffect(() => {
@@ -43,8 +48,13 @@ export default function MmszVideoVista({ mmszVideo }: { mmszVideo: MmszVideo }) 
         ) : (
           <div className="mmsz-video-sin-red">
             <span>📡</span>
-            <b>Necesitas conexión a internet para ver los videos.</b>
-            <small>Las lecturas, desafíos y prácticas sí funcionan sin internet.</small>
+            <b>Este video necesita conexión a internet.</b>
+            <small>Pero puedes aprender lo mismo sin internet con la lección animada.</small>
+            {mmszAlternativa && (
+              <button className="mmsz-din-boton" onClick={mmszAlternativa}>
+                ✺ Ver la lección animada
+              </button>
+            )}
           </div>
         )}
       </div>

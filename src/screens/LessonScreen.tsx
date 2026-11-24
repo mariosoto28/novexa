@@ -4,6 +4,7 @@ import type { MmszCourse, MmszExercise, MmszLesson } from '../types';
 import type { MmszProgress } from '../progress';
 import { mmszOnPythonLoading, mmszPreloadPython, mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
 import MmszExerciseView, { type MmszAnswer } from '../components/ExerciseView';
+import { MMSZ_AVISO_MAYUSCULAS, mmszMismaSalida, mmszMismoCodigo, mmszSoloMayusculas } from '../mmszComparar';
 
 interface MmszProps {
   mmszCourse: MmszCourse;
@@ -15,8 +16,6 @@ interface MmszProps {
 }
 
 type MmszPhase = 'intro' | 'answering' | 'correct' | 'wrong' | 'finished' | 'failed';
-
-const mmszNormalize = (s: string) => s.trim().replace(/\s+/g, ' ');
 
 function mmszIsReady(ex: MmszExercise, a: MmszAnswer): boolean {
   if (a == null) return false;
@@ -34,6 +33,8 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
   const [mmszChecking, mmszSetChecking] = useState(false);
   const [mmszMistakes, mmszSetMistakes] = useState(0);
   const [mmszXpGained, mmszSetXpGained] = useState(0);
+  // Aviso cuando la respuesta solo falla por mayúsculas (no quita vidas).
+  const [mmszCasi, mmszSetCasi] = useState<string | null>(null);
 
   const [mmszCorrectCount, mmszSetCorrectCount] = useState(0);
   const mmszTotal = mmszLesson.exercises.length;
@@ -58,15 +59,26 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
 
   async function mmszCheck() {
     let ok = false;
+    mmszSetCasi(null);
     if (mmszExercise.type === 'choice') ok = mmszAnswer === mmszExercise.answer;
-    if (mmszExercise.type === 'fill') ok = mmszExercise.answers.some((r) => mmszNormalize(r) === mmszNormalize(String(mmszAnswer)));
+    if (mmszExercise.type === 'fill') {
+      // Lo que se escribe en el espacio es código: ahí las mayúsculas sí importan.
+      const mmszEscrito = String(mmszAnswer);
+      ok = mmszExercise.answers.some((r) => mmszMismoCodigo(r, mmszEscrito));
+      if (!ok && mmszExercise.answers.some((r) => mmszSoloMayusculas(r, mmszEscrito))) {
+        // Solo fallan las mayúsculas: se avisa y se deja corregir sin perder una vida.
+        mmszSetCasi(MMSZ_AVISO_MAYUSCULAS);
+        return;
+      }
+    }
     if (mmszExercise.type === 'order') ok = (mmszAnswer as number[]).every((v, i) => v === i);
     if (mmszExercise.type === 'code') {
       mmszSetChecking(true);
       const r = await mmszRunCode(mmszLang, String(mmszAnswer));
       mmszSetChecking(false);
       mmszSetRun(r);
-      ok = !r.error && mmszNormalize(r.output) === mmszNormalize(mmszExercise.expectedOutput);
+      // En la salida del programa no importan las mayúsculas.
+      ok = !r.error && mmszMismaSalida(r.output, mmszExercise.expectedOutput);
     }
 
     if (ok) {
@@ -126,7 +138,10 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
             key={mmszPos}
             mmszExercise={mmszExercise}
             mmszAnswer={mmszAnswer}
-            mmszOnAnswer={mmszSetAnswer}
+            mmszOnAnswer={(a) => {
+              mmszSetAnswer(a);
+              mmszSetCasi(null);
+            }}
             mmszLocked={mmszPhase !== 'answering'}
             mmszRun={mmszRun}
             mmszLang={mmszCourse.id}
@@ -158,6 +173,7 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
 
       <footer className={`lesson-foot ${mmszPhase}`}>
         <div className="feedback">
+          {mmszPhase === 'answering' && mmszCasi && <span className="mmsz-casi">⚠ {mmszCasi}</span>}
           {mmszPhase === 'correct' && (
             <>
               <b>¡Correcto! ✓</b>

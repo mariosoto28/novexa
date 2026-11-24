@@ -16,9 +16,13 @@ export interface MmszProgress {
   sesionActiva: boolean; // false después de "Finalizar sesión"
   cursosOcultos: string[]; // cursos quitados de "Mis cursos"
   tema: string; // tema de colores elegido en Configuración
+  bienvenidaCompleta: boolean; // false hasta terminar la bienvenida del primer inicio
+  disenoDinamico: boolean; // diseño de cursos: true = dinámico (predeterminado), false = clásico
+  modoOffline: boolean; // true = sin conexión (oculta los videos de YouTube), false = en línea
 }
 
-export const MMSZ_NOMBRE_PREDETERMINADO = 'Mario Soto Zea';
+// Nombre provisional: cada persona escribe el suyo en la bienvenida del primer inicio.
+export const MMSZ_NOMBRE_PREDETERMINADO = 'Estudiante';
 
 /** Copia de seguridad guardada (automática o manual). */
 export interface MmszCopia {
@@ -54,6 +58,9 @@ const mmszFresh = (): MmszProgress => ({
   sesionActiva: true,
   cursosOcultos: [],
   tema: 'clasico',
+  bienvenidaCompleta: false,
+  disenoDinamico: true,
+  modoOffline: true, // Novexa es una app de escritorio: por defecto funciona sin conexión
 });
 
 export function mmszDayKey(d = new Date()): string {
@@ -90,7 +97,13 @@ function mmszNormalize(p: MmszProgress): MmszProgress {
 
 /** Completa los campos que falten (por ejemplo, de versiones anteriores de la app). */
 export function mmszCompletarProgreso(mmszDatos: Partial<MmszProgress> | null | undefined): MmszProgress {
-  return mmszNormalize({ ...mmszFresh(), ...(mmszDatos || {}) });
+  // Quien ya tenía progreso guardado (de antes de existir la bienvenida) no vuelve a verla.
+  const mmszYaUsaba = mmszDatos && mmszDatos.bienvenidaCompleta === undefined;
+  return mmszNormalize({
+    ...mmszFresh(),
+    ...(mmszDatos || {}),
+    ...(mmszYaUsaba ? { bienvenidaCompleta: true } : {}),
+  });
 }
 
 /* --- Copias en la versión web (en la app de escritorio las hace Electron en disco) --- */
@@ -224,7 +237,15 @@ export function mmszUseProgress() {
 
   // Reinicia XP, racha y lecciones, pero conserva el nombre y el tema del estudiante.
   const mmszReset = useCallback(
-    () => mmszUpdate((p) => ({ ...mmszFresh(), nombre: p.nombre, tema: p.tema })),
+    () =>
+      mmszUpdate((p) => ({
+        ...mmszFresh(),
+        nombre: p.nombre,
+        tema: p.tema,
+        disenoDinamico: p.disenoDinamico,
+        modoOffline: p.modoOffline,
+        bienvenidaCompleta: true,
+      })),
     [mmszUpdate],
   );
 
@@ -243,6 +264,29 @@ export function mmszUseProgress() {
     (mmszNombre: string) => mmszUpdate((p) => ({ ...p, nombre: mmszNombre.trim() || MMSZ_NOMBRE_PREDETERMINADO })),
     [mmszUpdate],
   );
+  const mmszCambiarModo = useCallback(
+    (mmszOffline: boolean) => mmszUpdate((p) => ({ ...p, modoOffline: mmszOffline })),
+    [mmszUpdate],
+  );
+
+  const mmszCambiarDiseno = useCallback(
+    (mmszDinamico: boolean) => mmszUpdate((p) => ({ ...p, disenoDinamico: mmszDinamico })),
+    [mmszUpdate],
+  );
+
+  /** Termina la bienvenida del primer inicio: guarda el nombre y los cursos elegidos. */
+  const mmszCompletarBienvenida = useCallback(
+    (mmszNombre: string, mmszCursosOcultos: string[]) =>
+      mmszUpdate((p) => ({
+        ...p,
+        nombre: mmszNombre.trim() || MMSZ_NOMBRE_PREDETERMINADO,
+        cursosOcultos: mmszCursosOcultos,
+        bienvenidaCompleta: true,
+        sesionActiva: true,
+      })),
+    [mmszUpdate],
+  );
+
   const mmszCambiarSesion = useCallback(
     (mmszActiva: boolean) => mmszUpdate((p) => ({ ...p, sesionActiva: mmszActiva })),
     [mmszUpdate],
@@ -262,6 +306,9 @@ export function mmszUseProgress() {
     mmszCambiarCursosOcultos,
     mmszCambiarTema,
     mmszReemplazar,
+    mmszCompletarBienvenida,
+    mmszCambiarDiseno,
+    mmszCambiarModo,
     mmszAviso,
     mmszCerrarAviso: () => setMmszAviso(null),
   };

@@ -11,6 +11,9 @@ import MmszMarkdown from '../components/MmszMarkdown';
 import MmszDesafioVista from '../components/MmszDesafioVista';
 import MmszVideoVista from '../components/MmszVideoVista';
 import MmszLectorVoz from '../components/MmszLectorVoz';
+import MmszLeccionAnimada from '../components/MmszLeccionAnimada';
+import MmszProgramaGuiado from '../components/MmszProgramaGuiado';
+import MmszGuiaPasoAPaso from '../components/MmszGuiaPasoAPaso';
 
 interface MmszProps {
   mmszCourse: MmszCourse;
@@ -29,6 +32,9 @@ export const MMSZ_ICONOS: Record<MmszItem['tipo'] | 'practica', string> = {
   proyecto: '⚑',
   practica: '✎',
   video: '▶',
+  animada: '✺',
+  guiado: '⚙',
+  guia: '⏯',
 };
 const MMSZ_NOMBRES: Record<MmszItem['tipo'], string> = {
   lectura: 'lectura',
@@ -37,8 +43,11 @@ const MMSZ_NOMBRES: Record<MmszItem['tipo'], string> = {
   desafio: 'desafío',
   proyecto: 'proyecto',
   video: 'video',
+  animada: 'lección animada',
+  guiado: 'programa guiado',
+  guia: 'guía paso a paso',
 };
-const MMSZ_XP: Record<MmszItem['tipo'], number> = { lectura: 2, consejo: 2, repaso: 2, desafio: 10, proyecto: 20, video: 2 };
+const MMSZ_XP: Record<MmszItem['tipo'], number> = { lectura: 2, consejo: 2, repaso: 2, desafio: 10, proyecto: 20, video: 2, animada: 3, guiado: 5, guia: 4 };
 
 export default function MmszVisor({ mmszCourse, mmszLessonId, mmszItemId, mmszProgress, mmszNav, mmszCompletar }: MmszProps) {
   // Todas las lecciones del curso con su unidad, para moverse con < y >.
@@ -49,6 +58,7 @@ export default function MmszVisor({ mmszCourse, mmszLessonId, mmszItemId, mmszPr
   const mmszItem = mmszLesson.items[mmszIdx];
   const mmszSiguiente = mmszLesson.items[mmszIdx + 1];
   const mmszLang = mmszCourse.id as MmszRunnableLang;
+  const mmszAnimadaId = mmszLesson.items.find((it) => it.tipo === 'animada')?.id;
 
   // Las lecturas se marcan como vistas al abrirlas (una sola vez).
   const mmszMarcado = useRef<string | null>(null);
@@ -142,8 +152,54 @@ export default function MmszVisor({ mmszCourse, mmszLessonId, mmszItemId, mmszPr
                   if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP[mmszItem.tipo]);
                 }}
               />
+            ) : mmszItem.tipo === 'guiado' ? (
+              <MmszProgramaGuiado
+                key={mmszItem.id}
+                mmszGuiado={mmszItem}
+                mmszLang={mmszLang}
+                mmszAlTerminar={() => {
+                  if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP.guiado);
+                }}
+                mmszIrAlDesafio={
+                  mmszSiguiente?.tipo === 'desafio'
+                    ? () => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, mmszSiguiente.id)
+                    : undefined
+                }
+              />
+            ) : mmszItem.tipo === 'guia' ? (
+              <MmszGuiaPasoAPaso
+                key={mmszItem.id}
+                mmszGuia={mmszItem}
+                mmszLang={mmszLang}
+                mmszAlTerminar={() => {
+                  if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP.guia);
+                }}
+                mmszIrAlGuiado={
+                  mmszSiguiente?.tipo === 'guiado'
+                    ? () => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, mmszSiguiente.id)
+                    : undefined
+                }
+              />
+            ) : mmszItem.tipo === 'animada' ? (
+              <MmszLeccionAnimada
+                key={mmszItem.id}
+                mmszTitulo={mmszLesson.title}
+                mmszIntro={mmszLesson.intro}
+                mmszRecuerdo={mmszItem.recuerdo}
+                mmszLecturas={mmszItem.lecturas}
+                mmszLang={mmszLang}
+                mmszAlTerminar={() => {
+                  if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP.animada);
+                }}
+              />
             ) : mmszItem.tipo === 'video' ? (
-              <MmszVideoVista key={mmszItem.id} mmszVideo={mmszItem} />
+              <MmszVideoVista
+                key={mmszItem.id}
+                mmszVideo={mmszItem}
+                mmszAlternativa={
+                  mmszAnimadaId ? () => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, mmszAnimadaId) : undefined
+                }
+              />
             ) : (
               <article className="mmsz-visor-lectura">
                 <MmszLectorVoz mmszTexto={(mmszItem as MmszLectura).contenido} />

@@ -75,7 +75,43 @@ export interface MmszVideo {
   descripcion: string;
 }
 
-export type MmszItem = MmszLectura | MmszDesafio | MmszVideo;
+/** Lo que se vio en la lección anterior (para decir "¿Recuerdas…?"). */
+export interface MmszRecuerdo {
+  leccion: string;
+  resumen: string;
+}
+
+/** Lección animada (offline): se genera a partir de las lecturas de la lección. */
+export interface MmszAnimada {
+  tipo: 'animada';
+  id: string;
+  titulo: string;
+  lecturas: string[];
+  recuerdo?: MmszRecuerdo;
+}
+
+/** Guía paso a paso: "video" interactivo que escribe y explica el programa del desafío. */
+export interface MmszGuia {
+  tipo: 'guia';
+  id: string;
+  titulo: string;
+  objetivo: string;
+  codigo: string;
+  salida?: string;
+  recuerdo?: MmszRecuerdo;
+}
+
+/** Programa guiado: se construye línea por línea el programa del desafío, con explicaciones. */
+export interface MmszGuiado {
+  tipo: 'guiado';
+  id: string;
+  titulo: string;
+  objetivo: string; // qué hace el programa (instrucciones del desafío)
+  codigo: string; // programa completo
+  salida?: string; // salida esperada (si el lenguaje se puede ejecutar)
+}
+
+export type MmszItem = MmszLectura | MmszDesafio | MmszVideo | MmszAnimada | MmszGuiado | MmszGuia;
 
 export type MmszNivel = 'Básico' | 'Intermedio' | 'Avanzado';
 
