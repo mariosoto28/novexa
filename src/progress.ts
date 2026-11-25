@@ -36,6 +36,9 @@ declare global {
       mmszCopiaManual: (mmszP: MmszProgress, mmszEtiqueta: string) => Promise<boolean>;
       mmszExportarProgreso: (mmszContenido: string) => Promise<{ mmszOk: boolean; mmszRuta?: string }>;
       mmszImportarProgreso: () => Promise<{ mmszOk: boolean; mmszContenido?: string; mmszError?: string }>;
+      mmszSintetizarVoz?: (mmszTexto: string) => Promise<Uint8Array | null>;
+      mmszCargarUsuarios?: () => Promise<unknown>;
+      mmszGuardarUsuarios?: (mmszDatos: unknown) => Promise<boolean>;
     };
   }
 }

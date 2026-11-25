@@ -1,6 +1,8 @@
 const { app: mmszApp, BrowserWindow: MmszBrowserWindow, dialog: mmszDialog, ipcMain: mmszIpcMain, Menu: MmszMenu, protocol: mmszProtocol, session: mmszSession, shell: mmszShell } = require('electron');
 const mmszPath = require('path');
 const mmszFs = require('fs');
+const mmszCrypto = require('crypto');
+const { spawn: mmszSpawn } = require('child_process');
 
 const mmszIsDev = process.argv.includes('--dev');
 
@@ -174,6 +176,22 @@ mmszIpcMain.handle('progress:importar', async (mmszEvent) => {
   return { mmszOk: true, mmszContenido: mmszFs.readFileSync(mmszFilePaths[0], 'utf8') };
 });
 
+const mmszUsuariosFile = () => mmszPath.join(mmszApp.getPath('userData'), 'usuarios.json');
+
+mmszIpcMain.handle('usuarios:load', () => {
+  try {
+    return JSON.parse(mmszFs.readFileSync(mmszUsuariosFile(), 'utf8'));
+  } catch {
+    return null;
+  }
+});
+
+mmszIpcMain.handle('usuarios:save', (mmszEvent, mmszDatos) => {
+  if (!mmszDatos || !Array.isArray(mmszDatos.mmszUsuarios)) return false;
+  mmszEscribirSeguro(mmszUsuariosFile(), mmszDatos);
+  return true;
+});
+
 function mmszCreateWindow() {
   const mmszWin = new MmszBrowserWindow({
     width: 1100,
@@ -196,6 +214,81 @@ function mmszCreateWindow() {
 
   mmszWin.loadURL(mmszIsDev ? 'http://localhost:5173' : 'app://bundle/index.html');
 }
+
+const MMSZ_MODELO_VOZ = 'es_AR-daniela-high.onnx';
+const MMSZ_MAXIMO_CACHE_VOZ = 3000;
+const mmszCarpetaVoz = () => (mmszApp.isPackaged ? mmszPath.join(process.resourcesPath, 'voz') : mmszPath.join(__dirname, '..', 'voz'));
+const mmszCarpetaCacheVoz = () => mmszPath.join(mmszApp.getPath('userData'), 'voz-cache');
+let mmszPiper = null;
+let mmszBufferVoz = '';
+const mmszPendientesVoz = [];
+
+function mmszLimpiarCacheVoz() {
+  try {
+    const mmszArchivos = mmszFs
+      .readdirSync(mmszCarpetaCacheVoz())
+      .filter((mmszF) => mmszF.endsWith('.wav'))
+      .map((mmszF) => ({ mmszF, mmszT: mmszFs.statSync(mmszPath.join(mmszCarpetaCacheVoz(), mmszF)).mtimeMs }));
+    if (mmszArchivos.length <= MMSZ_MAXIMO_CACHE_VOZ) return;
+    mmszArchivos
+      .sort((mmszA, mmszB) => mmszA.mmszT - mmszB.mmszT)
+      .slice(0, mmszArchivos.length - MMSZ_MAXIMO_CACHE_VOZ / 2)
+      .forEach((mmszA) => mmszFs.unlinkSync(mmszPath.join(mmszCarpetaCacheVoz(), mmszA.mmszF)));
+  } catch {}
+}
+
+function mmszIniciarPiper() {
+  const mmszBase = mmszCarpetaVoz();
+  const mmszExe = mmszPath.join(mmszBase, 'piper', 'piper.exe');
+  const mmszModelo = mmszPath.join(mmszBase, MMSZ_MODELO_VOZ);
+  if (process.platform !== 'win32' || !mmszFs.existsSync(mmszExe) || !mmszFs.existsSync(mmszModelo)) return null;
+  mmszFs.mkdirSync(mmszCarpetaCacheVoz(), { recursive: true });
+  mmszLimpiarCacheVoz();
+  const mmszProceso = mmszSpawn(mmszExe, ['--model', mmszModelo, '--json-input', '--output_dir', mmszCarpetaCacheVoz()], {
+    cwd: mmszPath.join(mmszBase, 'piper'),
+    windowsHide: true,
+  });
+  mmszBufferVoz = '';
+  mmszProceso.stdout.on('data', (mmszD) => {
+    mmszBufferVoz += mmszD.toString();
+    let mmszI;
+    while ((mmszI = mmszBufferVoz.indexOf('\n')) >= 0) {
+      mmszBufferVoz = mmszBufferVoz.slice(mmszI + 1);
+      mmszPendientesVoz.shift()?.mmszListo();
+    }
+  });
+  mmszProceso.stderr.on('data', () => {});
+  const mmszCaido = () => {
+    if (mmszPiper === mmszProceso) mmszPiper = null;
+    mmszPendientesVoz.splice(0).forEach((mmszP) => mmszP.mmszListo());
+  };
+  mmszProceso.on('exit', mmszCaido);
+  mmszProceso.on('error', mmszCaido);
+  return mmszProceso;
+}
+
+function mmszSintetizarVoz(mmszTexto) {
+  const mmszLimpio = String(mmszTexto || '').replace(/\s+/g, ' ').trim().slice(0, 800);
+  if (!mmszLimpio) return Promise.resolve(null);
+  const mmszClave = mmszCrypto.createHash('sha1').update(MMSZ_MODELO_VOZ + '|' + mmszLimpio).digest('hex');
+  const mmszArchivo = mmszPath.join(mmszCarpetaCacheVoz(), mmszClave + '.wav');
+  if (mmszFs.existsSync(mmszArchivo)) return Promise.resolve(mmszArchivo);
+  if (!mmszPiper) mmszPiper = mmszIniciarPiper();
+  if (!mmszPiper) return Promise.resolve(null);
+  return new Promise((mmszResolver) => {
+    mmszPendientesVoz.push({ mmszListo: () => mmszResolver(mmszFs.existsSync(mmszArchivo) ? mmszArchivo : null) });
+    mmszPiper.stdin.write(JSON.stringify({ text: mmszLimpio, output_file: mmszArchivo }) + '\n');
+  });
+}
+
+mmszIpcMain.handle('voz:sintetizar', async (mmszEvent, mmszTexto) => {
+  const mmszArchivo = await mmszSintetizarVoz(mmszTexto);
+  return mmszArchivo ? mmszFs.readFileSync(mmszArchivo) : null;
+});
+
+mmszApp.on('will-quit', () => {
+  if (mmszPiper) mmszPiper.kill();
+});
 
 mmszApp.whenReady().then(() => {
   mmszProtocol.handle('app', mmszServeApp);

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MmszGuia } from '../types';
 import { mmszPreloadPython, mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
 import { mmszConceptos, mmszExplicarLinea } from '../mmszExplicador';
-import { mmszTextoHablado, mmszVozEspanol } from './MmszLectorVoz';
+import { mmszTextoHablado } from './MmszLectorVoz';
+import { mmszCallar, mmszDecirFrases, mmszHayVoz as mmszHayVozDisponible, mmszPrecargar } from '../mmszVoz';
 import MmszMarkdown, { MmszEnLinea } from './MmszMarkdown';
 import MmszEditor from './MmszEditor';
 import '../mmszDinamico.css';
@@ -89,7 +90,7 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
   const mmszLineas = useMemo(() => mmszGuia.mmszCodigo.split('\n'), [mmszGuia.mmszCodigo]);
   const mmszGuion = useMemo(() => mmszCrearGuion(mmszGuia, mmszLang, mmszLineas), [mmszGuia, mmszLang, mmszLineas]);
   const mmszTotal = mmszGuion[mmszGuion.length - 1].mmszInicio + mmszGuion[mmszGuion.length - 1].mmszDur;
-  const mmszHayVoz = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const mmszHayVoz = mmszHayVozDisponible();
 
   const [mmszT, mmszSetT] = useState(0);
   const [mmszReproduciendo, mmszSetReproduciendo] = useState(false);
@@ -154,38 +155,32 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
   }, [mmszT, mmszTotal, mmszReproduciendo, mmszAlTerminar]);
 
   useEffect(() => {
+    if (mmszHayVoz && mmszConVoz) mmszPrecargar(mmszGuion[0]?.mmszVoz);
+  }, [mmszGuion, mmszHayVoz, mmszConVoz]);
+
+  useEffect(() => {
     if (!mmszHayVoz) return;
-    speechSynthesis.cancel();
     mmszHablando.current = false;
     const mmszMiTurno = ++mmszTurno.current;
     if (!mmszReproduciendo || !mmszConVoz || mmszT >= mmszTotal) return;
-    const mmszVoz = mmszVozEspanol();
     const mmszFrases = mmszSeg.mmszVoz;
     if (!mmszFrases.length) return;
     mmszHablando.current = true;
-    mmszFrases.forEach((mmszF, mmszI) => {
-      const mmszU = new SpeechSynthesisUtterance(mmszF);
-      mmszU.lang = mmszVoz?.lang ?? 'es-ES';
-      if (mmszVoz) mmszU.voice = mmszVoz;
-      mmszU.rate = mmszVelocidad;
-      if (mmszI === mmszFrases.length - 1) {
-        const mmszFin = () => {
-          if (mmszTurno.current === mmszMiTurno) mmszHablando.current = false;
-        };
-        mmszU.onend = mmszFin;
-        mmszU.onerror = mmszFin;
-      }
-      speechSynthesis.speak(mmszU);
+    mmszPrecargar(mmszGuion[mmszIndice + 1]?.mmszVoz);
+    const mmszDicho = mmszDecirFrases(mmszFrases, mmszVelocidad);
+    mmszDicho.mmszFin.then(() => {
+      if (mmszTurno.current === mmszMiTurno) mmszHablando.current = false;
     });
     const mmszSeguro = setTimeout(() => {
       if (mmszTurno.current === mmszMiTurno) mmszHablando.current = false;
-    }, (mmszSeg.mmszDur / mmszVelocidad) + 5000);
-    return () => clearTimeout(mmszSeguro);
+    }, (mmszSeg.mmszDur / mmszVelocidad) + 8000);
+    return () => {
+      clearTimeout(mmszSeguro);
+      mmszDicho.mmszCancelar();
+    };
   }, [mmszIndice, mmszReproduciendo, mmszConVoz, mmszVelocidad]);
 
-  useEffect(() => () => {
-    if (mmszHayVoz) speechSynthesis.cancel();
-  }, [mmszHayVoz]);
+  useEffect(() => () => mmszCallar(), []);
 
   const mmszVisible = useMemo(() => {
     const mmszFilas: { mmszTexto: string; mmszI: number }[] = [];

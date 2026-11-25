@@ -7,4 +7,7 @@ mmszContextBridge.exposeInMainWorld('mmszApi', {
   mmszCopiaManual: (mmszData, mmszEtiqueta) => mmszIpcRenderer.invoke('progress:copiaManual', mmszData, mmszEtiqueta),
   mmszExportarProgreso: (mmszContenido) => mmszIpcRenderer.invoke('progress:exportar', mmszContenido),
   mmszImportarProgreso: () => mmszIpcRenderer.invoke('progress:importar'),
+  mmszSintetizarVoz: (mmszTexto) => mmszIpcRenderer.invoke('voz:sintetizar', mmszTexto),
+  mmszCargarUsuarios: () => mmszIpcRenderer.invoke('usuarios:load'),
+  mmszGuardarUsuarios: (mmszDatos) => mmszIpcRenderer.invoke('usuarios:save', mmszDatos),
 });

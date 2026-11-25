@@ -8,6 +8,8 @@ import MmszCursoDinamico from './screens/MmszCursoDinamico';
 import MmszCourseMap from './screens/CourseMap';
 import MmszLessonScreen from './screens/LessonScreen';
 import MmszVisor from './screens/MmszVisor';
+import MmszElegirUsuario from './screens/MmszElegirUsuario';
+import { mmszUseUsuarios } from './mmszUsuarios';
 import type { MmszNav, MmszSeccion } from './mmszUtilidades';
 
 type MmszPantalla =
@@ -35,6 +37,8 @@ export default function MmszApp() {
   } = mmszUseProgress();
   const [mmszPantalla, mmszSetPantalla] = useState<MmszPantalla>({ mmszName: 'panel', mmszSeccion: 'cursos' });
   const [mmszHistorial, mmszSetHistorial] = useState<MmszPantalla[]>([]);
+  const [mmszUsuarioElegido, mmszSetUsuarioElegido] = useState(false);
+  const mmszUsuarios = mmszUseUsuarios(mmszProgress, mmszReemplazar);
 
   useEffect(() => {
     document.documentElement.dataset.tema = mmszProgress?.mmszTema ?? 'clasico';
@@ -56,7 +60,7 @@ export default function MmszApp() {
   }, []);
   const mmszAtrasRef = useRef(() => {});
 
-  if (!mmszProgress) return <div className="loading">Cargando…</div>;
+  if (!mmszProgress || !mmszUsuarios.mmszListo) return <div className="loading">Cargando…</div>;
 
   const mmszCon = (mmszVista: JSX.Element) => (
     <>
@@ -101,17 +105,41 @@ export default function MmszApp() {
     mmszCambiarModo,
     mmszCerrarSesion: () => {
       mmszCambiarSesion(false);
+      mmszSetUsuarioElegido(false);
       mmszSetPantalla({ mmszName: 'panel', mmszSeccion: 'cursos' });
     },
   };
+
+  const mmszVolverAlInicio = () => {
+    mmszSetUsuarioElegido(true);
+    mmszSetPantalla({ mmszName: 'panel', mmszSeccion: 'cursos' });
+    mmszSetHistorial([]);
+  };
+
+  if (mmszUsuarios.mmszFichas.length > 0 && (!mmszUsuarioElegido || !mmszProgress.mmszSesionActiva)) {
+    return mmszCon(
+      <MmszElegirUsuario
+        mmszUsuarios={mmszUsuarios.mmszFichas}
+        mmszElegir={(mmszId) => {
+          mmszUsuarios.mmszElegir(mmszId);
+          if (!mmszProgress.mmszSesionActiva) mmszCambiarSesion(true);
+          mmszVolverAlInicio();
+        }}
+        mmszAgregar={() => {
+          mmszUsuarios.mmszAgregar();
+          mmszVolverAlInicio();
+        }}
+        mmszQuitar={mmszUsuarios.mmszQuitar}
+      />,
+    );
+  }
 
   if (!mmszProgress.mmszBienvenidaCompleta) {
     return mmszCon(
       <MmszPrimerInicio
         mmszTerminar={(mmszNombre, mmszOcultos) => {
           mmszCompletarBienvenida(mmszNombre, mmszOcultos);
-          mmszSetPantalla({ mmszName: 'panel', mmszSeccion: 'cursos' });
-          mmszSetHistorial([]);
+          mmszVolverAlInicio();
         }}
       />,
     );

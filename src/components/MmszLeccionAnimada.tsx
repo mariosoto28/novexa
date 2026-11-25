@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from '
 import { mmszCrearEscenas } from '../mmszEscenas';
 import type { MmszRecuerdo } from '../types';
 import { mmszPreloadPython, mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
-import { mmszVozEspanol } from './MmszLectorVoz';
+import { mmszCallar, mmszDecir, mmszHayVoz as mmszHayVozDisponible, mmszPrecargar, type MmszDicho } from '../mmszVoz';
 import { MmszEnLinea } from './MmszMarkdown';
 import '../mmszDinamico.css';
 
@@ -43,7 +43,7 @@ function mmszColorear(mmszCodigo: string, mmszLang: MmszRunnableLang): ReactNode
 
 export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo, mmszLecturas, mmszLang, mmszAlTerminar }: MmszProps) {
   const mmszEscenas = useMemo(() => mmszCrearEscenas(mmszTitulo, mmszIntro, mmszLecturas, mmszRecuerdo), [mmszTitulo, mmszIntro, mmszLecturas, mmszRecuerdo]);
-  const mmszHayVoz = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const mmszHayVoz = mmszHayVozDisponible();
 
   const [mmszIndice, mmszSetIndice] = useState(0);
   const [mmszReproduciendo, mmszSetReproduciendo] = useState(false);
@@ -87,7 +87,12 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
     if (!mmszReproduciendo) return;
     let mmszCancelado = false;
     const mmszTimers: number[] = [];
+    const mmszDichos: MmszDicho[] = [];
     const mmszE = mmszEscena;
+    if (!mmszSilencio) {
+      mmszPrecargar(mmszE.mmszNarracion);
+      mmszPrecargar(mmszEscenas[mmszIndice + 1]?.mmszNarracion.slice(0, 1));
+    }
     const mmszTotal = mmszE.mmszCodigo?.length ?? 0;
     const mmszDuracionVoz = (mmszE.mmszNarracion.join(' ').length / MMSZ_LETRAS_POR_SEGUNDO) * 1000 / mmszVelocidad;
 
@@ -139,7 +144,6 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
       mmszEjecutar();
     }
 
-    const mmszVoz = mmszHayVoz ? mmszVozEspanol() : undefined;
     const mmszHablar = (mmszI: number) => {
       if (mmszCancelado) return;
       if (mmszI >= mmszE.mmszNarracion.length) {
@@ -159,13 +163,9 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
         mmszTimers.push(window.setTimeout(mmszSiguiente, (mmszTexto.length / MMSZ_LETRAS_POR_SEGUNDO) * 1000 / mmszVelocidad + 250));
         return;
       }
-      const mmszU = new SpeechSynthesisUtterance(mmszTexto);
-      mmszU.lang = mmszVoz?.lang ?? 'es-ES';
-      if (mmszVoz) mmszU.voice = mmszVoz;
-      mmszU.rate = mmszVelocidad;
-      mmszU.onend = mmszSiguiente;
-      mmszU.onerror = mmszSiguiente;
-      speechSynthesis.speak(mmszU);
+      const mmszDicho = mmszDecir(mmszTexto, mmszVelocidad);
+      mmszDichos.push(mmszDicho);
+      mmszDicho.mmszFin.then(mmszSiguiente);
     };
     if (!mmszVozLista) mmszHablar(mmszFraseRef.current);
     mmszRevisar();
@@ -176,11 +176,11 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
         window.clearTimeout(mmszT);
         window.clearInterval(mmszT);
       });
-      if (mmszHayVoz) speechSynthesis.cancel();
+      mmszDichos.forEach((mmszD) => mmszD.mmszCancelar());
     };
   }, [mmszReproduciendo, mmszIndice, mmszVelocidad, mmszSilencio]);
 
-  useEffect(() => () => void (mmszHayVoz && speechSynthesis.cancel()), [mmszHayVoz]);
+  useEffect(() => () => mmszCallar(), []);
 
   const mmszCodigoVisible = mmszEscena.mmszCodigo?.slice(0, mmszTipeados) ?? '';
   const mmszEscribiendo = Boolean(mmszEscena.mmszCodigo) && mmszTipeados < (mmszEscena.mmszCodigo?.length ?? 0);

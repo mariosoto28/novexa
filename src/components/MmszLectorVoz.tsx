@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { mmszDecirFrases, mmszHayVoz, type MmszDicho } from '../mmszVoz';
 
 export function mmszTextoHablado(mmszMarkdown: string): string[] {
   const mmszSinCodigo = mmszMarkdown.replace(/(```|~~~)[\s\S]*?\1/g, '\nA continuación hay un ejemplo de código.\n');
@@ -17,53 +18,36 @@ export function mmszTextoHablado(mmszMarkdown: string): string[] {
     .filter(Boolean);
 }
 
-export function mmszVozEspanol(): SpeechSynthesisVoice | undefined {
-  const mmszVoces = speechSynthesis.getVoices().filter((mmszV) => mmszV.lang.toLowerCase().startsWith('es'));
-  return (
-    mmszVoces.find((mmszV) => /es-(MX|US|PE|419)/i.test(mmszV.lang)) ??
-    mmszVoces.find((mmszV) => /es-ES/i.test(mmszV.lang)) ??
-    mmszVoces[0]
-  );
-}
-
 const MMSZ_VELOCIDADES = [0.8, 1, 1.25, 1.5];
 
 export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
-  const mmszDisponible = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  const mmszDisponible = mmszHayVoz();
   const [mmszEstado, mmszSetEstado] = useState<'parado' | 'hablando' | 'pausado'>('parado');
   const [mmszVelocidad, mmszSetVelocidad] = useState(1);
-  const [mmszSinVoz, mmszSetSinVoz] = useState(false);
-  const mmszCancelado = useRef(false);
+  const mmszDicho = useRef<MmszDicho | null>(null);
 
   useEffect(() => {
     return () => {
-      mmszCancelado.current = true;
-      if (mmszDisponible) speechSynthesis.cancel();
+      mmszDicho.current?.mmszCancelar();
+      mmszDicho.current = null;
     };
-  }, [mmszTexto, mmszDisponible]);
+  }, [mmszTexto]);
 
   if (!mmszDisponible) return null;
 
   function mmszEmpezar() {
-    speechSynthesis.cancel();
-    mmszCancelado.current = false;
-    const mmszVoz = mmszVozEspanol();
-    if (!mmszVoz && speechSynthesis.getVoices().length > 0) mmszSetSinVoz(true);
-    const mmszFrases = mmszTextoHablado(mmszTexto);
-    mmszFrases.forEach((mmszF, mmszI) => {
-      const mmszU = new SpeechSynthesisUtterance(mmszF);
-      mmszU.lang = mmszVoz?.lang ?? 'es-ES';
-      if (mmszVoz) mmszU.voice = mmszVoz;
-      mmszU.rate = mmszVelocidad;
-      if (mmszI === mmszFrases.length - 1) mmszU.onend = () => !mmszCancelado.current && mmszSetEstado('parado');
-      speechSynthesis.speak(mmszU);
+    mmszDicho.current?.mmszCancelar();
+    const mmszEste = mmszDecirFrases(mmszTextoHablado(mmszTexto), mmszVelocidad);
+    mmszDicho.current = mmszEste;
+    mmszEste.mmszFin.then(() => {
+      if (mmszDicho.current === mmszEste) mmszSetEstado('parado');
     });
     mmszSetEstado('hablando');
   }
 
   function mmszDetener() {
-    mmszCancelado.current = true;
-    speechSynthesis.cancel();
+    mmszDicho.current?.mmszCancelar();
+    mmszDicho.current = null;
     mmszSetEstado('parado');
   }
 
@@ -78,7 +62,7 @@ export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
         <button
           className="mmsz-btn"
           onClick={() => {
-            speechSynthesis.pause();
+            mmszDicho.current?.mmszPausar();
             mmszSetEstado('pausado');
           }}
         >
@@ -89,7 +73,7 @@ export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
         <button
           className="mmsz-btn"
           onClick={() => {
-            speechSynthesis.resume();
+            mmszDicho.current?.mmszReanudar();
             mmszSetEstado('hablando');
           }}
         >
@@ -117,7 +101,6 @@ export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
           ))}
         </select>
       </label>
-      {mmszSinVoz && <small className="muted">No encontré una voz en español; se usará la voz del sistema.</small>}
     </div>
   );
 }

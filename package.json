@@ -13,7 +13,8 @@
     "start": "npm run build && electron .",
     "typecheck": "tsc --noEmit",
     "verificar": "node scripts/verificar-contenido.cjs",
-    "dist": "npm run build && electron-builder --win nsis"
+    "dist": "npm run voz && npm run build && electron-builder --win nsis",
+    "voz": "node scripts/descargar-voz.cjs"
   },
   "author": "Novexa",
   "build": {
@@ -38,7 +39,16 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Novexa",
       "artifactName": "Novexa-Setup-${version}.${ext}"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "voz",
+        "to": "voz",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

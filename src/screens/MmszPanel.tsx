@@ -450,6 +450,14 @@ function MmszAyuda() {
           <li><kbd>Esc</kbd> Cerrar menús</li>
         </ul>
       </section>
+      <section className="mmsz-tarjeta">
+        <h3>Créditos de la voz</h3>
+        <p className="muted">
+          La voz de las lecciones animadas, la guía paso a paso y «Escuchar» funciona sin internet. Es la voz
+          «Daniela» (español de Argentina) de Piper Voices, con licencia CC BY-SA 4.0, entrenada con datos de OpenSLR 61.
+          El motor de voz es Piper, con licencia MIT.
+        </p>
+      </section>
     </>
   );
 }
