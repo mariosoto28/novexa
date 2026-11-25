@@ -6,6 +6,7 @@
   "main": "electron/main.cjs",
   "private": true,
   "scripts": {
+    "postinstall": "node scripts/preparar-electron.cjs",
     "pyodide": "node scripts/copy-pyodide.cjs",
     "dev": "npm run pyodide && concurrently -k -n web,app \"vite\" \"wait-on http://localhost:5173 && electron . --dev\"",
     "web": "npm run pyodide && vite",
@@ -64,5 +65,9 @@
     "typescript": "^5.5.4",
     "vite": "^5.4.0",
     "wait-on": "^8.0.1"
+  },
+  "allowScripts": {
+    "electron@33.4.11": true,
+    "esbuild@0.21.5": true
   }
 }
