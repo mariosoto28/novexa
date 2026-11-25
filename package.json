@@ -17,10 +17,11 @@
     "dist": "npm run voz && npm run build && electron-builder --win nsis",
     "voz": "node scripts/descargar-voz.cjs"
   },
-  "author": "Novexa",
+  "author": "Mario Soto Zea",
   "build": {
     "appId": "com.novexa.app",
     "productName": "Novexa",
+    "copyright": "Copyright © 2026 Mario Soto Zea",
     "directories": {
       "output": "release"
     },
@@ -39,6 +40,13 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Novexa",
+      "license": "build/licencia.txt",
+      "language": "3082",
+      "installerLanguages": [
+        "es_ES"
+      ],
+      "runAfterFinish": true,
+      "uninstallDisplayName": "Novexa",
       "artifactName": "Novexa-Setup-${version}.${ext}"
     },
     "extraResources": [

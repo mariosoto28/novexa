@@ -1,0 +1,25 @@
+﻿NOVEXA - TÉRMINOS DE USO
+Versión 0.1.0
+Autor: Mario Soto Zea
+
+Novexa es una aplicación de escritorio para aprender a programar en Python, JavaScript y C++. Fue desarrollada como trabajo académico del curso de Ingeniería de Software.
+
+1. USO
+Puedes instalar y usar Novexa de forma gratuita con fines educativos. La aplicación funciona sin conexión a internet; solo los videos de YouTube del modo «En línea» necesitan internet.
+
+2. TUS DATOS
+Novexa guarda el progreso de cada usuario (nombre, experiencia, racha y lecciones completadas) únicamente en esta computadora, dentro de la carpeta de datos de la aplicación. No envía información a ningún servidor.
+
+3. GARANTÍA
+Novexa se entrega «tal cual», sin garantías de ningún tipo. El autor no se hace responsable por daños derivados de su uso.
+
+4. COMPONENTES DE TERCEROS
+Novexa incluye los siguientes componentes, cada uno con su propia licencia:
+- Electron (licencia MIT).
+- React (licencia MIT).
+- Pyodide, intérprete de Python (licencia MPL 2.0).
+- JSCPP, intérprete de C++ (licencia MIT).
+- Piper, motor de voz (licencia MIT).
+- Voz «Daniela» (español de Argentina) de Piper Voices, entrenada con datos de OpenSLR 61 (licencia CC BY-SA 4.0).
+
+Al presionar «Acepto» confirmas que leíste estos términos.
