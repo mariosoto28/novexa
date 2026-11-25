@@ -1,4 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
 import { useEffect, useMemo, useRef } from 'react';
 import type { MmszExercise } from '../types';
 import type { MmszRunResult } from '../runner';
@@ -8,7 +7,7 @@ export type MmszAnswer = number | string | number[] | null;
 interface MmszProps {
   mmszExercise: MmszExercise;
   mmszAnswer: MmszAnswer;
-  mmszOnAnswer: (a: MmszAnswer) => void;
+  mmszOnAnswer: (mmszA: MmszAnswer) => void;
   mmszLocked: boolean;
   mmszRun: MmszRunResult | null;
   mmszLang: string;
@@ -17,18 +16,18 @@ interface MmszProps {
   mmszPyLoading: boolean;
 }
 
-function mmszShuffle(n: number): number[] {
-  const a = Array.from({ length: n }, (_, i) => i);
+function mmszShuffle(mmszN: number): number[] {
+  const mmszA = Array.from({ length: mmszN }, (mmszSinUso, mmszI) => mmszI);
   do {
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+    for (let mmszI = mmszA.length - 1; mmszI > 0; mmszI--) {
+      const mmszJ = Math.floor(Math.random() * (mmszI + 1));
+      [mmszA[mmszI], mmszA[mmszJ]] = [mmszA[mmszJ], mmszA[mmszI]];
     }
-  } while (n > 1 && a.every((v, i) => v === i)); // evita que salga ya ordenado
-  return a;
+  } while (mmszN > 1 && mmszA.every((mmszV, mmszI) => mmszV === mmszI));
+  return mmszA;
 }
 
-const mmszLabel: Record<MmszExercise['type'], string> = {
+const mmszLabel: Record<MmszExercise['mmszType'], string> = {
   choice: 'Elige la respuesta correcta',
   fill: 'Completa el espacio',
   order: 'Ordena el código',
@@ -39,14 +38,14 @@ export default function MmszExerciseView(mmszProps: MmszProps) {
   const { mmszExercise, mmszAnswer, mmszOnAnswer, mmszLocked } = mmszProps;
   return (
     <div className="exercise">
-      <span className="tag">{mmszLabel[mmszExercise.type]}</span>
-      <h2>{mmszExercise.prompt}</h2>
-      {mmszExercise.type === 'choice' && <MmszChoice ex={mmszExercise} mmszAnswer={mmszAnswer} mmszOnAnswer={mmszOnAnswer} mmszLocked={mmszLocked} />}
-      {mmszExercise.type === 'fill' && <MmszFill ex={mmszExercise} mmszAnswer={mmszAnswer} mmszOnAnswer={mmszOnAnswer} mmszLocked={mmszLocked} />}
-      {mmszExercise.type === 'order' && <MmszOrder ex={mmszExercise} mmszAnswer={mmszAnswer} mmszOnAnswer={mmszOnAnswer} mmszLocked={mmszLocked} />}
-      {mmszExercise.type === 'code' && (
+      <span className="tag">{mmszLabel[mmszExercise.mmszType]}</span>
+      <h2>{mmszExercise.mmszPrompt}</h2>
+      {mmszExercise.mmszType === 'choice' && <MmszChoice mmszEx={mmszExercise} mmszAnswer={mmszAnswer} mmszOnAnswer={mmszOnAnswer} mmszLocked={mmszLocked} />}
+      {mmszExercise.mmszType === 'fill' && <MmszFill mmszEx={mmszExercise} mmszAnswer={mmszAnswer} mmszOnAnswer={mmszOnAnswer} mmszLocked={mmszLocked} />}
+      {mmszExercise.mmszType === 'order' && <MmszOrder mmszEx={mmszExercise} mmszAnswer={mmszAnswer} mmszOnAnswer={mmszOnAnswer} mmszLocked={mmszLocked} />}
+      {mmszExercise.mmszType === 'code' && (
         <MmszCodeEditor
-          ex={mmszExercise}
+          mmszEx={mmszExercise}
           mmszAnswer={mmszAnswer}
           mmszOnAnswer={mmszOnAnswer}
           mmszLocked={mmszLocked}
@@ -61,26 +60,26 @@ export default function MmszExerciseView(mmszProps: MmszProps) {
   );
 }
 
-type MmszSub<T extends MmszExercise['type']> = {
-  ex: Extract<MmszExercise, { type: T }>;
+type MmszSub<MmszT extends MmszExercise['mmszType']> = {
+  mmszEx: Extract<MmszExercise, { mmszType: MmszT }>;
   mmszAnswer: MmszAnswer;
-  mmszOnAnswer: (a: MmszAnswer) => void;
+  mmszOnAnswer: (mmszA: MmszAnswer) => void;
   mmszLocked: boolean;
 };
 
-function MmszChoice({ ex, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'choice'>) {
+function MmszChoice({ mmszEx, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'choice'>) {
   return (
     <>
-      {ex.code && <pre className="code">{ex.code}</pre>}
+      {mmszEx.mmszCode && <pre className="code">{mmszEx.mmszCode}</pre>}
       <div className="options">
-        {ex.options.map((mmszOpt, i) => {
+        {mmszEx.mmszOptions.map((mmszOpt, mmszI) => {
           let mmszCls = 'option';
-          if (mmszAnswer === i) mmszCls += ' selected';
-          if (mmszLocked && i === ex.answer) mmszCls += ' right';
-          if (mmszLocked && mmszAnswer === i && i !== ex.answer) mmszCls += ' bad';
+          if (mmszAnswer === mmszI) mmszCls += ' selected';
+          if (mmszLocked && mmszI === mmszEx.mmszAnswer) mmszCls += ' right';
+          if (mmszLocked && mmszAnswer === mmszI && mmszI !== mmszEx.mmszAnswer) mmszCls += ' bad';
           return (
-            <button key={i} className={mmszCls} disabled={mmszLocked} onClick={() => mmszOnAnswer(i)}>
-              <span className="key">{i + 1}</span>
+            <button key={mmszI} className={mmszCls} disabled={mmszLocked} onClick={() => mmszOnAnswer(mmszI)}>
+              <span className="key">{mmszI + 1}</span>
               <code>{mmszOpt}</code>
             </button>
           );
@@ -90,8 +89,8 @@ function MmszChoice({ ex, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'choic
   );
 }
 
-function MmszFill({ ex, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'fill'>) {
-  const [mmszBefore, mmszAfter] = ex.code.split('___');
+function MmszFill({ mmszEx, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'fill'>) {
+  const [mmszBefore, mmszAfter] = mmszEx.mmszCode.split('___');
   return (
     <pre className="code fill">
       {mmszBefore}
@@ -99,7 +98,7 @@ function MmszFill({ ex, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'fill'>)
         autoFocus
         className="blank"
         value={typeof mmszAnswer === 'string' ? mmszAnswer : ''}
-        onChange={(e) => mmszOnAnswer(e.target.value)}
+        onChange={(mmszE) => mmszOnAnswer(mmszE.target.value)}
         disabled={mmszLocked}
         size={Math.max(4, String(mmszAnswer ?? '').length + 1)}
         spellCheck={false}
@@ -109,21 +108,21 @@ function MmszFill({ ex, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'fill'>)
   );
 }
 
-function MmszOrder({ ex, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'order'>) {
-  const mmszPool = useMemo(() => mmszShuffle(ex.lines.length), [ex]);
+function MmszOrder({ mmszEx, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'order'>) {
+  const mmszPool = useMemo(() => mmszShuffle(mmszEx.mmszLines.length), [mmszEx]);
   const mmszChosen = Array.isArray(mmszAnswer) ? mmszAnswer : [];
   return (
     <>
       <div className="order-target">
         {mmszChosen.length === 0 && <span className="muted small">Toca las líneas de abajo en el orden correcto</span>}
-        {mmszChosen.map((mmszLineIdx, i) => (
+        {mmszChosen.map((mmszLineIdx, mmszI) => (
           <button
-            key={i}
+            key={mmszI}
             className="line placed"
             disabled={mmszLocked}
-            onClick={() => mmszOnAnswer(mmszChosen.filter((_, j) => j !== i))}
+            onClick={() => mmszOnAnswer(mmszChosen.filter((mmszSinUso, mmszJ) => mmszJ !== mmszI))}
           >
-            <code>{ex.lines[mmszLineIdx]}</code>
+            <code>{mmszEx.mmszLines[mmszLineIdx]}</code>
           </button>
         ))}
       </div>
@@ -135,7 +134,7 @@ function MmszOrder({ ex, mmszAnswer, mmszOnAnswer, mmszLocked }: MmszSub<'order'
             disabled={mmszLocked || mmszChosen.includes(mmszLineIdx)}
             onClick={() => mmszOnAnswer([...mmszChosen, mmszLineIdx])}
           >
-            <code>{ex.lines[mmszLineIdx]}</code>
+            <code>{mmszEx.mmszLines[mmszLineIdx]}</code>
           </button>
         ))}
       </div>
@@ -151,46 +150,42 @@ type MmszEditorProps = MmszSub<'code'> & {
   mmszPyLoading: boolean;
 };
 
-function MmszCodeEditor({ ex, mmszAnswer, mmszOnAnswer, mmszLocked, mmszRun, mmszLang, mmszOnRun, mmszRunning, mmszPyLoading }: MmszEditorProps) {
-  const mmszValue = typeof mmszAnswer === 'string' ? mmszAnswer : ex.starter;
+function MmszCodeEditor({ mmszEx, mmszAnswer, mmszOnAnswer, mmszLocked, mmszRun, mmszLang, mmszOnRun, mmszRunning, mmszPyLoading }: MmszEditorProps) {
+  const mmszValue = typeof mmszAnswer === 'string' ? mmszAnswer : mmszEx.mmszStarter;
   const mmszRef = useRef<HTMLTextAreaElement>(null);
   const mmszIndentUnit = mmszLang === 'javascript' ? '  ' : '    ';
 
-  /** Inserta texto en la posición del cursor y lo deja justo después. */
-  function mmszInsert(t: HTMLTextAreaElement, mmszText: string) {
-    const s = t.selectionStart;
-    mmszOnAnswer(mmszValue.slice(0, s) + mmszText + mmszValue.slice(t.selectionEnd));
-    requestAnimationFrame(() => t.setSelectionRange(s + mmszText.length, s + mmszText.length));
+  function mmszInsert(mmszT: HTMLTextAreaElement, mmszText: string) {
+    const mmszS = mmszT.selectionStart;
+    mmszOnAnswer(mmszValue.slice(0, mmszS) + mmszText + mmszValue.slice(mmszT.selectionEnd));
+    requestAnimationFrame(() => mmszT.setSelectionRange(mmszS + mmszText.length, mmszS + mmszText.length));
   }
 
-  function mmszOnKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    const t = e.currentTarget;
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
+  function mmszOnKeyDown(mmszE: React.KeyboardEvent<HTMLTextAreaElement>) {
+    const mmszT = mmszE.currentTarget;
+    if (mmszE.key === 'Enter' && (mmszE.ctrlKey || mmszE.metaKey)) {
+      mmszE.preventDefault();
       if (!mmszRunning) mmszOnRun();
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      mmszInsert(t, mmszIndentUnit);
-    } else if (e.key === 'Enter') {
-      // Mantiene la sangría de la línea actual y agrega un nivel tras ":" o "{".
-      e.preventDefault();
-      const mmszBefore = mmszValue.slice(0, t.selectionStart);
+    } else if (mmszE.key === 'Tab') {
+      mmszE.preventDefault();
+      mmszInsert(mmszT, mmszIndentUnit);
+    } else if (mmszE.key === 'Enter') {
+      mmszE.preventDefault();
+      const mmszBefore = mmszValue.slice(0, mmszT.selectionStart);
       const mmszLine = mmszBefore.slice(mmszBefore.lastIndexOf('\n') + 1);
       const mmszIndent = mmszLine.match(/^\s*/)![0];
       const mmszOpens = /[:{]\s*$/.test(mmszLine);
-      mmszInsert(t, '\n' + mmszIndent + (mmszOpens ? mmszIndentUnit : ''));
+      mmszInsert(mmszT, '\n' + mmszIndent + (mmszOpens ? mmszIndentUnit : ''));
     }
   }
 
-  // Al abrir el ejercicio: carga el código inicial y pone el cursor al final.
   useEffect(() => {
-    if (mmszAnswer == null) mmszOnAnswer(ex.starter);
-    const t = mmszRef.current;
-    if (t) {
-      t.focus();
-      t.setSelectionRange(ex.starter.length, ex.starter.length);
+    if (mmszAnswer == null) mmszOnAnswer(mmszEx.mmszStarter);
+    const mmszT = mmszRef.current;
+    if (mmszT) {
+      mmszT.focus();
+      mmszT.setSelectionRange(mmszEx.mmszStarter.length, mmszEx.mmszStarter.length);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -199,7 +194,7 @@ function MmszCodeEditor({ ex, mmszAnswer, mmszOnAnswer, mmszLocked, mmszRun, mms
         ref={mmszRef}
         className="editor"
         value={mmszValue}
-        onChange={(e) => mmszOnAnswer(e.target.value)}
+        onChange={(mmszE) => mmszOnAnswer(mmszE.target.value)}
         onKeyDown={mmszOnKeyDown}
         disabled={mmszLocked}
         spellCheck={false}
@@ -214,15 +209,15 @@ function MmszCodeEditor({ ex, mmszAnswer, mmszOnAnswer, mmszLocked, mmszRun, mms
       <div className="console">
         <div className="console-col">
           <span className="small muted">Salida esperada · no importan mayúsculas</span>
-          <pre className="out expected">{ex.expectedOutput}</pre>
+          <pre className="out expected">{mmszEx.mmszExpectedOutput}</pre>
         </div>
         <div className="console-col">
           <span className="small muted">Tu salida</span>
-          <pre className={mmszRun?.error ? 'out err' : 'out'}>
+          <pre className={mmszRun?.mmszError ? 'out err' : 'out'}>
             {!mmszRun && <span className="muted">Ejecuta tu código para ver el resultado</span>}
-            {mmszRun?.output}
-            {mmszRun?.error ? `${mmszRun.output ? '\n' : ''}${mmszRun.error}` : ''}
-            {mmszRun && !mmszRun.output && !mmszRun.error ? '(no se mostró nada)' : ''}
+            {mmszRun?.mmszOutput}
+            {mmszRun?.mmszError ? `${mmszRun.mmszOutput ? '\n' : ''}${mmszRun.mmszError}` : ''}
+            {mmszRun && !mmszRun.mmszOutput && !mmszRun.mmszError ? '(no se mostró nada)' : ''}
           </pre>
         </div>
       </div>

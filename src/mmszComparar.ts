@@ -1,25 +1,15 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Reglas para comparar respuestas de los estudiantes.
+const mmszEspacios = (mmszS: string) => mmszS.replace(/\r/g, '').trim().replace(/\s+/g, ' ');
 
-/** Quita espacios extra y saltos de línea de Windows. */
-const mmszEspacios = (s: string) => s.replace(/\r/g, '').trim().replace(/\s+/g, ' ');
-
-/**
- * Compara la salida de un programa con la esperada sin importar mayúsculas ni espacios extra:
- * "hola, soy estudiante" cuenta igual que "Hola, soy estudiante".
- */
 export function mmszMismaSalida(mmszObtenida: string, mmszEsperada: string): boolean {
   return mmszEspacios(mmszObtenida).toLowerCase() === mmszEspacios(mmszEsperada).toLowerCase();
 }
 
-/** Compara código exacto (en programación las mayúsculas importan: print ≠ Print). */
-export function mmszMismoCodigo(a: string, b: string): boolean {
-  return mmszEspacios(a) === mmszEspacios(b);
+export function mmszMismoCodigo(mmszA: string, mmszB: string): boolean {
+  return mmszEspacios(mmszA) === mmszEspacios(mmszB);
 }
 
-/** true si dos textos solo se diferencian en mayúsculas/minúsculas. */
-export function mmszSoloMayusculas(a: string, b: string): boolean {
-  return !mmszMismoCodigo(a, b) && mmszEspacios(a).toLowerCase() === mmszEspacios(b).toLowerCase();
+export function mmszSoloMayusculas(mmszA: string, mmszB: string): boolean {
+  return !mmszMismoCodigo(mmszA, mmszB) && mmszEspacios(mmszA).toLowerCase() === mmszEspacios(mmszB).toLowerCase();
 }
 
 export const MMSZ_AVISO_MAYUSCULAS =

@@ -1,6 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Programa guiado: el estudiante construye el programa del desafío línea por línea,
-// con la explicación de cada línea, pistas, predicción de la salida y un espacio para experimentar.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MmszGuiado } from '../types';
 import { mmszPreloadPython, mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
@@ -19,51 +16,48 @@ interface MmszProps {
 
 type MmszFase = 'construir' | 'predecir' | 'experimentar' | 'listo';
 
-/** Líneas que pone Novexa (estructura obligatoria, llaves de cierre, comentarios). */
-function mmszEsAutomatica(l: string): boolean {
-  const s = l.trim();
+function mmszEsAutomatica(mmszL: string): boolean {
+  const mmszS = mmszL.trim();
   return (
-    !s ||
-    /^(#include|using namespace|int main\(\)\s*{|return 0;|}\s*;?$|\);?$|\]\s*;?$|#\s|\/\/)/.test(s) ||
-    /^[}\])],?$/.test(s)
+    !mmszS ||
+    /^(#include|using namespace|int main\(\)\s*{|return 0;|}\s*;?$|\);?$|\]\s*;?$|#\s|\/\/)/.test(mmszS) ||
+    /^[}\])],?$/.test(mmszS)
   );
 }
 
-const mmszSinEspacios = (s: string) => s.replace(/\s+/g, '');
+const mmszSinEspacios = (mmszS: string) => mmszS.replace(/\s+/g, '');
 
-/** true si los dos textos tienen los mismos números (ej. "14" y "14.0"), aunque cambie el formato. */
-function mmszMismosNumeros(a: string, b: string): boolean {
-  const mmszNums = (s: string) => (s.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number);
-  const x = mmszNums(a);
-  const y = mmszNums(b);
-  return x.length > 0 && x.length === y.length && x.every((v, i) => Math.abs(v - y[i]) < 1e-9);
+function mmszMismosNumeros(mmszA: string, mmszB: string): boolean {
+  const mmszNums = (mmszS: string) => (mmszS.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number);
+  const mmszX = mmszNums(mmszA);
+  const mmszY = mmszNums(mmszB);
+  return mmszX.length > 0 && mmszX.length === mmszY.length && mmszX.every((mmszV, mmszI) => Math.abs(mmszV - mmszY[mmszI]) < 1e-9);
 }
 
-/** Primer número asignado a una variable, para proponer un experimento. */
 function mmszExperimento(mmszCodigo: string): string {
-  const m = mmszCodigo.match(/^\s*(?:const |let |int |double )?(\w+)\s*=\s*(-?\d+(?:\.\d+)?)\s*;?\s*$/m);
-  if (m) return `Cambia el valor de «${m[1]}» (ahora es ${m[2]}) por otro número y vuelve a ejecutar. ¿Cómo cambia el resultado?`;
-  const t = mmszCodigo.match(/["']([^"']{3,})["']/);
-  if (t) return `Cambia el texto "${t[1]}" por otro y vuelve a ejecutar.`;
+  const mmszM = mmszCodigo.match(/^\s*(?:const |let |int |double )?(\w+)\s*=\s*(-?\d+(?:\.\d+)?)\s*;?\s*$/m);
+  if (mmszM) return `Cambia el valor de «${mmszM[1]}» (ahora es ${mmszM[2]}) por otro número y vuelve a ejecutar. ¿Cómo cambia el resultado?`;
+  const mmszT = mmszCodigo.match(/["']([^"']{3,})["']/);
+  if (mmszT) return `Cambia el texto "${mmszT[1]}" por otro y vuelve a ejecutar.`;
   return 'Cambia algo del programa (un número, un texto o una condición) y vuelve a ejecutar para ver qué pasa.';
 }
 
 export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTerminar, mmszIrAlDesafio }: MmszProps) {
-  const mmszLineas = useMemo(() => mmszGuiado.codigo.split('\n'), [mmszGuiado.codigo]);
-  const mmszRequeridas = mmszLineas.map((l, i) => ({ l, i })).filter((x) => !mmszEsAutomatica(x.l));
-  const mmszSeEjecuta = mmszGuiado.salida !== undefined;
+  const mmszLineas = useMemo(() => mmszGuiado.mmszCodigo.split('\n'), [mmszGuiado.mmszCodigo]);
+  const mmszRequeridas = mmszLineas.map((mmszL, mmszI) => ({ mmszL, mmszI })).filter((mmszX) => !mmszEsAutomatica(mmszX.mmszL));
+  const mmszSeEjecuta = mmszGuiado.mmszSalida !== undefined;
 
-  const [mmszFase, setMmszFase] = useState<MmszFase>('construir');
-  const [mmszPaso, setMmszPaso] = useState(0); // índice dentro de las líneas requeridas
-  const [mmszEscrito, setMmszEscrito] = useState('');
-  const [mmszPista, setMmszPista] = useState(0); // 0 nada, 1 estructura, 2 respuesta
-  const [mmszAviso, setMmszAviso] = useState<{ ok: boolean; texto: string } | null>(null);
-  const [mmszAciertosSinAyuda, setMmszAciertosSinAyuda] = useState(0);
-  const [mmszPrediccion, setMmszPrediccion] = useState('');
-  const [mmszResultado, setMmszResultado] = useState<MmszRunResult | null>(null);
-  const [mmszCorriendo, setMmszCorriendo] = useState(false);
-  const [mmszJuego, setMmszJuego] = useState(mmszGuiado.codigo);
-  const [mmszJuegoSalida, setMmszJuegoSalida] = useState<MmszRunResult | null>(null);
+  const [mmszFase, mmszSetFase] = useState<MmszFase>('construir');
+  const [mmszPaso, mmszSetPaso] = useState(0);
+  const [mmszEscrito, mmszSetEscrito] = useState('');
+  const [mmszPista, mmszSetPista] = useState(0);
+  const [mmszAviso, mmszSetAviso] = useState<{ mmszOk: boolean; mmszTexto: string } | null>(null);
+  const [mmszAciertosSinAyuda, mmszSetAciertosSinAyuda] = useState(0);
+  const [mmszPrediccion, mmszSetPrediccion] = useState('');
+  const [mmszResultado, mmszSetResultado] = useState<MmszRunResult | null>(null);
+  const [mmszCorriendo, mmszSetCorriendo] = useState(false);
+  const [mmszJuego, mmszSetJuego] = useState(mmszGuiado.mmszCodigo);
+  const [mmszJuegoSalida, mmszSetJuegoSalida] = useState<MmszRunResult | null>(null);
   const mmszEntrada = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -72,88 +66,85 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
   useEffect(() => mmszEntrada.current?.focus(), [mmszPaso, mmszFase]);
 
   const mmszActual = mmszRequeridas[mmszPaso];
-  // Líneas visibles del programa: todas las automáticas hasta la actual y las requeridas ya escritas.
-  const mmszHasta = mmszFase === 'construir' && mmszActual ? mmszActual.i : mmszLineas.length;
+  const mmszHasta = mmszFase === 'construir' && mmszActual ? mmszActual.mmszI : mmszLineas.length;
 
   function mmszComprobar() {
     if (!mmszActual) return;
-    const mmszEsperada = mmszActual.l;
+    const mmszEsperada = mmszActual.mmszL;
     if (mmszSinEspacios(mmszEscrito) === mmszSinEspacios(mmszEsperada)) {
-      if (mmszPista === 0) setMmszAciertosSinAyuda((n) => n + 1);
+      if (mmszPista === 0) mmszSetAciertosSinAyuda((mmszN) => mmszN + 1);
       mmszAvanzar('¡Correcto! ✓');
     } else if (mmszSinEspacios(mmszEscrito).toLowerCase() === mmszSinEspacios(mmszEsperada).toLowerCase()) {
-      setMmszAviso({ ok: false, texto: 'Casi: solo cambian las mayúsculas. En el código sí importan.' });
+      mmszSetAviso({ mmszOk: false, mmszTexto: 'Casi: solo cambian las mayúsculas. En el código sí importan.' });
     } else if (!mmszEscrito.trim()) {
-      setMmszAviso({ ok: false, texto: 'Escribe la línea en el cuadro. Si no sabes cómo, usa 💡 Pista.' });
+      mmszSetAviso({ mmszOk: false, mmszTexto: 'Escribe la línea en el cuadro. Si no sabes cómo, usa 💡 Pista.' });
     } else {
-      setMmszAviso({ ok: false, texto: 'Todavía no. Compara con la explicación o usa 💡 Pista para ver la forma de la línea.' });
+      mmszSetAviso({ mmszOk: false, mmszTexto: 'Todavía no. Compara con la explicación o usa 💡 Pista para ver la forma de la línea.' });
     }
   }
 
   function mmszAvanzar(mmszTexto: string) {
-    setMmszAviso({ ok: true, texto: mmszTexto });
-    setMmszEscrito('');
-    setMmszPista(0);
+    mmszSetAviso({ mmszOk: true, mmszTexto });
+    mmszSetEscrito('');
+    mmszSetPista(0);
     if (mmszPaso + 1 >= mmszRequeridas.length) {
-      setMmszPaso(mmszRequeridas.length);
-      setMmszFase(mmszSeEjecuta ? 'predecir' : 'experimentar');
+      mmszSetPaso(mmszRequeridas.length);
+      mmszSetFase(mmszSeEjecuta ? 'predecir' : 'experimentar');
     } else {
-      setMmszPaso(mmszPaso + 1);
+      mmszSetPaso(mmszPaso + 1);
     }
   }
 
   async function mmszEjecutarYComparar() {
-    setMmszCorriendo(true);
-    const r = await mmszRunCode(mmszLang, mmszGuiado.codigo);
-    setMmszResultado(r);
-    setMmszCorriendo(false);
+    mmszSetCorriendo(true);
+    const mmszR = await mmszRunCode(mmszLang, mmszGuiado.mmszCodigo);
+    mmszSetResultado(mmszR);
+    mmszSetCorriendo(false);
   }
 
   async function mmszEjecutarJuego() {
-    setMmszCorriendo(true);
-    setMmszJuegoSalida(await mmszRunCode(mmszLang, mmszJuego));
-    setMmszCorriendo(false);
+    mmszSetCorriendo(true);
+    mmszSetJuegoSalida(await mmszRunCode(mmszLang, mmszJuego));
+    mmszSetCorriendo(false);
   }
 
   function mmszTerminar() {
-    setMmszFase('listo');
+    mmszSetFase('listo');
     mmszAlTerminar();
   }
 
-  const mmszFases: { id: MmszFase; texto: string }[] = [
-    { id: 'construir', texto: '1. Construir' },
-    ...(mmszSeEjecuta ? [{ id: 'predecir' as const, texto: '2. Predecir' }] : []),
-    { id: 'experimentar', texto: `${mmszSeEjecuta ? 3 : 2}. Experimentar` },
-    { id: 'listo', texto: '✓ Listo' },
+  const mmszFases: { mmszId: MmszFase; mmszTexto: string }[] = [
+    { mmszId: 'construir', mmszTexto: '1. Construir' },
+    ...(mmszSeEjecuta ? [{ mmszId: 'predecir' as const, mmszTexto: '2. Predecir' }] : []),
+    { mmszId: 'experimentar', mmszTexto: `${mmszSeEjecuta ? 3 : 2}. Experimentar` },
+    { mmszId: 'listo', mmszTexto: '✓ Listo' },
   ];
-  const mmszFaseIdx = mmszFases.findIndex((f) => f.id === mmszFase);
+  const mmszFaseIdx = mmszFases.findIndex((mmszF) => mmszF.mmszId === mmszFase);
 
   return (
     <div className="mmsz-guiado">
-      {/* ---------- Fases ---------- */}
       <div className="mmsz-guiado-fases">
-        {mmszFases.map((f, i) => (
-          <span key={f.id} className={i < mmszFaseIdx ? 'hecha' : i === mmszFaseIdx ? 'actual' : ''}>
-            {f.texto}
+        {mmszFases.map((mmszF, mmszI) => (
+          <span key={mmszF.mmszId} className={mmszI < mmszFaseIdx ? 'hecha' : mmszI === mmszFaseIdx ? 'actual' : ''}>
+            {mmszF.mmszTexto}
           </span>
         ))}
       </div>
 
       <details className="mmsz-guiado-objetivo" open={mmszFase === 'construir' && mmszPaso === 0}>
         <summary>🎯 Qué vamos a programar</summary>
-        <MmszMarkdown texto={mmszGuiado.objetivo} lang={mmszLang} />
+        <MmszMarkdown mmszTexto={mmszGuiado.mmszObjetivo} mmszLang={mmszLang} />
       </details>
 
       <div className="mmsz-guiado-cuerpo">
-        {/* ---------- Panel izquierdo: la actividad de cada fase ---------- */}
         <section className="mmsz-guiado-actividad">
           {mmszFase === 'construir' && mmszActual && (
             <div key={mmszPaso} className="mmsz-aparecer">
               <small className="muted">
                 Línea {mmszPaso + 1} de {mmszRequeridas.length}
               </small>
-              <h3>{mmszExplicarLinea(mmszActual.l, mmszLang)}</h3>
-              {mmszLang === 'python' && /^\s+/.test(mmszActual.l) && (
+              <h3>{mmszExplicarLinea(mmszActual.mmszL, mmszLang)}</h3>
+              {mmszLang === 'python' && /^\s+/.test(mmszActual.mmszL) && (
                 <p className="muted small">La sangría (espacios al inicio) la ponemos por ti.</p>
               )}
               <label className="mmsz-guiado-entrada">
@@ -162,24 +153,24 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
                   ref={mmszEntrada}
                   value={mmszEscrito}
                   spellCheck={false}
-                  placeholder={mmszPista >= 1 ? mmszHuecoLinea(mmszActual.l, mmszLang).trim() : 'Escribe aquí tu línea de código…'}
-                  onChange={(e) => {
-                    setMmszEscrito(e.target.value);
-                    setMmszAviso(null);
+                  placeholder={mmszPista >= 1 ? mmszHuecoLinea(mmszActual.mmszL, mmszLang).trim() : 'Escribe aquí tu línea de código…'}
+                  onChange={(mmszE) => {
+                    mmszSetEscrito(mmszE.target.value);
+                    mmszSetAviso(null);
                   }}
-                  onKeyDown={(e) => e.key === 'Enter' && mmszComprobar()}
+                  onKeyDown={(mmszE) => mmszE.key === 'Enter' && mmszComprobar()}
                 />
               </label>
               {mmszPista >= 1 && (
                 <div className="mmsz-guiado-pista">
                   <small>💡 La línea tiene esta forma (completa los ___):</small>
-                  <code>{mmszHuecoLinea(mmszActual.l, mmszLang).trim()}</code>
+                  <code>{mmszHuecoLinea(mmszActual.mmszL, mmszLang).trim()}</code>
                 </div>
               )}
               {mmszPista >= 2 && (
                 <div className="mmsz-guiado-pista respuesta">
                   <small>Respuesta: escríbela tú para practicar</small>
-                  <code>{mmszActual.l.trim()}</code>
+                  <code>{mmszActual.mmszL.trim()}</code>
                 </div>
               )}
               <div className="mmsz-acciones">
@@ -187,12 +178,12 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
                   Comprobar ↵
                 </button>
                 {mmszPista < 2 && (
-                  <button className="mmsz-btn" onClick={() => setMmszPista(mmszPista + 1)}>
+                  <button className="mmsz-btn" onClick={() => mmszSetPista(mmszPista + 1)}>
                     {mmszPista === 0 ? '💡 Pista' : '👀 Ver respuesta'}
                   </button>
                 )}
               </div>
-              {mmszAviso && <div className={`mmsz-mensaje ${mmszAviso.ok ? 'ok' : 'error'}`}>{mmszAviso.texto}</div>}
+              {mmszAviso && <div className={`mmsz-mensaje ${mmszAviso.mmszOk ? 'ok' : 'error'}`}>{mmszAviso.mmszTexto}</div>}
             </div>
           )}
 
@@ -203,7 +194,7 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
               <textarea
                 className="mmsz-guiado-prediccion"
                 value={mmszPrediccion}
-                onChange={(e) => setMmszPrediccion(e.target.value)}
+                onChange={(mmszE) => mmszSetPrediccion(mmszE.target.value)}
                 placeholder="Por ejemplo: 14.0"
                 rows={3}
               />
@@ -220,17 +211,17 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
                     </div>
                     <div>
                       <small>Salida real</small>
-                      <pre>{mmszResultado.output || mmszResultado.error}</pre>
+                      <pre>{mmszResultado.mmszOutput || mmszResultado.mmszError}</pre>
                     </div>
                   </div>
-                  <div className={`mmsz-mensaje ${mmszMismaSalida(mmszPrediccion, mmszResultado.output) ? 'ok' : 'info'}`}>
-                    {mmszMismaSalida(mmszPrediccion, mmszResultado.output)
+                  <div className={`mmsz-mensaje ${mmszMismaSalida(mmszPrediccion, mmszResultado.mmszOutput) ? 'ok' : 'info'}`}>
+                    {mmszMismaSalida(mmszPrediccion, mmszResultado.mmszOutput)
                       ? '🎯 ¡Acertaste! Entiendes lo que hace tu programa.'
-                      : mmszMismosNumeros(mmszPrediccion, mmszResultado.output)
+                      : mmszMismosNumeros(mmszPrediccion, mmszResultado.mmszOutput)
                         ? `🎯 ¡Casi perfecto! Los valores son correctos; solo cambia el formato.${mmszLang === 'python' ? ' En Python, la división con / siempre da un número con decimales (por ejemplo 14.0).' : ''}`
                         : 'No pasa nada: compara tu predicción con la salida real y revisa qué línea produce cada resultado.'}
                   </div>
-                  <button className="mmsz-din-boton chico" onClick={() => setMmszFase('experimentar')}>
+                  <button className="mmsz-din-boton chico" onClick={() => mmszSetFase('experimentar')}>
                     Siguiente: experimentar →
                   </button>
                 </>
@@ -241,7 +232,7 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
           {mmszFase === 'experimentar' && (
             <div className="mmsz-aparecer">
               <h3>🧪 Ahora experimenta</h3>
-              <p>{mmszExperimento(mmszGuiado.codigo)}</p>
+              <p>{mmszExperimento(mmszGuiado.mmszCodigo)}</p>
               <p className="muted small">Aquí no hay respuestas incorrectas: es tu espacio para probar.</p>
               <div className="mmsz-acciones">
                 {mmszSeEjecuta && (
@@ -252,8 +243,8 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
                 <button
                   className="mmsz-btn"
                   onClick={() => {
-                    setMmszJuego(mmszGuiado.codigo);
-                    setMmszJuegoSalida(null);
+                    mmszSetJuego(mmszGuiado.mmszCodigo);
+                    mmszSetJuegoSalida(null);
                   }}
                 >
                   ↺ Restaurar
@@ -263,10 +254,10 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
                 </button>
               </div>
               {mmszJuegoSalida && (
-                <pre className={`out ${mmszJuegoSalida.error ? 'err' : ''}`}>
-                  {mmszJuegoSalida.output}
-                  {mmszJuegoSalida.error ? `${mmszJuegoSalida.output ? '\n' : ''}${mmszJuegoSalida.error}` : ''}
-                  {!mmszJuegoSalida.output && !mmszJuegoSalida.error ? '(no se mostró nada)' : ''}
+                <pre className={`out ${mmszJuegoSalida.mmszError ? 'err' : ''}`}>
+                  {mmszJuegoSalida.mmszOutput}
+                  {mmszJuegoSalida.mmszError ? `${mmszJuegoSalida.mmszOutput ? '\n' : ''}${mmszJuegoSalida.mmszError}` : ''}
+                  {!mmszJuegoSalida.mmszOutput && !mmszJuegoSalida.mmszError ? '(no se mostró nada)' : ''}
                 </pre>
               )}
             </div>
@@ -289,12 +280,12 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
                 <button
                   className="mmsz-btn"
                   onClick={() => {
-                    setMmszFase('construir');
-                    setMmszPaso(0);
-                    setMmszAviso(null);
-                    setMmszAciertosSinAyuda(0);
-                    setMmszResultado(null);
-                    setMmszPrediccion('');
+                    mmszSetFase('construir');
+                    mmszSetPaso(0);
+                    mmszSetAviso(null);
+                    mmszSetAciertosSinAyuda(0);
+                    mmszSetResultado(null);
+                    mmszSetPrediccion('');
                   }}
                 >
                   ↺ Volver a construirlo
@@ -304,23 +295,22 @@ export default function MmszProgramaGuiado({ mmszGuiado, mmszLang, mmszAlTermina
           )}
         </section>
 
-        {/* ---------- Panel derecho: el programa que se va armando ---------- */}
         <section className="mmsz-guiado-programa">
-          <div className="mmsz-arte-puntos">
+          <div className="mmsz-ventana-puntos">
             <i /> <i /> <i />
             <small>{mmszLang === 'cpp' ? 'main.cpp' : mmszLang === 'python' ? 'programa.py' : 'programa.js'}</small>
           </div>
           {mmszFase === 'experimentar' ? (
-            <MmszEditor mmszValor={mmszJuego} mmszCambiar={setMmszJuego} mmszLang={mmszLang} mmszEjecutar={mmszEjecutarJuego} />
+            <MmszEditor mmszValor={mmszJuego} mmszCambiar={mmszSetJuego} mmszLang={mmszLang} mmszEjecutar={mmszEjecutarJuego} />
           ) : (
             <ol className="mmsz-guiado-lineas">
-              {mmszLineas.map((l, i) => {
-                const mmszVisible = i < mmszHasta;
-                const mmszEsActual = mmszFase === 'construir' && mmszActual?.i === i;
+              {mmszLineas.map((mmszL, mmszI) => {
+                const mmszVisible = mmszI < mmszHasta;
+                const mmszEsActual = mmszFase === 'construir' && mmszActual?.mmszI === mmszI;
                 return (
-                  <li key={i} className={`${mmszVisible ? 'visible' : ''} ${mmszEsActual ? 'actual' : ''} ${mmszEsAutomatica(l) ? 'auto' : ''}`}>
-                    <span className="mmsz-guiado-num">{i + 1}</span>
-                    <code>{mmszVisible ? l || ' ' : mmszEsActual ? '▍ tu línea va aquí' : l.trim() ? '…' : ' '}</code>
+                  <li key={mmszI} className={`${mmszVisible ? 'visible' : ''} ${mmszEsActual ? 'actual' : ''} ${mmszEsAutomatica(mmszL) ? 'auto' : ''}`}>
+                    <span className="mmsz-guiado-num">{mmszI + 1}</span>
+                    <code>{mmszVisible ? mmszL || ' ' : mmszEsActual ? '▍ tu línea va aquí' : mmszL.trim() ? '…' : ' '}</code>
                   </li>
                 );
               })}

@@ -1,4 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
 import { useEffect, useState } from 'react';
 import type { MmszCourse, MmszExercise, MmszLesson } from '../types';
 import type { MmszProgress } from '../progress';
@@ -11,21 +10,21 @@ interface MmszProps {
   mmszLesson: MmszLesson;
   mmszProgress: MmszProgress;
   mmszOnMistake: () => void;
-  mmszOnComplete: (xp: number) => void;
+  mmszOnComplete: (mmszXp: number) => void;
   mmszOnExit: () => void;
 }
 
 type MmszPhase = 'intro' | 'answering' | 'correct' | 'wrong' | 'finished' | 'failed';
 
-function mmszIsReady(ex: MmszExercise, a: MmszAnswer): boolean {
-  if (a == null) return false;
-  if (ex.type === 'choice') return typeof a === 'number';
-  if (ex.type === 'order') return Array.isArray(a) && a.length === ex.lines.length;
-  return typeof a === 'string' && a.trim().length > 0;
+function mmszIsReady(mmszEx: MmszExercise, mmszA: MmszAnswer): boolean {
+  if (mmszA == null) return false;
+  if (mmszEx.mmszType === 'choice') return typeof mmszA === 'number';
+  if (mmszEx.mmszType === 'order') return Array.isArray(mmszA) && mmszA.length === mmszEx.mmszLines.length;
+  return typeof mmszA === 'string' && mmszA.trim().length > 0;
 }
 
 export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress, mmszOnMistake, mmszOnComplete, mmszOnExit }: MmszProps) {
-  const [mmszQueue, mmszSetQueue] = useState<number[]>(() => mmszLesson.exercises.map((_, i) => i));
+  const [mmszQueue, mmszSetQueue] = useState<number[]>(() => mmszLesson.mmszExercises.map((mmszSinUso, mmszI) => mmszI));
   const [mmszPos, mmszSetPos] = useState(0);
   const [mmszPhase, mmszSetPhase] = useState<MmszPhase>('intro');
   const [mmszAnswer, mmszSetAnswer] = useState<MmszAnswer>(null);
@@ -33,24 +32,21 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
   const [mmszChecking, mmszSetChecking] = useState(false);
   const [mmszMistakes, mmszSetMistakes] = useState(0);
   const [mmszXpGained, mmszSetXpGained] = useState(0);
-  // Aviso cuando la respuesta solo falla por mayúsculas (no quita vidas).
   const [mmszCasi, mmszSetCasi] = useState<string | null>(null);
 
   const [mmszCorrectCount, mmszSetCorrectCount] = useState(0);
-  const mmszTotal = mmszLesson.exercises.length;
+  const mmszTotal = mmszLesson.mmszExercises.length;
   const mmszPct = mmszPhase === 'finished' ? 100 : Math.round((mmszCorrectCount / mmszTotal) * 100);
-  const mmszExercise = mmszLesson.exercises[mmszQueue[mmszPos]];
-  const mmszLang = mmszCourse.id as MmszRunnableLang;
+  const mmszExercise = mmszLesson.mmszExercises[mmszQueue[mmszPos]];
+  const mmszLang = mmszCourse.mmszId as MmszRunnableLang;
   const [mmszPyLoading, mmszSetPyLoading] = useState(false);
 
-  // Si la lección tiene ejercicios de Python, empieza a cargar Python desde ya.
   useEffect(() => {
     if (mmszLang !== 'python') return;
-    if (mmszLesson.exercises.some((e) => e.type === 'code')) mmszPreloadPython();
+    if (mmszLesson.mmszExercises.some((mmszE) => mmszE.mmszType === 'code')) mmszPreloadPython();
     return mmszOnPythonLoading(mmszSetPyLoading);
   }, [mmszLang, mmszLesson]);
 
-  /** Ejecuta sin calificar, para que el estudiante pruebe su código. */
   async function mmszTryRun() {
     mmszSetChecking(true);
     mmszSetRun(await mmszRunCode(mmszLang, String(mmszAnswer ?? '')));
@@ -58,49 +54,46 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
   }
 
   async function mmszCheck() {
-    let ok = false;
+    let mmszOk = false;
     mmszSetCasi(null);
-    if (mmszExercise.type === 'choice') ok = mmszAnswer === mmszExercise.answer;
-    if (mmszExercise.type === 'fill') {
-      // Lo que se escribe en el espacio es código: ahí las mayúsculas sí importan.
+    if (mmszExercise.mmszType === 'choice') mmszOk = mmszAnswer === mmszExercise.mmszAnswer;
+    if (mmszExercise.mmszType === 'fill') {
       const mmszEscrito = String(mmszAnswer);
-      ok = mmszExercise.answers.some((r) => mmszMismoCodigo(r, mmszEscrito));
-      if (!ok && mmszExercise.answers.some((r) => mmszSoloMayusculas(r, mmszEscrito))) {
-        // Solo fallan las mayúsculas: se avisa y se deja corregir sin perder una vida.
+      mmszOk = mmszExercise.mmszAnswers.some((mmszR) => mmszMismoCodigo(mmszR, mmszEscrito));
+      if (!mmszOk && mmszExercise.mmszAnswers.some((mmszR) => mmszSoloMayusculas(mmszR, mmszEscrito))) {
         mmszSetCasi(MMSZ_AVISO_MAYUSCULAS);
         return;
       }
     }
-    if (mmszExercise.type === 'order') ok = (mmszAnswer as number[]).every((v, i) => v === i);
-    if (mmszExercise.type === 'code') {
+    if (mmszExercise.mmszType === 'order') mmszOk = (mmszAnswer as number[]).every((mmszV, mmszI) => mmszV === mmszI);
+    if (mmszExercise.mmszType === 'code') {
       mmszSetChecking(true);
-      const r = await mmszRunCode(mmszLang, String(mmszAnswer));
+      const mmszR = await mmszRunCode(mmszLang, String(mmszAnswer));
       mmszSetChecking(false);
-      mmszSetRun(r);
-      // En la salida del programa no importan las mayúsculas.
-      ok = !r.error && mmszMismaSalida(r.output, mmszExercise.expectedOutput);
+      mmszSetRun(mmszR);
+      mmszOk = !mmszR.mmszError && mmszMismaSalida(mmszR.mmszOutput, mmszExercise.mmszExpectedOutput);
     }
 
-    if (ok) {
+    if (mmszOk) {
       mmszSetPhase('correct');
-      mmszSetCorrectCount((c) => c + 1);
+      mmszSetCorrectCount((mmszC) => mmszC + 1);
     } else {
       mmszSetPhase('wrong');
-      mmszSetMistakes((m) => m + 1);
-      mmszSetQueue((q) => [...q, q[mmszPos]]); // se repite al final, como en las apps de idiomas
+      mmszSetMistakes((mmszM) => mmszM + 1);
+      mmszSetQueue((mmszQ) => [...mmszQ, mmszQ[mmszPos]]);
       mmszOnMistake();
     }
   }
 
   function mmszNext() {
-    if (mmszPhase === 'wrong' && mmszProgress.hearts <= 0) {
+    if (mmszPhase === 'wrong' && mmszProgress.mmszHearts <= 0) {
       mmszSetPhase('failed');
       return;
     }
     if (mmszPos + 1 >= mmszQueue.length) {
-      const xp = 10 + (mmszMistakes === 0 ? 5 : 0);
-      mmszSetXpGained(xp);
-      mmszOnComplete(xp);
+      const mmszXp = 10 + (mmszMistakes === 0 ? 5 : 0);
+      mmszSetXpGained(mmszXp);
+      mmszOnComplete(mmszXp);
       mmszSetPhase('finished');
       return;
     }
@@ -111,7 +104,7 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
   }
 
   return (
-    <div className="page lesson" style={{ ['--accent' as string]: mmszCourse.color }}>
+    <div className="page lesson" style={{ ['--accent' as string]: mmszCourse.mmszColor }}>
       <header className="lesson-top">
         <button className="close" onClick={mmszOnExit} title="Salir de la lección">
           ✕
@@ -120,16 +113,16 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
           <span className="bar-fill" style={{ width: `${mmszPct}%` }} />
         </div>
         <span className="stat">
-          ❤️ <b>{mmszProgress.hearts}</b>
+          ❤️ <b>{mmszProgress.mmszHearts}</b>
         </span>
       </header>
 
       <main className="lesson-body">
         {mmszPhase === 'intro' && (
           <div className="intro">
-            <span className="tag">{mmszCourse.name}</span>
-            <h1>{mmszLesson.title}</h1>
-            <p>{mmszLesson.intro}</p>
+            <span className="tag">{mmszCourse.mmszName}</span>
+            <h1>{mmszLesson.mmszTitle}</h1>
+            <p>{mmszLesson.mmszIntro}</p>
           </div>
         )}
 
@@ -138,13 +131,13 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
             key={mmszPos}
             mmszExercise={mmszExercise}
             mmszAnswer={mmszAnswer}
-            mmszOnAnswer={(a) => {
-              mmszSetAnswer(a);
+            mmszOnAnswer={(mmszA) => {
+              mmszSetAnswer(mmszA);
               mmszSetCasi(null);
             }}
             mmszLocked={mmszPhase !== 'answering'}
             mmszRun={mmszRun}
-            mmszLang={mmszCourse.id}
+            mmszLang={mmszCourse.mmszId}
             mmszOnRun={mmszTryRun}
             mmszRunning={mmszChecking}
             mmszPyLoading={mmszPyLoading}
@@ -177,13 +170,13 @@ export default function MmszLessonScreen({ mmszCourse, mmszLesson, mmszProgress,
           {mmszPhase === 'correct' && (
             <>
               <b>¡Correcto! ✓</b>
-              <span>{mmszExercise.explain}</span>
+              <span>{mmszExercise.mmszExplain}</span>
             </>
           )}
           {mmszPhase === 'wrong' && (
             <>
               <b>Incorrecto</b>
-              <span>{mmszExercise.explain}</span>
+              <span>{mmszExercise.mmszExplain}</span>
             </>
           )}
         </div>

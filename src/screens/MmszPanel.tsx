@@ -1,5 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Página de inicio del estudiante: perfil, nivel, racha y secciones (Cursos, Avance, Perfil, Configuración, Ayuda).
 import { useState } from 'react';
 import { mmszCourses, mmszAllLessons } from '../content';
 import { MMSZ_MAX_HEARTS, type MmszProgress } from '../progress';
@@ -23,101 +21,99 @@ interface MmszProps {
   mmszProgreso: MmszProgress;
   mmszSeccion: MmszSeccion;
   mmszNav: MmszNav;
-  mmszCambiarNombre: (n: string) => void;
+  mmszCambiarNombre: (mmszN: string) => void;
   mmszCambiarCursosOcultos: (mmszIds: string[]) => void;
   mmszCambiarTema: (mmszTema: string) => void;
-  mmszReemplazar: (p: MmszProgress) => void;
+  mmszReemplazar: (mmszP: MmszProgress) => void;
   mmszCambiarDiseno: (mmszDinamico: boolean) => void;
   mmszReiniciar: () => void;
 }
 
-const MMSZ_MENU_LATERAL: { grupo: string; items: { id: MmszSeccion; texto: string }[] }[] = [
-  { grupo: 'Mis cosas', items: [{ id: 'cursos', texto: 'Cursos' }] },
+const MMSZ_MENU_LATERAL: { mmszGrupo: string; mmszItems: { mmszId: MmszSeccion; mmszTexto: string }[] }[] = [
+  { mmszGrupo: 'Mis cosas', mmszItems: [{ mmszId: 'cursos', mmszTexto: 'Cursos' }] },
   {
-    grupo: 'Mi cuenta',
-    items: [
-      { id: 'avance', texto: 'Avance' },
-      { id: 'perfil', texto: 'Perfil' },
-      { id: 'configuracion', texto: 'Configuración' },
-      { id: 'ayuda', texto: 'Ayuda' },
+    mmszGrupo: 'Mi cuenta',
+    mmszItems: [
+      { mmszId: 'avance', mmszTexto: 'Avance' },
+      { mmszId: 'perfil', mmszTexto: 'Perfil' },
+      { mmszId: 'configuracion', mmszTexto: 'Configuración' },
+      { mmszId: 'ayuda', mmszTexto: 'Ayuda' },
     ],
   },
 ];
 
 export default function MmszPanel(mmszProps: MmszProps) {
   const { mmszProgreso, mmszSeccion, mmszNav } = mmszProps;
-  const mmszNivel = mmszCalcularNivel(mmszProgreso.xp);
+  const mmszNivel = mmszCalcularNivel(mmszProgreso.mmszXp);
   const mmszTotalLecciones = mmszLeccionesCompletadas(mmszProgreso);
-  const mmszLogrados = mmszLogros(mmszProgreso).filter((l) => l.logrado).length;
+  const mmszLogrados = mmszLogros(mmszProgreso).filter((mmszL) => mmszL.mmszLogrado).length;
 
   return (
     <div className="page mmsz-pagina">
       <MmszBarraSuperior mmszProgreso={mmszProgreso} mmszNav={mmszNav} />
 
-      {/* Franja de racha y nivel */}
       <div className="mmsz-franja">
         <h2>
-          {mmszProgreso.streak > 0
-            ? `¡Vas ${mmszProgreso.streak} ${mmszProgreso.streak === 1 ? 'día' : 'días'} seguidos, sigue así!`
+          {mmszProgreso.mmszStreak > 0
+            ? `¡Vas ${mmszProgreso.mmszStreak} ${mmszProgreso.mmszStreak === 1 ? 'día' : 'días'} seguidos, sigue así!`
             : '¡Empieza a subir de nivel y arma tu racha diaria!'}
         </h2>
         <div className="mmsz-franja-datos">
           <span className="mmsz-racha" title="Días seguidos estudiando">
-            🔥 <b>{mmszProgreso.streak}</b>
+            🔥 <b>{mmszProgreso.mmszStreak}</b>
           </span>
           <span className="mmsz-separador" />
           <div className="mmsz-nivel">
             <span>
-              <b>Nivel {mmszNivel.nivel}</b>
+              <b>Nivel {mmszNivel.mmszNivel}</b>
             </span>
             <span className="bar">
-              <span className="bar-fill" style={{ width: `${(mmszNivel.xpEnNivel / mmszNivel.xpMeta) * 100}%` }} />
+              <span className="bar-fill" style={{ width: `${(mmszNivel.mmszXpEnNivel / mmszNivel.mmszXpMeta) * 100}%` }} />
             </span>
           </div>
           <span className="mmsz-nivel-xp">
-            <b>{mmszNivel.xpEnNivel}</b> / {mmszNivel.xpMeta} XP
+            <b>{mmszNivel.mmszXpEnNivel}</b> / {mmszNivel.mmszXpMeta} XP
           </span>
         </div>
       </div>
 
-      {/* Cabecera del perfil */}
       <section className="mmsz-perfil-cabecera">
-        <div className="mmsz-avatar">{mmszIniciales(mmszProgreso.nombre)}</div>
+        <div className="mmsz-avatar">{mmszIniciales(mmszProgreso.mmszNombre)}</div>
         <div className="mmsz-perfil-texto">
-          <h1>{mmszProgreso.nombre}</h1>
+          <h1>{mmszProgreso.mmszNombre}</h1>
           <p>
             Estudiante de Novexa ·{' '}
-            <button className="mmsz-enlace" onClick={() => mmszNav.irInicio('configuracion')}>
+            <button className="mmsz-enlace" onClick={() => mmszNav.mmszIrInicio('configuracion')}>
               Edita tu información
             </button>
           </p>
         </div>
         <div className="mmsz-perfil-lado">
-          <button className="mmsz-btn" onClick={() => mmszNav.irInicio('perfil')}>
+          <button className="mmsz-btn" onClick={() => mmszNav.mmszIrInicio('perfil')}>
             Ver tu perfil
           </button>
           <div className="mmsz-insignias">
-            <span title="Puntos de experiencia">⭐ {mmszProgreso.xp}</span>
-            <span title="Racha">🔥 {mmszProgreso.streak}</span>
+            <span title="Puntos de experiencia">⭐ {mmszProgreso.mmszXp}</span>
+            <span title="Racha">🔥 {mmszProgreso.mmszStreak}</span>
             <span title="Lecciones completadas">✅ {mmszTotalLecciones}</span>
             <span title="Logros">🏅 {mmszLogrados}</span>
-            <span title="Vidas">❤️ {mmszProgreso.hearts}</span>
+            <span title="Vidas">❤️ {mmszProgreso.mmszHearts}</span>
           </div>
         </div>
       </section>
 
       <div className="mmsz-cuerpo">
         <nav className="mmsz-lateral">
-          {MMSZ_MENU_LATERAL.map((g) => (
-            <div key={g.grupo}>
-              <p className="mmsz-lateral-grupo">{g.grupo}</p>
-              {g.items.map((i) => (
+          {MMSZ_MENU_LATERAL.map((mmszG) => (
+            <div key={mmszG.mmszGrupo}>
+              <p className="mmsz-lateral-grupo">{mmszG.mmszGrupo}</p>
+              {mmszG.mmszItems.map((mmszI) => (
                 <button
-                  key={i.id}
-                  className={mmszSeccion === i.id ? 'activo' : ''}
-                  onClick={() => mmszNav.irInicio(i.id)}
+                  key={mmszI.mmszId}
+                  className={mmszSeccion === mmszI.mmszId ? 'activo' : ''}
+                  onClick={() => mmszNav.mmszIrInicio(mmszI.mmszId)}
                 >
-                  {i.texto}
+                  {mmszI.mmszTexto}
                 </button>
               ))}
             </div>
@@ -126,7 +122,7 @@ export default function MmszPanel(mmszProps: MmszProps) {
 
         <main className="mmsz-contenido">
           {mmszSeccion === 'cursos' &&
-            (mmszProps.mmszProgreso.disenoDinamico ? (
+            (mmszProps.mmszProgreso.mmszDisenoDinamico ? (
               <MmszCursosDinamico
                 mmszProgreso={mmszProps.mmszProgreso}
                 mmszNav={mmszProps.mmszNav}
@@ -145,16 +141,14 @@ export default function MmszPanel(mmszProps: MmszProps) {
   );
 }
 
-/* ---------------- Mis cursos ---------------- */
-
 function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszProps) {
-  const [mmszEditando, setMmszEditando] = useState(false);
-  const mmszOcultos = mmszProgreso.cursosOcultos;
-  const mmszVisibles = mmszEditando ? mmszCourses : mmszCourses.filter((c) => !mmszOcultos.includes(c.id));
+  const [mmszEditando, mmszSetEditando] = useState(false);
+  const mmszOcultos = mmszProgreso.mmszCursosOcultos;
+  const mmszVisibles = mmszEditando ? mmszCourses : mmszCourses.filter((mmszC) => !mmszOcultos.includes(mmszC.mmszId));
 
   function mmszAlternar(mmszId: string) {
     mmszCambiarCursosOcultos(
-      mmszOcultos.includes(mmszId) ? mmszOcultos.filter((x) => x !== mmszId) : [...mmszOcultos, mmszId],
+      mmszOcultos.includes(mmszId) ? mmszOcultos.filter((mmszX) => mmszX !== mmszId) : [...mmszOcultos, mmszId],
     );
   }
 
@@ -162,7 +156,7 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
     <>
       <div className="mmsz-titulo-fila">
         <h1>Mis cursos</h1>
-        <button className="mmsz-btn" onClick={() => setMmszEditando(!mmszEditando)}>
+        <button className="mmsz-btn" onClick={() => mmszSetEditando(!mmszEditando)}>
           {mmszEditando ? 'Listo' : 'Editar cursos'}
         </button>
       </div>
@@ -172,24 +166,24 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
       )}
 
       <div className="mmsz-cursos-grid">
-        {mmszVisibles.map((c) => {
-          const mmszTotal = mmszAllLessons(c).length;
-          const mmszHechas = mmszLeccionesHechas(c, mmszProgreso);
-          const mmszSiguiente = mmszSiguienteLeccion(c, mmszProgreso);
+        {mmszVisibles.map((mmszC) => {
+          const mmszTotal = mmszAllLessons(mmszC).length;
+          const mmszHechas = mmszLeccionesHechas(mmszC, mmszProgreso);
+          const mmszSiguiente = mmszSiguienteLeccion(mmszC, mmszProgreso);
           const mmszTextoBoton = mmszHechas === 0 ? 'Inicio' : mmszSiguiente ? 'Continuar' : 'Repasar';
           return (
-            <article key={c.id} className="mmsz-curso" style={{ ['--accent' as string]: c.color }}>
+            <article key={mmszC.mmszId} className="mmsz-curso" style={{ ['--accent' as string]: mmszC.mmszColor }}>
               <div className="mmsz-curso-cabecera">
                 <h3>
-                  {c.icon} {c.name}
+                  {mmszC.mmszIcon} {mmszC.mmszName}
                 </h3>
                 {mmszEditando ? (
                   <label className="mmsz-check">
-                    <input type="checkbox" checked={!mmszOcultos.includes(c.id)} onChange={() => mmszAlternar(c.id)} />
+                    <input type="checkbox" checked={!mmszOcultos.includes(mmszC.mmszId)} onChange={() => mmszAlternar(mmszC.mmszId)} />
                     Mostrar
                   </label>
                 ) : (
-                  <button className="mmsz-enlace" onClick={() => mmszNav.abrirCurso(c.id)}>
+                  <button className="mmsz-enlace" onClick={() => mmszNav.mmszAbrirCurso(mmszC.mmszId)}>
                     Ver todo ({mmszTotal})
                   </button>
                 )}
@@ -197,17 +191,17 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
 
               <div className="mmsz-curso-cuerpo">
                 <ol className="mmsz-linea">
-                  {c.units.map((u, mmszUi) => {
-                    const mmszU = u.lessons.filter((l) => mmszProgreso.completed[l.id]).length;
-                    const mmszLista = mmszU === u.lessons.length;
+                  {mmszC.mmszUnits.map((mmszULocal, mmszUi) => {
+                    const mmszU = mmszULocal.mmszLessons.filter((mmszL) => mmszProgreso.mmszCompleted[mmszL.mmszId]).length;
+                    const mmszLista = mmszU === mmszULocal.mmszLessons.length;
                     return (
-                      <li key={u.title} className={mmszLista ? 'hecho' : ''}>
-                        <span className="mmsz-circulo">{mmszLista ? '✓' : c.icon}</span>
-                        <button className="mmsz-enlace" onClick={() => mmszNav.abrirCurso(c.id, mmszUi)}>
-                          {u.title.replace(/^Unidad \d+ · /, '')}
+                      <li key={mmszULocal.mmszTitle} className={mmszLista ? 'hecho' : ''}>
+                        <span className="mmsz-circulo">{mmszLista ? '✓' : mmszC.mmszIcon}</span>
+                        <button className="mmsz-enlace" onClick={() => mmszNav.mmszAbrirCurso(mmszC.mmszId, mmszUi)}>
+                          {mmszULocal.mmszTitle.replace(/^Unidad \d+ · /, '')}
                         </button>
                         <small>
-                          {mmszU}/{u.lessons.length}
+                          {mmszU}/{mmszULocal.mmszLessons.length}
                         </small>
                       </li>
                     );
@@ -217,8 +211,7 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
                   <button
                     className="mmsz-btn mmsz-btn-inicio"
                     onClick={() =>
-                      // "Continuar" abre la unidad de la siguiente lección pendiente.
-                      mmszNav.abrirCurso(c.id, mmszSiguiente ? mmszUnidadDe(c, mmszSiguiente.id) : undefined)
+                      mmszNav.mmszAbrirCurso(mmszC.mmszId, mmszSiguiente ? mmszUnidadDe(mmszC, mmszSiguiente.mmszId) : undefined)
                     }
                   >
                     {mmszTextoBoton}
@@ -232,7 +225,7 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
                 </span>
                 <small className="muted">
                   {mmszHechas} de {mmszTotal} lecciones
-                  {mmszSiguiente && mmszHechas > 0 ? ` · Sigue: ${mmszSiguiente.title}` : ''}
+                  {mmszSiguiente && mmszHechas > 0 ? ` · Sigue: ${mmszSiguiente.mmszTitle}` : ''}
                 </small>
               </div>
             </article>
@@ -243,22 +236,20 @@ function MmszCursos({ mmszProgreso, mmszNav, mmszCambiarCursosOcultos }: MmszPro
   );
 }
 
-/* ---------------- Avance ---------------- */
-
 function MmszAvance({ mmszProgreso, mmszNav }: MmszProps) {
   return (
     <>
       <h1>Avance</h1>
       <p className="muted">Lo que llevas completado en cada curso.</p>
-      {mmszCourses.map((c) => {
-        const mmszTotal = mmszAllLessons(c).length;
-        const mmszHechas = mmszLeccionesHechas(c, mmszProgreso);
+      {mmszCourses.map((mmszC) => {
+        const mmszTotal = mmszAllLessons(mmszC).length;
+        const mmszHechas = mmszLeccionesHechas(mmszC, mmszProgreso);
         const mmszPct = Math.round((mmszHechas / mmszTotal) * 100);
         return (
-          <section key={c.id} className="mmsz-tarjeta" style={{ ['--accent' as string]: c.color }}>
+          <section key={mmszC.mmszId} className="mmsz-tarjeta" style={{ ['--accent' as string]: mmszC.mmszColor }}>
             <div className="mmsz-titulo-fila">
               <h3>
-                {c.icon} {c.name}
+                {mmszC.mmszIcon} {mmszC.mmszName}
               </h3>
               <b>{mmszPct}%</b>
             </div>
@@ -266,15 +257,15 @@ function MmszAvance({ mmszProgreso, mmszNav }: MmszProps) {
               <span className="bar-fill" style={{ width: `${mmszPct}%` }} />
             </span>
             <div className="mmsz-avance-unidades">
-              {c.units.map((u, mmszUi) => (
-                <div key={u.title}>
-                  <b>{u.title}</b>
-                  {u.lessons.map((l) => {
-                    const mmszVeces = mmszProgreso.completed[l.id] || 0;
+              {mmszC.mmszUnits.map((mmszU, mmszUi) => (
+                <div key={mmszU.mmszTitle}>
+                  <b>{mmszU.mmszTitle}</b>
+                  {mmszU.mmszLessons.map((mmszL) => {
+                    const mmszVeces = mmszProgreso.mmszCompleted[mmszL.mmszId] || 0;
                     return (
-                      <button key={l.id} className="mmsz-avance-leccion" onClick={() => mmszNav.abrirCurso(c.id, mmszUi)}>
+                      <button key={mmszL.mmszId} className="mmsz-avance-leccion" onClick={() => mmszNav.mmszAbrirCurso(mmszC.mmszId, mmszUi)}>
                         <span>{mmszVeces ? '✅' : '⬜'}</span>
-                        {l.title}
+                        {mmszL.mmszTitle}
                         {mmszVeces > 1 && <small className="muted"> · {mmszVeces} veces</small>}
                       </button>
                     );
@@ -289,42 +280,38 @@ function MmszAvance({ mmszProgreso, mmszNav }: MmszProps) {
   );
 }
 
-/* ---------------- Perfil ---------------- */
-
 function MmszPerfil({ mmszProgreso, mmszNav }: MmszProps) {
-  const mmszNivel = mmszCalcularNivel(mmszProgreso.xp);
+  const mmszNivel = mmszCalcularNivel(mmszProgreso.mmszXp);
   const mmszLista = mmszLogros(mmszProgreso);
   return (
     <>
       <div className="mmsz-titulo-fila">
         <h1>Perfil</h1>
-        <button className="mmsz-btn" onClick={() => mmszNav.irInicio('configuracion')}>
+        <button className="mmsz-btn" onClick={() => mmszNav.mmszIrInicio('configuracion')}>
           Edita tu perfil
         </button>
       </div>
       <div className="mmsz-estadisticas">
-        <div><b>{mmszNivel.nivel}</b><span>Nivel</span></div>
-        <div><b>{mmszProgreso.xp}</b><span>XP total</span></div>
-        <div><b>{mmszProgreso.streak}</b><span>Días de racha</span></div>
+        <div><b>{mmszNivel.mmszNivel}</b><span>Nivel</span></div>
+        <div><b>{mmszProgreso.mmszXp}</b><span>XP total</span></div>
+        <div><b>{mmszProgreso.mmszStreak}</b><span>Días de racha</span></div>
         <div><b>{mmszLeccionesCompletadas(mmszProgreso)}</b><span>Lecciones</span></div>
-        <div><b>{mmszProgreso.hearts}/{MMSZ_MAX_HEARTS}</b><span>Vidas</span></div>
+        <div><b>{mmszProgreso.mmszHearts}/{MMSZ_MAX_HEARTS}</b><span>Vidas</span></div>
       </div>
 
       <h2>Logros</h2>
       <div className="mmsz-logros">
-        {mmszLista.map((l) => (
-          <div key={l.id} className={`mmsz-logro ${l.logrado ? 'logrado' : ''}`}>
-            <span className="mmsz-logro-icono">{l.icono}</span>
-            <b>{l.titulo}</b>
-            <small>{l.descripcion}</small>
+        {mmszLista.map((mmszL) => (
+          <div key={mmszL.mmszId} className={`mmsz-logro ${mmszL.mmszLogrado ? 'logrado' : ''}`}>
+            <span className="mmsz-logro-icono">{mmszL.mmszIcono}</span>
+            <b>{mmszL.mmszTitulo}</b>
+            <small>{mmszL.mmszDescripcion}</small>
           </div>
         ))}
       </div>
     </>
   );
 }
-
-/* ---------------- Configuración ---------------- */
 
 function MmszConfiguracion({
   mmszProgreso,
@@ -334,8 +321,8 @@ function MmszConfiguracion({
   mmszCambiarDiseno,
   mmszReiniciar,
 }: MmszProps) {
-  const [mmszNombre, setMmszNombre] = useState(mmszProgreso.nombre);
-  const [mmszGuardado, setMmszGuardado] = useState(false);
+  const [mmszNombre, mmszSetNombre] = useState(mmszProgreso.mmszNombre);
+  const [mmszGuardado, mmszSetGuardado] = useState(false);
   return (
     <>
       <h1>Configuración</h1>
@@ -344,21 +331,21 @@ function MmszConfiguracion({
         <p className="muted">Cambia cómo se ven “Mis cursos” y la página de cada curso. Tu progreso no cambia.</p>
         <div className="mmsz-diseno-opciones">
           {[
-            { id: true, nombre: 'Dinámico', detalle: 'Colores, anillos de progreso, animaciones y siguiente paso recomendado.', icono: '✨' },
-            { id: false, nombre: 'Clásico', detalle: 'Diseño simple y minimalista, con listas y tarjetas blancas.', icono: '📄' },
-          ].map((o) => (
+            { mmszId: true, mmszNombre: 'Dinámico', mmszDetalle: 'Colores, anillos de progreso, animaciones y siguiente paso recomendado.', mmszIcono: '✨' },
+            { mmszId: false, mmszNombre: 'Clásico', mmszDetalle: 'Diseño simple y minimalista, con listas y tarjetas blancas.', mmszIcono: '📄' },
+          ].map((mmszO) => (
             <button
-              key={o.nombre}
-              className={`mmsz-tema ${mmszProgreso.disenoDinamico === o.id ? 'activo' : ''}`}
-              onClick={() => mmszCambiarDiseno(o.id)}
-              aria-pressed={mmszProgreso.disenoDinamico === o.id}
+              key={mmszO.mmszNombre}
+              className={`mmsz-tema ${mmszProgreso.mmszDisenoDinamico === mmszO.mmszId ? 'activo' : ''}`}
+              onClick={() => mmszCambiarDiseno(mmszO.mmszId)}
+              aria-pressed={mmszProgreso.mmszDisenoDinamico === mmszO.mmszId}
             >
-              <span className="mmsz-diseno-icono">{o.icono}</span>
+              <span className="mmsz-diseno-icono">{mmszO.mmszIcono}</span>
               <b>
-                {o.nombre}
-                {mmszProgreso.disenoDinamico === o.id && <span>✓</span>}
+                {mmszO.mmszNombre}
+                {mmszProgreso.mmszDisenoDinamico === mmszO.mmszId && <span>✓</span>}
               </b>
-              <small>{o.detalle}</small>
+              <small>{mmszO.mmszDetalle}</small>
             </button>
           ))}
         </div>
@@ -368,23 +355,23 @@ function MmszConfiguracion({
         <h3>Colores de la app</h3>
         <p className="muted">Elige el tema que más te guste. Se aplica al instante y se guarda para la próxima vez.</p>
         <div className="mmsz-temas">
-          {MMSZ_TEMAS.map((t) => (
+          {MMSZ_TEMAS.map((mmszT) => (
             <button
-              key={t.id}
-              className={`mmsz-tema ${mmszProgreso.tema === t.id ? 'activo' : ''}`}
-              onClick={() => mmszCambiarTema(t.id)}
-              aria-pressed={mmszProgreso.tema === t.id}
+              key={mmszT.mmszId}
+              className={`mmsz-tema ${mmszProgreso.mmszTema === mmszT.mmszId ? 'activo' : ''}`}
+              onClick={() => mmszCambiarTema(mmszT.mmszId)}
+              aria-pressed={mmszProgreso.mmszTema === mmszT.mmszId}
             >
               <span className="mmsz-tema-muestra">
-                {t.muestra.map((c) => (
-                  <span key={c} style={{ background: c }} />
+                {mmszT.mmszMuestra.map((mmszC) => (
+                  <span key={mmszC} style={{ background: mmszC }} />
                 ))}
               </span>
               <b>
-                {t.nombre}
-                {mmszProgreso.tema === t.id && <span>✓</span>}
+                {mmszT.mmszNombre}
+                {mmszProgreso.mmszTema === mmszT.mmszId && <span>✓</span>}
               </b>
-              <small>{t.descripcion}</small>
+              <small>{mmszT.mmszDescripcion}</small>
             </button>
           ))}
         </div>
@@ -397,19 +384,19 @@ function MmszConfiguracion({
           <input
             value={mmszNombre}
             maxLength={40}
-            onChange={(e) => {
-              setMmszNombre(e.target.value);
-              setMmszGuardado(false);
+            onChange={(mmszE) => {
+              mmszSetNombre(mmszE.target.value);
+              mmszSetGuardado(false);
             }}
           />
         </label>
         <div className="mmsz-acciones">
           <button
             className="mmsz-btn"
-            disabled={mmszNombre.trim() === mmszProgreso.nombre}
+            disabled={mmszNombre.trim() === mmszProgreso.mmszNombre}
             onClick={() => {
               mmszCambiarNombre(mmszNombre);
-              setMmszGuardado(true);
+              mmszSetGuardado(true);
             }}
           >
             Guardar
@@ -438,8 +425,6 @@ function MmszConfiguracion({
   );
 }
 
-/* ---------------- Ayuda ---------------- */
-
 function MmszAyuda() {
   const mmszPreguntas = [
     ['¿Cómo funcionan las lecciones?', 'Cada lección tiene una explicación corta y varios ejercicios. Si fallas uno, vuelve a aparecer al final para que lo practiques.'],
@@ -451,10 +436,10 @@ function MmszAyuda() {
   return (
     <>
       <h1>Ayuda</h1>
-      {mmszPreguntas.map(([p, r]) => (
-        <details key={p} className="mmsz-tarjeta mmsz-pregunta">
-          <summary>{p}</summary>
-          <p>{r}</p>
+      {mmszPreguntas.map(([mmszP, mmszR]) => (
+        <details key={mmszP} className="mmsz-tarjeta mmsz-pregunta">
+          <summary>{mmszP}</summary>
+          <p>{mmszR}</p>
         </details>
       ))}
       <section className="mmsz-tarjeta">

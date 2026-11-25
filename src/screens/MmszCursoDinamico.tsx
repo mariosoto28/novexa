@@ -1,6 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Página de un curso con diseño dinámico: portada con color y progreso,
-// ruta de unidades por nivel y lecciones como tarjetas con su avance.
 import { useState } from 'react';
 import type { MmszCourse } from '../types';
 import type { MmszProgress } from '../progress';
@@ -25,52 +22,51 @@ interface MmszProps {
   mmszUnidadElegida?: number;
 }
 
-export default function MmszCursoDinamico({ mmszCourse: c, mmszProgress: p, mmszNav, mmszUnidadElegida }: MmszProps) {
-  const [mmszUnidad] = useState(() => mmszUnidadElegida ?? mmszSiguientePaso(c, p)?.unidad ?? 0);
-  const mmszUnit = c.units[mmszUnidad];
-  const mmszCurso = mmszAvanceCurso(c, p);
-  const mmszAvU = mmszAvanceUnidad(mmszUnit, p);
-  const mmszSig = mmszSiguientePaso(c, p, mmszUnidad);
-  const mmszSigEnUnidad = mmszSig && mmszSig.unidad === mmszUnidad ? mmszSig : null;
-  const mmszPracticadas = c.units.flatMap((u) => u.lessons).filter((l) => p.completed[l.id]).length;
-  const mmszTotalLecciones = c.units.reduce((s, u) => s + u.lessons.length, 0);
-  const mmszNoHearts = p.hearts <= 0;
+export default function MmszCursoDinamico({ mmszCourse: mmszC, mmszProgress: mmszP, mmszNav, mmszUnidadElegida }: MmszProps) {
+  const [mmszUnidad] = useState(() => mmszUnidadElegida ?? mmszSiguientePaso(mmszC, mmszP)?.mmszUnidad ?? 0);
+  const mmszUnit = mmszC.mmszUnits[mmszUnidad];
+  const mmszCurso = mmszAvanceCurso(mmszC, mmszP);
+  const mmszAvU = mmszAvanceUnidad(mmszUnit, mmszP);
+  const mmszSig = mmszSiguientePaso(mmszC, mmszP, mmszUnidad);
+  const mmszSigEnUnidad = mmszSig && mmszSig.mmszUnidad === mmszUnidad ? mmszSig : null;
+  const mmszPracticadas = mmszC.mmszUnits.flatMap((mmszU) => mmszU.mmszLessons).filter((mmszL) => mmszP.mmszCompleted[mmszL.mmszId]).length;
+  const mmszTotalLecciones = mmszC.mmszUnits.reduce((mmszS, mmszU) => mmszS + mmszU.mmszLessons.length, 0);
+  const mmszNoHearts = mmszP.mmszHearts <= 0;
 
-  const mmszElegir = (i: number) => i !== mmszUnidad && mmszNav.abrirCurso(c.id, i);
+  const mmszElegir = (mmszI: number) => mmszI !== mmszUnidad && mmszNav.mmszAbrirCurso(mmszC.mmszId, mmszI);
 
   return (
-    <div className="page mmsz-din" style={{ ['--accent' as string]: c.color }}>
-      <MmszBarraSuperior mmszProgreso={p} mmszNav={mmszNav} />
+    <div className="page mmsz-din" style={{ ['--accent' as string]: mmszC.mmszColor }}>
+      <MmszBarraSuperior mmszProgreso={mmszP} mmszNav={mmszNav} />
 
-      {/* ---------- Portada del curso ---------- */}
       <section className="mmsz-din-portada">
         <span className="mmsz-din-portada-fondo" aria-hidden>
-          {c.icon}
+          {mmszC.mmszIcon}
         </span>
         <div className="mmsz-din-portada-contenido">
           <nav className="mmsz-din-migas">
-            <button onClick={() => mmszNav.irInicio('cursos')}>⌂ Mis cursos</button> <span>›</span> <b>{c.name}</b>
+            <button onClick={() => mmszNav.mmszIrInicio('cursos')}>⌂ Mis cursos</button> <span>›</span> <b>{mmszC.mmszName}</b>
           </nav>
           <div className="mmsz-din-portada-fila">
-            <span className="mmsz-din-portada-icono">{c.icon}</span>
+            <span className="mmsz-din-portada-icono">{mmszC.mmszIcon}</span>
             <div className="mmsz-din-portada-texto">
-              <h1>{c.name}</h1>
-              <p>{c.tagline}</p>
+              <h1>{mmszC.mmszName}</h1>
+              <p>{mmszC.mmszTagline}</p>
               <div className="mmsz-din-niveles">
-                {mmszAvancePorNivel(c, p).map(({ nivel, avance }) => (
-                  <span key={nivel} className={avance.pct === 100 ? 'completo' : ''}>
-                    <b>{nivel}</b>
+                {mmszAvancePorNivel(mmszC, mmszP).map(({ mmszNivel, mmszAvance }) => (
+                  <span key={mmszNivel} className={mmszAvance.mmszPct === 100 ? 'completo' : ''}>
+                    <b>{mmszNivel}</b>
                     <i>
-                      <em style={{ width: `${avance.pct}%` }} />
+                      <em style={{ width: `${mmszAvance.mmszPct}%` }} />
                     </i>
-                    <small>{avance.pct}%</small>
+                    <small>{mmszAvance.mmszPct}%</small>
                   </span>
                 ))}
               </div>
             </div>
             <div className="mmsz-din-portada-stats">
-              <MmszAnillo mmszPct={mmszCurso.pct} mmszTam={112} mmszGrosor={11} mmszColor="#fff">
-                <b>{mmszCurso.pct}%</b>
+              <MmszAnillo mmszPct={mmszCurso.mmszPct} mmszTam={112} mmszGrosor={11} mmszColor="#fff">
+                <b>{mmszCurso.mmszPct}%</b>
                 <small>completado</small>
               </MmszAnillo>
               <div>
@@ -82,9 +78,9 @@ export default function MmszCursoDinamico({ mmszCourse: c, mmszProgress: p, mmsz
                 </span>
                 <span>
                   <b>
-                    <MmszNumero mmszValor={mmszCurso.hechos} />
+                    <MmszNumero mmszValor={mmszCurso.mmszHechos} />
                   </b>
-                  /{mmszCurso.total} actividades
+                  /{mmszCurso.mmszTotal} actividades
                 </span>
               </div>
             </div>
@@ -93,26 +89,25 @@ export default function MmszCursoDinamico({ mmszCourse: c, mmszProgress: p, mmsz
       </section>
 
       <div className="mmsz-din-curso-cuerpo">
-        {/* ---------- Ruta de unidades ---------- */}
         <aside className="mmsz-din-mapa">
           <h3>Ruta del curso</h3>
-          {c.units.map((u, i) => {
-            const a = mmszAvanceUnidad(u, p);
-            const mmszNuevoNivel = i === 0 || c.units[i - 1].nivel !== u.nivel;
+          {mmszC.mmszUnits.map((mmszU, mmszI) => {
+            const mmszA = mmszAvanceUnidad(mmszU, mmszP);
+            const mmszNuevoNivel = mmszI === 0 || mmszC.mmszUnits[mmszI - 1].mmszNivel !== mmszU.mmszNivel;
             return (
-              <div key={u.title}>
-                {mmszNuevoNivel && <p className={`mmsz-din-mapa-nivel nivel-${u.nivel}`}>{u.nivel}</p>}
+              <div key={mmszU.mmszTitle}>
+                {mmszNuevoNivel && <p className={`mmsz-din-mapa-nivel nivel-${mmszU.mmszNivel}`}>{mmszU.mmszNivel}</p>}
                 <button
-                  className={`mmsz-din-mapa-unidad ${i === mmszUnidad ? 'activa' : ''} ${a.pct === 100 ? 'hecha' : ''}`}
-                  onClick={() => mmszElegir(i)}
+                  className={`mmsz-din-mapa-unidad ${mmszI === mmszUnidad ? 'activa' : ''} ${mmszA.mmszPct === 100 ? 'hecha' : ''}`}
+                  onClick={() => mmszElegir(mmszI)}
                 >
-                  <MmszAnillo mmszPct={a.pct} mmszTam={42} mmszGrosor={4}>
-                    {a.pct === 100 ? '✓' : i + 1}
+                  <MmszAnillo mmszPct={mmszA.mmszPct} mmszTam={42} mmszGrosor={4}>
+                    {mmszA.mmszPct === 100 ? '✓' : mmszI + 1}
                   </MmszAnillo>
                   <span>
-                    <b>{u.title}</b>
+                    <b>{mmszU.mmszTitle}</b>
                     <small>
-                      {u.lessons.length} lecciones · {a.pct}%
+                      {mmszU.mmszLessons.length} lecciones · {mmszA.mmszPct}%
                     </small>
                   </span>
                 </button>
@@ -121,33 +116,32 @@ export default function MmszCursoDinamico({ mmszCourse: c, mmszProgress: p, mmsz
           })}
         </aside>
 
-        {/* ---------- Unidad elegida ---------- */}
         <main className="mmsz-din-unidad" key={mmszUnidad}>
           <header className="mmsz-din-unidad-cabecera mmsz-aparecer">
             <div>
-              <small className={`mmsz-nivel-chip nivel-${mmszUnit.nivel}`}>{mmszUnit.nivel}</small>
+              <small className={`mmsz-nivel-chip nivel-${mmszUnit.mmszNivel}`}>{mmszUnit.mmszNivel}</small>
               <h2>
-                Unidad {mmszUnidad + 1}: {mmszUnit.title}
+                Unidad {mmszUnidad + 1}: {mmszUnit.mmszTitle}
               </h2>
-              <p>{mmszUnit.description}</p>
+              <p>{mmszUnit.mmszDescription}</p>
             </div>
-            <MmszAnillo mmszPct={mmszAvU.pct} mmszTam={78} mmszGrosor={8} />
+            <MmszAnillo mmszPct={mmszAvU.mmszPct} mmszTam={78} mmszGrosor={8} />
           </header>
 
           {mmszNoHearts && <div className="notice">Te quedaste sin vidas ❤️ para las prácticas. Se recupera una cada 20 minutos.</div>}
 
-          {mmszAvU.pct === 100 ? (
+          {mmszAvU.mmszPct === 100 ? (
             <div className="mmsz-din-celebra mmsz-aparecer">
               <span className="mmsz-din-confeti" aria-hidden>
-                {['🎉', '✨', '🎊', '⭐', '🎉', '✨', '🎊', '⭐'].map((e, i) => (
-                  <i key={i} style={{ left: `${8 + i * 12}%`, animationDelay: `${i * 0.15}s` }}>
-                    {e}
+                {['🎉', '✨', '🎊', '⭐', '🎉', '✨', '🎊', '⭐'].map((mmszE, mmszI) => (
+                  <i key={mmszI} style={{ left: `${8 + mmszI * 12}%`, animationDelay: `${mmszI * 0.15}s` }}>
+                    {mmszE}
                   </i>
                 ))}
               </span>
               <b>¡Unidad completada!</b>
-              <span>Dominaste «{mmszUnit.title}». ¿Seguimos con la siguiente?</span>
-              {mmszUnidad < c.units.length - 1 && (
+              <span>Dominaste «{mmszUnit.mmszTitle}». ¿Seguimos con la siguiente?</span>
+              {mmszUnidad < mmszC.mmszUnits.length - 1 && (
                 <button className="mmsz-din-boton" onClick={() => mmszElegir(mmszUnidad + 1)}>
                   Ir a la unidad {mmszUnidad + 2} →
                 </button>
@@ -158,59 +152,59 @@ export default function MmszCursoDinamico({ mmszCourse: c, mmszProgress: p, mmsz
               <button
                 className="mmsz-din-siguiente mmsz-aparecer"
                 onClick={() =>
-                  mmszSigEnUnidad.item
-                    ? mmszNav.abrirItem(c.id, mmszSigEnUnidad.leccion.id, mmszSigEnUnidad.item.id)
-                    : mmszNav.practicar(c.id, mmszSigEnUnidad.leccion.id)
+                  mmszSigEnUnidad.mmszItem
+                    ? mmszNav.mmszAbrirItem(mmszC.mmszId, mmszSigEnUnidad.mmszLeccion.mmszId, mmszSigEnUnidad.mmszItem.mmszId)
+                    : mmszNav.mmszPracticar(mmszC.mmszId, mmszSigEnUnidad.mmszLeccion.mmszId)
                 }
               >
                 <span
                   className="mmsz-din-siguiente-icono"
-                  style={{ background: MMSZ_COLOR_TIPO[mmszSigEnUnidad.item?.tipo ?? 'practica'] }}
+                  style={{ background: MMSZ_COLOR_TIPO[mmszSigEnUnidad.mmszItem?.mmszTipo ?? 'practica'] }}
                 >
-                  {mmszSigEnUnidad.item ? MMSZ_ICONOS[mmszSigEnUnidad.item.tipo] : MMSZ_ICONOS.practica}
+                  {mmszSigEnUnidad.mmszItem ? MMSZ_ICONOS[mmszSigEnUnidad.mmszItem.mmszTipo] : MMSZ_ICONOS.practica}
                 </span>
                 <span>
                   <small>SIGUIENTE PASO RECOMENDADO</small>
-                  <b>{mmszSigEnUnidad.item?.titulo ?? `Practica: ${mmszSigEnUnidad.leccion.title}`}</b>
+                  <b>{mmszSigEnUnidad.mmszItem?.mmszTitulo ?? `Practica: ${mmszSigEnUnidad.mmszLeccion.mmszTitle}`}</b>
                 </span>
                 <span className="mmsz-din-siguiente-flecha">▶</span>
               </button>
             )
           )}
 
-          {mmszUnit.lessons.map((l, li) => {
-            const a = mmszAvanceLeccion(l, p);
-            const mmszPracticada = Boolean(p.completed[l.id]);
+          {mmszUnit.mmszLessons.map((mmszL, mmszLi) => {
+            const mmszA = mmszAvanceLeccion(mmszL, mmszP);
+            const mmszPracticada = Boolean(mmszP.mmszCompleted[mmszL.mmszId]);
             return (
               <section
-                key={l.id}
-                className={`mmsz-din-leccion mmsz-aparecer ${a.pct === 100 ? 'hecha' : ''}`}
-                style={{ animationDelay: `${120 + li * 110}ms` }}
+                key={mmszL.mmszId}
+                className={`mmsz-din-leccion mmsz-aparecer ${mmszA.mmszPct === 100 ? 'hecha' : ''}`}
+                style={{ animationDelay: `${120 + mmszLi * 110}ms` }}
               >
                 <header>
-                  <span className="mmsz-din-leccion-num">{a.pct === 100 ? '✓' : li + 1}</span>
+                  <span className="mmsz-din-leccion-num">{mmszA.mmszPct === 100 ? '✓' : mmszLi + 1}</span>
                   <div>
-                    <h3>{l.title}</h3>
-                    <p>{l.intro}</p>
+                    <h3>{mmszL.mmszTitle}</h3>
+                    <p>{mmszL.mmszIntro}</p>
                   </div>
-                  <span className="mmsz-din-leccion-pct">{a.pct}%</span>
+                  <span className="mmsz-din-leccion-pct">{mmszA.mmszPct}%</span>
                 </header>
                 <div className="mmsz-din-barra">
-                  <i style={{ width: `${a.pct}%` }} />
+                  <i style={{ width: `${mmszA.mmszPct}%` }} />
                 </div>
 
                 <div className="mmsz-din-items">
-                  {l.items.map((it, k) => {
-                    const mmszHecho = Boolean(p.completed[it.id]);
+                  {mmszL.mmszItems.map((mmszIt, mmszK) => {
+                    const mmszHecho = Boolean(mmszP.mmszCompleted[mmszIt.mmszId]);
                     return (
                       <button
-                        key={it.id}
+                        key={mmszIt.mmszId}
                         className={`mmsz-din-item ${mmszHecho ? 'hecho' : ''}`}
-                        style={{ ['--tipo' as string]: MMSZ_COLOR_TIPO[it.tipo], animationDelay: `${200 + li * 110 + k * 40}ms` }}
-                        onClick={() => mmszNav.abrirItem(c.id, l.id, it.id)}
+                        style={{ ['--tipo' as string]: MMSZ_COLOR_TIPO[mmszIt.mmszTipo], animationDelay: `${200 + mmszLi * 110 + mmszK * 40}ms` }}
+                        onClick={() => mmszNav.mmszAbrirItem(mmszC.mmszId, mmszL.mmszId, mmszIt.mmszId)}
                       >
-                        <span className="mmsz-din-item-icono">{mmszHecho ? '✓' : MMSZ_ICONOS[it.tipo]}</span>
-                        <span className="mmsz-din-item-texto">{it.titulo}</span>
+                        <span className="mmsz-din-item-icono">{mmszHecho ? '✓' : MMSZ_ICONOS[mmszIt.mmszTipo]}</span>
+                        <span className="mmsz-din-item-texto">{mmszIt.mmszTitulo}</span>
                       </button>
                     );
                   })}
@@ -218,11 +212,11 @@ export default function MmszCursoDinamico({ mmszCourse: c, mmszProgress: p, mmsz
                     className={`mmsz-din-item practica ${mmszPracticada ? 'hecho' : ''}`}
                     style={{ ['--tipo' as string]: MMSZ_COLOR_TIPO.practica }}
                     disabled={mmszNoHearts}
-                    onClick={() => mmszNav.practicar(c.id, l.id)}
+                    onClick={() => mmszNav.mmszPracticar(mmszC.mmszId, mmszL.mmszId)}
                   >
                     <span className="mmsz-din-item-icono">{mmszPracticada ? '✓' : MMSZ_ICONOS.practica}</span>
                     <span className="mmsz-din-item-texto">
-                      {mmszPracticada ? 'Repasar práctica' : 'Practica'} · {l.exercises.length} preguntas
+                      {mmszPracticada ? 'Repasar práctica' : 'Practica'} · {mmszL.mmszExercises.length} preguntas
                     </span>
                   </button>
                 </div>
@@ -238,7 +232,7 @@ export default function MmszCursoDinamico({ mmszCourse: c, mmszProgress: p, mmsz
             ) : (
               <span />
             )}
-            {mmszUnidad < c.units.length - 1 && (
+            {mmszUnidad < mmszC.mmszUnits.length - 1 && (
               <button className="mmsz-btn" onClick={() => mmszElegir(mmszUnidad + 1)}>
                 Unidad {mmszUnidad + 2} →
               </button>

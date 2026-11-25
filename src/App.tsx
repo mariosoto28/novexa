@@ -1,4 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
 import { useEffect, useRef, useState } from 'react';
 import { mmszUseProgress } from './progress';
 import { mmszCursoSegunModo, mmszGetCourse } from './content';
@@ -12,17 +11,17 @@ import MmszVisor from './screens/MmszVisor';
 import type { MmszNav, MmszSeccion } from './mmszUtilidades';
 
 type MmszPantalla =
-  | { name: 'panel'; seccion: MmszSeccion }
-  | { name: 'course'; courseId: string; unidad?: number }
-  | { name: 'item'; courseId: string; lessonId: string; itemId: string }
-  | { name: 'lesson'; courseId: string; lessonId: string };
+  | { mmszName: 'panel'; mmszSeccion: MmszSeccion }
+  | { mmszName: 'course'; mmszCourseId: string; mmszUnidad?: number }
+  | { mmszName: 'item'; mmszCourseId: string; mmszLessonId: string; mmszItemId: string }
+  | { mmszName: 'lesson'; mmszCourseId: string; mmszLessonId: string };
 
 export default function MmszApp() {
   const {
-    progress: mmszProgress,
-    loseHeart: mmszLoseHeart,
-    completeLesson: mmszCompleteLesson,
-    reset: mmszReset,
+    mmszProgress,
+    mmszLoseHeart,
+    mmszCompleteLesson,
+    mmszReset,
     mmszCambiarNombre,
     mmszCambiarSesion,
     mmszCambiarCursosOcultos,
@@ -34,22 +33,19 @@ export default function MmszApp() {
     mmszAviso,
     mmszCerrarAviso,
   } = mmszUseProgress();
-  const [mmszPantalla, setMmszPantalla] = useState<MmszPantalla>({ name: 'panel', seccion: 'cursos' });
-  // Pantallas visitadas, para el botón "Atrás".
-  const [mmszHistorial, setMmszHistorial] = useState<MmszPantalla[]>([]);
+  const [mmszPantalla, mmszSetPantalla] = useState<MmszPantalla>({ mmszName: 'panel', mmszSeccion: 'cursos' });
+  const [mmszHistorial, mmszSetHistorial] = useState<MmszPantalla[]>([]);
 
-  // Aplica el tema de colores elegido en Configuración.
   useEffect(() => {
-    document.documentElement.dataset.tema = mmszProgress?.tema ?? 'clasico';
-  }, [mmszProgress?.tema]);
+    document.documentElement.dataset.tema = mmszProgress?.mmszTema ?? 'clasico';
+  }, [mmszProgress?.mmszTema]);
 
-  // Atajos para volver: Alt + ← y el botón "atrás" del mouse.
   useEffect(() => {
-    const mmszTecla = (e: KeyboardEvent) => {
-      if (e.altKey && e.key === 'ArrowLeft') mmszAtrasRef.current();
+    const mmszTecla = (mmszE: KeyboardEvent) => {
+      if (mmszE.altKey && mmszE.key === 'ArrowLeft') mmszAtrasRef.current();
     };
-    const mmszMouse = (e: MouseEvent) => {
-      if (e.button === 3) mmszAtrasRef.current();
+    const mmszMouse = (mmszE: MouseEvent) => {
+      if (mmszE.button === 3) mmszAtrasRef.current();
     };
     window.addEventListener('keydown', mmszTecla);
     window.addEventListener('mouseup', mmszMouse);
@@ -62,7 +58,6 @@ export default function MmszApp() {
 
   if (!mmszProgress) return <div className="loading">Cargando…</div>;
 
-  // Aviso flotante (por ejemplo, si se recuperó una copia de seguridad al abrir la app).
   const mmszCon = (mmszVista: JSX.Element) => (
     <>
       {mmszVista}
@@ -75,98 +70,95 @@ export default function MmszApp() {
     </>
   );
 
-  const mmszIguales = (a: MmszPantalla, b: MmszPantalla) => JSON.stringify(a) === JSON.stringify(b);
+  const mmszIguales = (mmszA: MmszPantalla, mmszB: MmszPantalla) => JSON.stringify(mmszA) === JSON.stringify(mmszB);
 
-  // Cada cambio de pantalla empieza desde arriba y se guarda en el historial.
   const mmszIrA = (mmszNueva: MmszPantalla) => {
     if (mmszIguales(mmszNueva, mmszPantalla)) return;
-    setMmszHistorial((h) => [...h.slice(-49), mmszPantalla]);
-    setMmszPantalla(mmszNueva);
+    mmszSetHistorial((mmszH) => [...mmszH.slice(-49), mmszPantalla]);
+    mmszSetPantalla(mmszNueva);
     window.scrollTo({ top: 0 });
   };
 
   const mmszAtras = () => {
     const mmszAnterior = mmszHistorial[mmszHistorial.length - 1];
     if (!mmszAnterior) return;
-    setMmszHistorial((h) => h.slice(0, -1));
-    setMmszPantalla(mmszAnterior);
+    mmszSetHistorial((mmszH) => mmszH.slice(0, -1));
+    mmszSetPantalla(mmszAnterior);
     window.scrollTo({ top: 0 });
   };
   mmszAtrasRef.current = mmszAtras;
 
-  // En modo Sin conexión, los cursos se muestran sin los videos de YouTube.
-  const mmszCurso = (mmszId: string) => mmszCursoSegunModo(mmszGetCourse(mmszId), mmszProgress.modoOffline);
+  const mmszCurso = (mmszId: string) => mmszCursoSegunModo(mmszGetCourse(mmszId), mmszProgress.mmszModoOffline);
 
   const mmszNav: MmszNav = {
-    atras: mmszAtras,
-    puedeAtras: mmszHistorial.length > 0,
-    irInicio: (mmszSeccion = 'cursos') => mmszIrA({ name: 'panel', seccion: mmszSeccion }),
-    abrirCurso: (mmszCourseId, mmszUnidad) => mmszIrA({ name: 'course', courseId: mmszCourseId, unidad: mmszUnidad }),
-    abrirItem: (mmszCourseId, mmszLessonId, mmszItemId) =>
-      mmszIrA({ name: 'item', courseId: mmszCourseId, lessonId: mmszLessonId, itemId: mmszItemId }),
-    practicar: (mmszCourseId, mmszLessonId) => mmszIrA({ name: 'lesson', courseId: mmszCourseId, lessonId: mmszLessonId }),
-    cambiarModo: mmszCambiarModo,
-    cerrarSesion: () => {
+    mmszAtras,
+    mmszPuedeAtras: mmszHistorial.length > 0,
+    mmszIrInicio: (mmszSeccion = 'cursos') => mmszIrA({ mmszName: 'panel', mmszSeccion }),
+    mmszAbrirCurso: (mmszCourseId, mmszUnidad) => mmszIrA({ mmszName: 'course', mmszCourseId, mmszUnidad }),
+    mmszAbrirItem: (mmszCourseId, mmszLessonId, mmszItemId) =>
+      mmszIrA({ mmszName: 'item', mmszCourseId, mmszLessonId, mmszItemId }),
+    mmszPracticar: (mmszCourseId, mmszLessonId) => mmszIrA({ mmszName: 'lesson', mmszCourseId, mmszLessonId }),
+    mmszCambiarModo,
+    mmszCerrarSesion: () => {
       mmszCambiarSesion(false);
-      setMmszPantalla({ name: 'panel', seccion: 'cursos' });
+      mmszSetPantalla({ mmszName: 'panel', mmszSeccion: 'cursos' });
     },
   };
 
-  // Primera vez que se abre Novexa: pedir nombre y cursos.
-  if (!mmszProgress.bienvenidaCompleta) {
+  if (!mmszProgress.mmszBienvenidaCompleta) {
     return mmszCon(
       <MmszPrimerInicio
         mmszTerminar={(mmszNombre, mmszOcultos) => {
           mmszCompletarBienvenida(mmszNombre, mmszOcultos);
-          setMmszPantalla({ name: 'panel', seccion: 'cursos' });
-          setMmszHistorial([]);
+          mmszSetPantalla({ mmszName: 'panel', mmszSeccion: 'cursos' });
+          mmszSetHistorial([]);
         }}
       />,
     );
   }
 
-  if (!mmszProgress.sesionActiva) {
+  if (!mmszProgress.mmszSesionActiva) {
     return mmszCon(
       <MmszBienvenida
-        mmszNombre={mmszProgress.nombre}
+        mmszNombre={mmszProgress.mmszNombre}
         mmszEntrar={(mmszNombre) => {
-          if (mmszNombre !== mmszProgress.nombre) mmszCambiarNombre(mmszNombre);
+          if (mmszNombre !== mmszProgress.mmszNombre) mmszCambiarNombre(mmszNombre);
           mmszCambiarSesion(true);
         }}
       />
     );
   }
 
-  if (mmszPantalla.name === 'course' && mmszProgress.disenoDinamico) {
+  if (mmszPantalla.mmszName === 'course' && mmszProgress.mmszDisenoDinamico) {
     return mmszCon(
       <MmszCursoDinamico
-        key={`${mmszPantalla.courseId}-${mmszPantalla.unidad ?? ''}`}
-        mmszCourse={mmszCurso(mmszPantalla.courseId)}
+        key={`${mmszPantalla.mmszCourseId}-${mmszPantalla.mmszUnidad ?? ''}`}
+        mmszCourse={mmszCurso(mmszPantalla.mmszCourseId)}
         mmszProgress={mmszProgress}
         mmszNav={mmszNav}
-        mmszUnidadElegida={mmszPantalla.unidad}
+        mmszUnidadElegida={mmszPantalla.mmszUnidad}
       />,
     );
   }
 
-  if (mmszPantalla.name === 'course') {
+  if (mmszPantalla.mmszName === 'course') {
     return mmszCon(
       <MmszCourseMap
-        key={`${mmszPantalla.courseId}-${mmszPantalla.unidad ?? ''}`}
-        mmszCourse={mmszCurso(mmszPantalla.courseId)}
+        key={`${mmszPantalla.mmszCourseId}-${mmszPantalla.mmszUnidad ?? ''}`}
+        mmszCourse={mmszCurso(mmszPantalla.mmszCourseId)}
         mmszProgress={mmszProgress}
         mmszNav={mmszNav}
-        mmszUnidadElegida={mmszPantalla.unidad}
+        mmszUnidadElegida={mmszPantalla.mmszUnidad}
       />
     );
   }
 
-  if (mmszPantalla.name === 'item') {
+  if (mmszPantalla.mmszName === 'item') {
     return mmszCon(
       <MmszVisor
-        mmszCourse={mmszCurso(mmszPantalla.courseId)}
-        mmszLessonId={mmszPantalla.lessonId}
-        mmszItemId={mmszPantalla.itemId}
+        mmszCourse={mmszCurso(mmszPantalla.mmszCourseId)}
+        mmszLessonId={mmszPantalla.mmszLessonId}
+        mmszItemId={mmszPantalla.mmszItemId}
         mmszProgress={mmszProgress}
         mmszNav={mmszNav}
         mmszCompletar={mmszCompleteLesson}
@@ -174,19 +166,19 @@ export default function MmszApp() {
     );
   }
 
-  if (mmszPantalla.name === 'lesson') {
-    const mmszCourse = mmszCurso(mmszPantalla.courseId);
-    const mmszUnidad = mmszCourse.units.findIndex((u) => u.lessons.some((l) => l.id === mmszPantalla.lessonId));
-    const mmszLesson = mmszCourse.units[mmszUnidad].lessons.find((l) => l.id === mmszPantalla.lessonId)!;
+  if (mmszPantalla.mmszName === 'lesson') {
+    const mmszCourse = mmszCurso(mmszPantalla.mmszCourseId);
+    const mmszUnidad = mmszCourse.mmszUnits.findIndex((mmszU) => mmszU.mmszLessons.some((mmszL) => mmszL.mmszId === mmszPantalla.mmszLessonId));
+    const mmszLesson = mmszCourse.mmszUnits[mmszUnidad].mmszLessons.find((mmszL) => mmszL.mmszId === mmszPantalla.mmszLessonId)!;
     return mmszCon(
       <MmszLessonScreen
-        key={mmszLesson.id}
+        key={mmszLesson.mmszId}
         mmszCourse={mmszCourse}
         mmszLesson={mmszLesson}
         mmszProgress={mmszProgress}
         mmszOnMistake={mmszLoseHeart}
-        mmszOnComplete={(xp) => mmszCompleteLesson(mmszLesson.id, xp)}
-        mmszOnExit={() => (mmszHistorial.length ? mmszAtras() : mmszNav.abrirCurso(mmszCourse.id, mmszUnidad))}
+        mmszOnComplete={(mmszXp) => mmszCompleteLesson(mmszLesson.mmszId, mmszXp)}
+        mmszOnExit={() => (mmszHistorial.length ? mmszAtras() : mmszNav.mmszAbrirCurso(mmszCourse.mmszId, mmszUnidad))}
       />
     );
   }
@@ -194,7 +186,7 @@ export default function MmszApp() {
   return mmszCon(
     <MmszPanel
       mmszProgreso={mmszProgress}
-      mmszSeccion={mmszPantalla.seccion}
+      mmszSeccion={mmszPantalla.mmszSeccion}
       mmszNav={mmszNav}
       mmszCambiarNombre={mmszCambiarNombre}
       mmszCambiarCursosOcultos={mmszCambiarCursosOcultos}

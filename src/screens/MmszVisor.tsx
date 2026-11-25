@@ -1,6 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Visor de una lección: lista de recursos a la izquierda (lecturas, desafíos, proyecto,
-// práctica) y el recurso abierto a la derecha, con el botón "A continuación".
 import { useEffect, useRef } from 'react';
 import type { MmszCourse, MmszItem, MmszLectura } from '../types';
 import type { MmszProgress } from '../progress';
@@ -24,7 +21,7 @@ interface MmszProps {
   mmszCompletar: (mmszId: string, mmszXp: number) => void;
 }
 
-export const MMSZ_ICONOS: Record<MmszItem['tipo'] | 'practica', string> = {
+export const MMSZ_ICONOS: Record<MmszItem['mmszTipo'] | 'practica', string> = {
   lectura: '≡',
   consejo: '✦',
   repaso: '↺',
@@ -36,7 +33,7 @@ export const MMSZ_ICONOS: Record<MmszItem['tipo'] | 'practica', string> = {
   guiado: '⚙',
   guia: '⏯',
 };
-const MMSZ_NOMBRES: Record<MmszItem['tipo'], string> = {
+const MMSZ_NOMBRES: Record<MmszItem['mmszTipo'], string> = {
   lectura: 'lectura',
   consejo: 'consejo rápido',
   repaso: 'repaso',
@@ -47,49 +44,46 @@ const MMSZ_NOMBRES: Record<MmszItem['tipo'], string> = {
   guiado: 'programa guiado',
   guia: 'guía paso a paso',
 };
-const MMSZ_XP: Record<MmszItem['tipo'], number> = { lectura: 2, consejo: 2, repaso: 2, desafio: 10, proyecto: 20, video: 2, animada: 3, guiado: 5, guia: 4 };
+const MMSZ_XP: Record<MmszItem['mmszTipo'], number> = { lectura: 2, consejo: 2, repaso: 2, desafio: 10, proyecto: 20, video: 2, animada: 3, guiado: 5, guia: 4 };
 
 export default function MmszVisor({ mmszCourse, mmszLessonId, mmszItemId, mmszProgress, mmszNav, mmszCompletar }: MmszProps) {
-  // Todas las lecciones del curso con su unidad, para moverse con < y >.
-  const mmszTodas = mmszCourse.units.flatMap((u, ui) => u.lessons.map((l, li) => ({ l, u, ui, li })));
-  const mmszPos = mmszTodas.findIndex((x) => x.l.id === mmszLessonId);
-  const { l: mmszLesson, u: mmszUnit, ui: mmszUi, li: mmszLi } = mmszTodas[mmszPos];
-  const mmszIdx = Math.max(0, mmszLesson.items.findIndex((it) => it.id === mmszItemId));
-  const mmszItem = mmszLesson.items[mmszIdx];
-  const mmszSiguiente = mmszLesson.items[mmszIdx + 1];
-  const mmszLang = mmszCourse.id as MmszRunnableLang;
-  const mmszAnimadaId = mmszLesson.items.find((it) => it.tipo === 'animada')?.id;
+  const mmszTodas = mmszCourse.mmszUnits.flatMap((mmszU, mmszUi) => mmszU.mmszLessons.map((mmszL, mmszLi) => ({ mmszL, mmszU, mmszUi, mmszLi })));
+  const mmszPos = mmszTodas.findIndex((mmszX) => mmszX.mmszL.mmszId === mmszLessonId);
+  const { mmszL: mmszLesson, mmszU: mmszUnit, mmszUi, mmszLi } = mmszTodas[mmszPos];
+  const mmszIdx = Math.max(0, mmszLesson.mmszItems.findIndex((mmszIt) => mmszIt.mmszId === mmszItemId));
+  const mmszItem = mmszLesson.mmszItems[mmszIdx];
+  const mmszSiguiente = mmszLesson.mmszItems[mmszIdx + 1];
+  const mmszLang = mmszCourse.mmszId as MmszRunnableLang;
+  const mmszAnimadaId = mmszLesson.mmszItems.find((mmszIt) => mmszIt.mmszTipo === 'animada')?.mmszId;
 
-  // Las lecturas se marcan como vistas al abrirlas (una sola vez).
   const mmszMarcado = useRef<string | null>(null);
   useEffect(() => {
-    if ((mmszItem.tipo === 'lectura' || mmszItem.tipo === 'consejo' || mmszItem.tipo === 'repaso' || mmszItem.tipo === 'video') &&
-        !mmszProgress.completed[mmszItem.id] && mmszMarcado.current !== mmszItem.id) {
-      mmszMarcado.current = mmszItem.id;
-      mmszCompletar(mmszItem.id, MMSZ_XP[mmszItem.tipo]);
+    if ((mmszItem.mmszTipo === 'lectura' || mmszItem.mmszTipo === 'consejo' || mmszItem.mmszTipo === 'repaso' || mmszItem.mmszTipo === 'video') &&
+        !mmszProgress.mmszCompleted[mmszItem.mmszId] && mmszMarcado.current !== mmszItem.mmszId) {
+      mmszMarcado.current = mmszItem.mmszId;
+      mmszCompletar(mmszItem.mmszId, MMSZ_XP[mmszItem.mmszTipo]);
     }
     document.querySelector('.mmsz-visor-main')?.scrollTo({ top: 0 });
-  }, [mmszItem, mmszProgress.completed, mmszCompletar]);
+  }, [mmszItem, mmszProgress.mmszCompleted, mmszCompletar]);
 
   const mmszIrLeccion = (mmszDelta: number) => {
     const mmszOtra = mmszTodas[mmszPos + mmszDelta];
-    if (mmszOtra) mmszNav.abrirItem(mmszCourse.id, mmszOtra.l.id, mmszOtra.l.items[0].id);
+    if (mmszOtra) mmszNav.mmszAbrirItem(mmszCourse.mmszId, mmszOtra.mmszL.mmszId, mmszOtra.mmszL.mmszItems[0].mmszId);
   };
 
   return (
-    <div className="page mmsz-visor-pagina" style={{ ['--accent' as string]: mmszCourse.color }}>
+    <div className="page mmsz-visor-pagina" style={{ ['--accent' as string]: mmszCourse.mmszColor }}>
       <MmszBarraSuperior mmszProgreso={mmszProgress} mmszNav={mmszNav} />
 
       <div className="mmsz-visor">
-        {/* ---------- Panel izquierdo ---------- */}
         <aside className="mmsz-visor-lateral">
           <div className="mmsz-visor-curso">
-            <span className="mmsz-curso-icono chico">{mmszCourse.icon}</span>
-            <b>{mmszCourse.name}</b>
+            <span className="mmsz-curso-icono chico">{mmszCourse.mmszIcon}</span>
+            <b>{mmszCourse.mmszName}</b>
           </div>
           <div className="mmsz-visor-leccion">
             <small>
-              <button onClick={() => mmszNav.abrirCurso(mmszCourse.id)}>CURSO: {mmszCourse.name.toUpperCase()}</button>
+              <button onClick={() => mmszNav.mmszAbrirCurso(mmszCourse.mmszId)}>CURSO: {mmszCourse.mmszName.toUpperCase()}</button>
               {' > '}UNIDAD {mmszUi + 1}
             </small>
             <div className="mmsz-visor-flechas">
@@ -97,7 +91,7 @@ export default function MmszVisor({ mmszCourse, mmszLessonId, mmszItemId, mmszPr
                 ‹
               </button>
               <b>
-                Lección {mmszLi + 1}: {mmszLesson.title}
+                Lección {mmszLi + 1}: {mmszLesson.mmszTitle}
               </b>
               <button disabled={mmszPos === mmszTodas.length - 1} onClick={() => mmszIrLeccion(1)} title="Lección siguiente">
                 ›
@@ -106,116 +100,115 @@ export default function MmszVisor({ mmszCourse, mmszLessonId, mmszItemId, mmszPr
           </div>
 
           <nav className="mmsz-visor-items">
-            {mmszLesson.items.map((it) => (
+            {mmszLesson.mmszItems.map((mmszIt) => (
               <button
-                key={it.id}
-                className={it.id === mmszItem.id ? 'activo' : ''}
-                onClick={() => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, it.id)}
+                key={mmszIt.mmszId}
+                className={mmszIt.mmszId === mmszItem.mmszId ? 'activo' : ''}
+                onClick={() => mmszNav.mmszAbrirItem(mmszCourse.mmszId, mmszLesson.mmszId, mmszIt.mmszId)}
               >
-                <span className={`mmsz-recurso-icono ${mmszProgress.completed[it.id] ? 'hecho' : ''}`}>
-                  {MMSZ_ICONOS[it.tipo]}
+                <span className={`mmsz-recurso-icono ${mmszProgress.mmszCompleted[mmszIt.mmszId] ? 'hecho' : ''}`}>
+                  {MMSZ_ICONOS[mmszIt.mmszTipo]}
                 </span>
-                <span>{it.titulo}</span>
+                <span>{mmszIt.mmszTitulo}</span>
               </button>
             ))}
-            <button onClick={() => mmszNav.practicar(mmszCourse.id, mmszLesson.id)}>
-              <span className={`mmsz-recurso-icono ${mmszProgress.completed[mmszLesson.id] ? 'hecho' : ''}`}>
+            <button onClick={() => mmszNav.mmszPracticar(mmszCourse.mmszId, mmszLesson.mmszId)}>
+              <span className={`mmsz-recurso-icono ${mmszProgress.mmszCompleted[mmszLesson.mmszId] ? 'hecho' : ''}`}>
                 {MMSZ_ICONOS.practica}
               </span>
               <span>
-                Practica: {mmszLesson.title}
-                <small className="muted"> · {mmszLesson.exercises.length} preguntas</small>
+                Practica: {mmszLesson.mmszTitle}
+                <small className="muted"> · {mmszLesson.mmszExercises.length} preguntas</small>
               </span>
             </button>
           </nav>
 
           <div className="mmsz-visor-migas">
-            <button onClick={() => mmszNav.irInicio('cursos')}>Mis cursos</button> {'>'}{' '}
-            <button onClick={() => mmszNav.abrirCurso(mmszCourse.id)}>{mmszCourse.name}</button> {'>'}{' '}
-            <button onClick={() => mmszNav.abrirCurso(mmszCourse.id, mmszUi)}>{mmszUnit.title}</button> {'>'}{' '}
-            <span>{mmszLesson.title}</span>
+            <button onClick={() => mmszNav.mmszIrInicio('cursos')}>Mis cursos</button> {'>'}{' '}
+            <button onClick={() => mmszNav.mmszAbrirCurso(mmszCourse.mmszId)}>{mmszCourse.mmszName}</button> {'>'}{' '}
+            <button onClick={() => mmszNav.mmszAbrirCurso(mmszCourse.mmszId, mmszUi)}>{mmszUnit.mmszTitle}</button> {'>'}{' '}
+            <span>{mmszLesson.mmszTitle}</span>
           </div>
         </aside>
 
-        {/* ---------- Contenido ---------- */}
         <main className="mmsz-visor-main">
           <div className="mmsz-visor-contenido">
-            <span className="tag">{MMSZ_NOMBRES[mmszItem.tipo]}</span>
-            <h1>{mmszItem.titulo}</h1>
-            {mmszItem.tipo === 'desafio' || mmszItem.tipo === 'proyecto' ? (
+            <span className="tag">{MMSZ_NOMBRES[mmszItem.mmszTipo]}</span>
+            <h1>{mmszItem.mmszTitulo}</h1>
+            {mmszItem.mmszTipo === 'desafio' || mmszItem.mmszTipo === 'proyecto' ? (
               <MmszDesafioVista
-                key={mmszItem.id}
+                key={mmszItem.mmszId}
                 mmszDesafio={mmszItem}
                 mmszLang={mmszLang}
-                mmszYaCompletado={Boolean(mmszProgress.completed[mmszItem.id])}
+                mmszYaCompletado={Boolean(mmszProgress.mmszCompleted[mmszItem.mmszId])}
                 mmszAlCompletar={() => {
-                  if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP[mmszItem.tipo]);
+                  if (!mmszProgress.mmszCompleted[mmszItem.mmszId]) mmszCompletar(mmszItem.mmszId, MMSZ_XP[mmszItem.mmszTipo]);
                 }}
               />
-            ) : mmszItem.tipo === 'guiado' ? (
+            ) : mmszItem.mmszTipo === 'guiado' ? (
               <MmszProgramaGuiado
-                key={mmszItem.id}
+                key={mmszItem.mmszId}
                 mmszGuiado={mmszItem}
                 mmszLang={mmszLang}
                 mmszAlTerminar={() => {
-                  if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP.guiado);
+                  if (!mmszProgress.mmszCompleted[mmszItem.mmszId]) mmszCompletar(mmszItem.mmszId, MMSZ_XP.guiado);
                 }}
                 mmszIrAlDesafio={
-                  mmszSiguiente?.tipo === 'desafio'
-                    ? () => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, mmszSiguiente.id)
+                  mmszSiguiente?.mmszTipo === 'desafio'
+                    ? () => mmszNav.mmszAbrirItem(mmszCourse.mmszId, mmszLesson.mmszId, mmszSiguiente.mmszId)
                     : undefined
                 }
               />
-            ) : mmszItem.tipo === 'guia' ? (
+            ) : mmszItem.mmszTipo === 'guia' ? (
               <MmszGuiaPasoAPaso
-                key={mmszItem.id}
+                key={mmszItem.mmszId}
                 mmszGuia={mmszItem}
                 mmszLang={mmszLang}
                 mmszAlTerminar={() => {
-                  if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP.guia);
+                  if (!mmszProgress.mmszCompleted[mmszItem.mmszId]) mmszCompletar(mmszItem.mmszId, MMSZ_XP.guia);
                 }}
                 mmszIrAlGuiado={
-                  mmszSiguiente?.tipo === 'guiado'
-                    ? () => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, mmszSiguiente.id)
+                  mmszSiguiente?.mmszTipo === 'guiado'
+                    ? () => mmszNav.mmszAbrirItem(mmszCourse.mmszId, mmszLesson.mmszId, mmszSiguiente.mmszId)
                     : undefined
                 }
               />
-            ) : mmszItem.tipo === 'animada' ? (
+            ) : mmszItem.mmszTipo === 'animada' ? (
               <MmszLeccionAnimada
-                key={mmszItem.id}
-                mmszTitulo={mmszLesson.title}
-                mmszIntro={mmszLesson.intro}
-                mmszRecuerdo={mmszItem.recuerdo}
-                mmszLecturas={mmszItem.lecturas}
+                key={mmszItem.mmszId}
+                mmszTitulo={mmszLesson.mmszTitle}
+                mmszIntro={mmszLesson.mmszIntro}
+                mmszRecuerdo={mmszItem.mmszRecuerdo}
+                mmszLecturas={mmszItem.mmszLecturas}
                 mmszLang={mmszLang}
                 mmszAlTerminar={() => {
-                  if (!mmszProgress.completed[mmszItem.id]) mmszCompletar(mmszItem.id, MMSZ_XP.animada);
+                  if (!mmszProgress.mmszCompleted[mmszItem.mmszId]) mmszCompletar(mmszItem.mmszId, MMSZ_XP.animada);
                 }}
               />
-            ) : mmszItem.tipo === 'video' ? (
+            ) : mmszItem.mmszTipo === 'video' ? (
               <MmszVideoVista
-                key={mmszItem.id}
+                key={mmszItem.mmszId}
                 mmszVideo={mmszItem}
                 mmszAlternativa={
-                  mmszAnimadaId ? () => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, mmszAnimadaId) : undefined
+                  mmszAnimadaId ? () => mmszNav.mmszAbrirItem(mmszCourse.mmszId, mmszLesson.mmszId, mmszAnimadaId) : undefined
                 }
               />
             ) : (
               <article className="mmsz-visor-lectura">
-                <MmszLectorVoz mmszTexto={(mmszItem as MmszLectura).contenido} />
-                <MmszMarkdown texto={(mmszItem as MmszLectura).contenido} lang={mmszLang} />
+                <MmszLectorVoz mmszTexto={(mmszItem as MmszLectura).mmszContenido} />
+                <MmszMarkdown mmszTexto={(mmszItem as MmszLectura).mmszContenido} mmszLang={mmszLang} />
               </article>
             )}
           </div>
 
           <footer className="mmsz-visor-pie">
             {mmszSiguiente ? (
-              <button className="mmsz-btn mmsz-btn-fuerte" onClick={() => mmszNav.abrirItem(mmszCourse.id, mmszLesson.id, mmszSiguiente.id)}>
-                A continuación: {MMSZ_NOMBRES[mmszSiguiente.tipo]} →
+              <button className="mmsz-btn mmsz-btn-fuerte" onClick={() => mmszNav.mmszAbrirItem(mmszCourse.mmszId, mmszLesson.mmszId, mmszSiguiente.mmszId)}>
+                A continuación: {MMSZ_NOMBRES[mmszSiguiente.mmszTipo]} →
               </button>
             ) : (
-              <button className="mmsz-btn mmsz-btn-fuerte" onClick={() => mmszNav.practicar(mmszCourse.id, mmszLesson.id)}>
-                A continuación: práctica ({mmszLesson.exercises.length} preguntas) →
+              <button className="mmsz-btn mmsz-btn-fuerte" onClick={() => mmszNav.mmszPracticar(mmszCourse.mmszId, mmszLesson.mmszId)}>
+                A continuación: práctica ({mmszLesson.mmszExercises.length} preguntas) →
               </button>
             )}
           </footer>

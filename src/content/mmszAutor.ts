@@ -1,5 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Funciones cortas para escribir el contenido de los cursos sin repetir tanto código.
 import type {
   MmszDesafio,
   MmszExercise,
@@ -11,127 +9,121 @@ import type {
   MmszUnit,
 } from '../types';
 
-type MmszSinId<T> = T extends unknown ? Omit<T, 'id'> : never;
+type MmszSinId<MmszT> = MmszT extends unknown ? Omit<MmszT, 'mmszId'> : never;
 
-/** Quita la sangría común de un texto escrito con `...` para que el código quede limpio. */
 export function mmszLimpio(mmszTexto: string): string {
   const mmszLineas = mmszTexto.replace(/^\n/, '').replace(/\n\s*$/, '').split('\n');
   const mmszMin = Math.min(
-    ...mmszLineas.filter((l) => l.trim()).map((l) => l.match(/^ */)![0].length),
+    ...mmszLineas.filter((mmszL) => mmszL.trim()).map((mmszL) => mmszL.match(/^ */)![0].length),
   );
-  return mmszLineas.map((l) => l.slice(Number.isFinite(mmszMin) ? mmszMin : 0)).join('\n');
+  return mmszLineas.map((mmszL) => mmszL.slice(Number.isFinite(mmszMin) ? mmszMin : 0)).join('\n');
 }
 
-export const mmszLectura = (titulo: string, contenido: string): MmszSinId<MmszLectura> => ({
-  tipo: 'lectura',
-  titulo,
-  contenido: mmszLimpio(contenido),
+export const mmszLectura = (mmszTitulo: string, mmszContenido: string): MmszSinId<MmszLectura> => ({
+  mmszTipo: 'lectura',
+  mmszTitulo,
+  mmszContenido: mmszLimpio(mmszContenido),
 });
-export const mmszConsejo = (titulo: string, contenido: string): MmszSinId<MmszLectura> => ({
-  tipo: 'consejo',
-  titulo: `Consejo rápido: ${titulo}`,
-  contenido: mmszLimpio(contenido),
+export const mmszConsejo = (mmszTitulo: string, mmszContenido: string): MmszSinId<MmszLectura> => ({
+  mmszTipo: 'consejo',
+  mmszTitulo: `Consejo rápido: ${mmszTitulo}`,
+  mmszContenido: mmszLimpio(mmszContenido),
 });
-export const mmszRepaso = (titulo: string, contenido: string): MmszSinId<MmszLectura> => ({
-  tipo: 'repaso',
-  titulo: `Repaso: ${titulo}`,
-  contenido: mmszLimpio(contenido),
+export const mmszRepaso = (mmszTitulo: string, mmszContenido: string): MmszSinId<MmszLectura> => ({
+  mmszTipo: 'repaso',
+  mmszTitulo: `Repaso: ${mmszTitulo}`,
+  mmszContenido: mmszLimpio(mmszContenido),
 });
 
 export function mmszPaso(
-  titulo: string,
-  instrucciones: string,
-  mmszOpciones: Omit<MmszPaso, 'titulo' | 'instrucciones'>,
+  mmszTitulo: string,
+  mmszInstrucciones: string,
+  mmszOpciones: Omit<MmszPaso, 'mmszTitulo' | 'mmszInstrucciones'>,
 ): MmszPaso {
-  const mmszL = (s?: string) => (s === undefined ? undefined : mmszLimpio(s));
+  const mmszL = (mmszS?: string) => (mmszS === undefined ? undefined : mmszLimpio(mmszS));
   return {
-    titulo,
-    instrucciones: mmszLimpio(instrucciones),
+    mmszTitulo,
+    mmszInstrucciones: mmszLimpio(mmszInstrucciones),
     ...mmszOpciones,
-    inicio: mmszL(mmszOpciones.inicio),
-    pista: mmszL(mmszOpciones.pista),
-    salida: mmszL(mmszOpciones.salida),
-    solucion: mmszLimpio(mmszOpciones.solucion),
+    mmszInicio: mmszL(mmszOpciones.mmszInicio),
+    mmszPista: mmszL(mmszOpciones.mmszPista),
+    mmszSalida: mmszL(mmszOpciones.mmszSalida),
+    mmszSolucion: mmszLimpio(mmszOpciones.mmszSolucion),
   };
 }
 
-export const mmszDesafio = (titulo: string, pasos: MmszPaso[]): MmszSinId<MmszDesafio> => ({
-  tipo: 'desafio',
-  titulo: `Desafío: ${titulo}`,
-  pasos,
+export const mmszDesafio = (mmszTitulo: string, mmszPasos: MmszPaso[]): MmszSinId<MmszDesafio> => ({
+  mmszTipo: 'desafio',
+  mmszTitulo: `Desafío: ${mmszTitulo}`,
+  mmszPasos,
 });
-export const mmszProyecto = (titulo: string, pasos: MmszPaso[]): MmszSinId<MmszDesafio> => ({
-  tipo: 'proyecto',
-  titulo: `Proyecto: ${titulo}`,
-  pasos,
+export const mmszProyecto = (mmszTitulo: string, mmszPasos: MmszPaso[]): MmszSinId<MmszDesafio> => ({
+  mmszTipo: 'proyecto',
+  mmszTitulo: `Proyecto: ${mmszTitulo}`,
+  mmszPasos,
 });
 
-/* ---------- Preguntas de "Practica" ---------- */
-
-/** Opción múltiple: la opción correcta empieza con "*". */
-export function mmszElige(prompt: string, opciones: string[], explain: string, code?: string): MmszExercise {
-  const answer = opciones.findIndex((o) => o.startsWith('*'));
-  if (answer < 0) throw new Error(`Falta la opción correcta en: ${prompt}`);
+export function mmszElige(mmszPrompt: string, mmszOpciones: string[], mmszExplain: string, mmszCode?: string): MmszExercise {
+  const mmszAnswer = mmszOpciones.findIndex((mmszO) => mmszO.startsWith('*'));
+  if (mmszAnswer < 0) throw new Error(`Falta la opción correcta en: ${mmszPrompt}`);
   return {
-    type: 'choice',
-    prompt,
-    code: code === undefined ? undefined : mmszLimpio(code),
-    options: opciones.map((o) => o.replace(/^\*/, '')),
-    answer,
-    explain,
+    mmszType: 'choice',
+    mmszPrompt,
+    mmszCode: mmszCode === undefined ? undefined : mmszLimpio(mmszCode),
+    mmszOptions: mmszOpciones.map((mmszO) => mmszO.replace(/^\*/, '')),
+    mmszAnswer,
+    mmszExplain,
   };
 }
 
-export const mmszCompleta = (prompt: string, code: string, answers: string[], explain: string): MmszExercise => ({
-  type: 'fill',
-  prompt,
-  code: mmszLimpio(code),
-  answers,
-  explain,
+export const mmszCompleta = (mmszPrompt: string, mmszCode: string, mmszAnswers: string[], mmszExplain: string): MmszExercise => ({
+  mmszType: 'fill',
+  mmszPrompt,
+  mmszCode: mmszLimpio(mmszCode),
+  mmszAnswers,
+  mmszExplain,
 });
 
-export const mmszOrdena = (prompt: string, lines: string[], explain: string): MmszExercise => ({
-  type: 'order',
-  prompt,
-  lines,
-  explain,
+export const mmszOrdena = (mmszPrompt: string, mmszLines: string[], mmszExplain: string): MmszExercise => ({
+  mmszType: 'order',
+  mmszPrompt,
+  mmszLines,
+  mmszExplain,
 });
 
 export const mmszEscribe = (
-  prompt: string,
-  starter: string,
-  expectedOutput: string,
-  solucion: string,
+  mmszPrompt: string,
+  mmszStarter: string,
+  mmszExpectedOutput: string,
+  mmszSolucion: string,
 ): MmszExercise => ({
-  type: 'code',
-  prompt,
-  starter: starter ? mmszLimpio(starter) + '\n' : '',
-  expectedOutput: mmszLimpio(expectedOutput),
-  solucion: mmszLimpio(solucion),
-  explain: `Una solución:\n${mmszLimpio(solucion)}`,
+  mmszType: 'code',
+  mmszPrompt,
+  mmszStarter: mmszStarter ? mmszLimpio(mmszStarter) + '\n' : '',
+  mmszExpectedOutput: mmszLimpio(mmszExpectedOutput),
+  mmszSolucion: mmszLimpio(mmszSolucion),
+  mmszExplain: `Una solución:\n${mmszLimpio(mmszSolucion)}`,
 });
 
-/* ---------- Lecciones y unidades ---------- */
-
 export function mmszLeccion(
-  id: string,
-  title: string,
-  intro: string,
-  items: MmszSinId<MmszItem>[],
-  exercises: MmszExercise[],
+  mmszId: string,
+  mmszTitle: string,
+  mmszIntro: string,
+  mmszItems: MmszSinId<MmszItem>[],
+  mmszExercises: MmszExercise[],
 ): MmszLesson {
   return {
-    id,
-    title,
-    intro,
-    items: items.map((it, i) => ({ ...it, id: `${id}-${i + 1}` }) as MmszItem),
-    exercises,
+    mmszId,
+    mmszTitle,
+    mmszIntro,
+    mmszItems: mmszItems.map((mmszIt, mmszI) => ({ ...mmszIt, mmszId: `${mmszId}-${mmszI + 1}` }) as MmszItem),
+    mmszExercises,
   };
 }
 
 export const mmszUnidad = (
-  nivel: MmszNivel,
-  title: string,
-  description: string,
-  lessons: MmszLesson[],
-): MmszUnit => ({ nivel, title, description, lessons });
+  mmszNivel: MmszNivel,
+  mmszTitle: string,
+  mmszDescription: string,
+  mmszLessons: MmszLesson[],
+): MmszUnit => ({ mmszNivel, mmszTitle, mmszDescription, mmszLessons });

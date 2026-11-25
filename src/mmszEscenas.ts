@@ -1,64 +1,57 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Convierte las lecturas de una lección en "escenas" para la lección animada:
-// cada escena tiene un texto que aparece, código que se escribe solo y la narración.
 import { mmszTextoHablado } from './components/MmszLectorVoz';
 import type { MmszRecuerdo } from './types';
 
 export interface MmszEscena {
-  titular?: string;
-  texto?: string; // texto con formato simple («código», **negrita**), viñetas con "• "
-  codigo?: string;
-  ejecutable?: boolean;
-  narracion: string[]; // frases que dice la voz (también se muestran como subtítulos)
+  mmszTitular?: string;
+  mmszTexto?: string;
+  mmszCodigo?: string;
+  mmszEjecutable?: boolean;
+  mmszNarracion: string[];
 }
 
 type MmszBloque =
-  | { tipo: 'h' | 'p' | 'nota'; texto: string }
-  | { tipo: 'lista'; items: string[] }
-  | { tipo: 'codigo'; codigo: string; ejecutable: boolean };
+  | { mmszTipo: 'h' | 'p' | 'nota'; mmszTexto: string }
+  | { mmszTipo: 'lista'; mmszItems: string[] }
+  | { mmszTipo: 'codigo'; mmszCodigo: string; mmszEjecutable: boolean };
 
 function mmszBloques(mmszTexto: string): MmszBloque[] {
   const mmszLineas = mmszTexto.split('\n');
   const mmszSalida: MmszBloque[] = [];
   let mmszParrafo: string[] = [];
   const mmszCerrar = () => {
-    if (mmszParrafo.length) mmszSalida.push({ tipo: 'p', texto: mmszParrafo.join(' ') });
+    if (mmszParrafo.length) mmszSalida.push({ mmszTipo: 'p', mmszTexto: mmszParrafo.join(' ') });
     mmszParrafo = [];
   };
-  for (let i = 0; i < mmszLineas.length; i++) {
-    const l = mmszLineas[i];
-    if (l.startsWith('~~~') || l.startsWith('```')) {
+  for (let mmszI = 0; mmszI < mmszLineas.length; mmszI++) {
+    const mmszL = mmszLineas[mmszI];
+    if (mmszL.startsWith('~~~') || mmszL.startsWith('```')) {
       mmszCerrar();
-      const mmszCerca = l.slice(0, 3);
-      const mmszEjecutable = l.slice(3).trim() === 'run';
+      const mmszCerca = mmszL.slice(0, 3);
+      const mmszEjecutable = mmszL.slice(3).trim() === 'run';
       const mmszCodigo: string[] = [];
-      for (i++; i < mmszLineas.length && !mmszLineas[i].startsWith(mmszCerca); i++) mmszCodigo.push(mmszLineas[i]);
-      mmszSalida.push({ tipo: 'codigo', codigo: mmszCodigo.join('\n'), ejecutable: mmszEjecutable });
-    } else if (l.startsWith('- ')) {
+      for (mmszI++; mmszI < mmszLineas.length && !mmszLineas[mmszI].startsWith(mmszCerca); mmszI++) mmszCodigo.push(mmszLineas[mmszI]);
+      mmszSalida.push({ mmszTipo: 'codigo', mmszCodigo: mmszCodigo.join('\n'), mmszEjecutable });
+    } else if (mmszL.startsWith('- ')) {
       mmszCerrar();
-      const u = mmszSalida[mmszSalida.length - 1];
-      if (u?.tipo === 'lista') u.items.push(l.slice(2));
-      else mmszSalida.push({ tipo: 'lista', items: [l.slice(2)] });
-    } else if (l.startsWith('### ')) {
+      const mmszU = mmszSalida[mmszSalida.length - 1];
+      if (mmszU?.mmszTipo === 'lista') mmszU.mmszItems.push(mmszL.slice(2));
+      else mmszSalida.push({ mmszTipo: 'lista', mmszItems: [mmszL.slice(2)] });
+    } else if (mmszL.startsWith('### ')) {
       mmszCerrar();
-      mmszSalida.push({ tipo: 'h', texto: l.slice(4) });
-    } else if (l.startsWith('> ')) {
+      mmszSalida.push({ mmszTipo: 'h', mmszTexto: mmszL.slice(4) });
+    } else if (mmszL.startsWith('> ')) {
       mmszCerrar();
-      mmszSalida.push({ tipo: 'nota', texto: l.slice(2) });
-    } else if (!l.trim()) {
+      mmszSalida.push({ mmszTipo: 'nota', mmszTexto: mmszL.slice(2) });
+    } else if (!mmszL.trim()) {
       mmszCerrar();
     } else {
-      mmszParrafo.push(l.trim());
+      mmszParrafo.push(mmszL.trim());
     }
   }
   mmszCerrar();
   return mmszSalida;
 }
 
-/**
- * Arma las escenas: el párrafo que explica un código se muestra junto a ese código,
- * así la voz explica mientras el código se escribe.
- */
 export function mmszCrearEscenas(
   mmszTitulo: string,
   mmszIntro: string,
@@ -66,54 +59,52 @@ export function mmszCrearEscenas(
   mmszRecuerdo?: MmszRecuerdo,
 ): MmszEscena[] {
   const mmszLista: MmszEscena[] = [];
-  // Antes de empezar, se recuerda lo que se vio en la lección anterior.
   if (mmszRecuerdo) {
     mmszLista.push({
-      titular: '¿Recuerdas?',
-      texto: `En la lección anterior, **${mmszRecuerdo.leccion}**, aprendiste: ${mmszRecuerdo.resumen}
+      mmszTitular: '¿Recuerdas?',
+      mmszTexto: `En la lección anterior, **${mmszRecuerdo.mmszLeccion}**, aprendiste: ${mmszRecuerdo.mmszResumen}
 
 Hoy vamos a construir sobre eso.`,
-      narracion: mmszTextoHablado(
-        `¿Recuerdas lo que hiciste en la lección ${mmszRecuerdo.leccion}? ${mmszRecuerdo.resumen} Hoy vamos a construir sobre eso.`,
+      mmszNarracion: mmszTextoHablado(
+        `¿Recuerdas lo que hiciste en la lección ${mmszRecuerdo.mmszLeccion}? ${mmszRecuerdo.mmszResumen} Hoy vamos a construir sobre eso.`,
       ),
     });
   }
-  mmszLista.push({ titular: mmszTitulo, texto: mmszIntro, narracion: mmszTextoHablado(`${mmszTitulo}. ${mmszIntro}`) });
+  mmszLista.push({ mmszTitular: mmszTitulo, mmszTexto: mmszIntro, mmszNarracion: mmszTextoHablado(`${mmszTitulo}. ${mmszIntro}`) });
   const mmszPrimera = mmszLista[mmszLista.length - 1];
   const mmszActual = () => mmszLista[mmszLista.length - 1];
 
   for (const mmszLectura of mmszLecturas) {
-    for (const b of mmszBloques(mmszLectura)) {
-      if (b.tipo === 'h') {
-        mmszLista.push({ titular: b.texto, narracion: mmszTextoHablado(b.texto) });
-      } else if (b.tipo === 'codigo') {
-        const e = mmszActual();
-        if (e.texto && !e.codigo && e !== mmszPrimera) {
-          e.codigo = b.codigo;
-          e.ejecutable = b.ejecutable;
+    for (const mmszB of mmszBloques(mmszLectura)) {
+      if (mmszB.mmszTipo === 'h') {
+        mmszLista.push({ mmszTitular: mmszB.mmszTexto, mmszNarracion: mmszTextoHablado(mmszB.mmszTexto) });
+      } else if (mmszB.mmszTipo === 'codigo') {
+        const mmszE = mmszActual();
+        if (mmszE.mmszTexto && !mmszE.mmszCodigo && mmszE !== mmszPrimera) {
+          mmszE.mmszCodigo = mmszB.mmszCodigo;
+          mmszE.mmszEjecutable = mmszB.mmszEjecutable;
         } else {
-          mmszLista.push({ codigo: b.codigo, ejecutable: b.ejecutable, narracion: ['Observa este ejemplo de código.'] });
+          mmszLista.push({ mmszCodigo: mmszB.mmszCodigo, mmszEjecutable: mmszB.mmszEjecutable, mmszNarracion: ['Observa este ejemplo de código.'] });
         }
       } else {
         const mmszTexto =
-          b.tipo === 'lista' ? b.items.map((t) => `• ${t}`).join('\n') : b.tipo === 'nota' ? `💡 ${b.texto}` : b.texto;
-        const mmszVoz = mmszTextoHablado(b.tipo === 'lista' ? b.items.join('.\n') : b.tipo === 'nota' ? `Nota: ${b.texto}` : b.texto);
-        const e = mmszActual();
-        // Un subtítulo sin texto todavía recibe el párrafo que lo sigue.
-        if (e.titular && !e.texto && !e.codigo) {
-          e.texto = mmszTexto;
-          e.narracion.push(...mmszVoz);
+          mmszB.mmszTipo === 'lista' ? mmszB.mmszItems.map((mmszT) => `• ${mmszT}`).join('\n') : mmszB.mmszTipo === 'nota' ? `💡 ${mmszB.mmszTexto}` : mmszB.mmszTexto;
+        const mmszVoz = mmszTextoHablado(mmszB.mmszTipo === 'lista' ? mmszB.mmszItems.join('.\n') : mmszB.mmszTipo === 'nota' ? `Nota: ${mmszB.mmszTexto}` : mmszB.mmszTexto);
+        const mmszE = mmszActual();
+        if (mmszE.mmszTitular && !mmszE.mmszTexto && !mmszE.mmszCodigo) {
+          mmszE.mmszTexto = mmszTexto;
+          mmszE.mmszNarracion.push(...mmszVoz);
         } else {
-          mmszLista.push({ texto: mmszTexto, narracion: mmszVoz });
+          mmszLista.push({ mmszTexto, mmszNarracion: mmszVoz });
         }
       }
     }
   }
 
   mmszLista.push({
-    titular: '¡Muy bien!',
-    texto: 'Ya viste lo esencial de esta lección. Ahora ponlo en práctica con el desafío y la práctica.',
-    narracion: ['¡Muy bien!', 'Ya viste lo esencial de esta lección.', 'Ahora ponlo en práctica con el desafío y la práctica.'],
+    mmszTitular: '¡Muy bien!',
+    mmszTexto: 'Ya viste lo esencial de esta lección. Ahora ponlo en práctica con el desafío y la práctica.',
+    mmszNarracion: ['¡Muy bien!', 'Ya viste lo esencial de esta lección.', 'Ahora ponlo en práctica con el desafío y la práctica.'],
   });
   return mmszLista;
 }

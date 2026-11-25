@@ -1,5 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Curso de JavaScript: de lo básico a lo avanzado (9 unidades).
 import type { MmszCourse } from '../types';
 import {
   mmszCompleta,
@@ -17,13 +15,12 @@ import {
 } from './mmszAutor';
 
 export const mmszJavascript: MmszCourse = {
-  id: 'javascript',
-  name: 'JavaScript',
-  tagline: 'El lenguaje de la web',
-  color: '#e8b83a',
-  icon: '⚡',
-  units: [
-    /* =============================== BÁSICO =============================== */
+  mmszId: 'javascript',
+  mmszName: 'JavaScript',
+  mmszTagline: 'El lenguaje de la web',
+  mmszColor: '#e8b83a',
+  mmszIcon: '⚡',
+  mmszUnits: [
     mmszUnidad('Básico', 'Primeros pasos', 'Qué es JavaScript, cómo mostrar mensajes y cómo guardar datos con let y const.', [
       mmszLeccion('js-1-1', 'Hola, mundo', 'Mostrar mensajes con console.log y escribir comentarios.', [
         mmszLectura('¿Qué es JavaScript?', `
@@ -59,17 +56,17 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Saluda', `
             Muestra exactamente «Hola, soy estudiante».
           `, {
-            inicio: '// Escribe tu código aquí\n',
-            pista: 'console.log("...");',
-            salida: 'Hola, soy estudiante',
-            requiere: ['console.log'],
-            solucion: 'console.log("Hola, soy estudiante");',
+            mmszInicio: '// Escribe tu código aquí\n',
+            mmszPista: 'console.log("...");',
+            mmszSalida: 'Hola, soy estudiante',
+            mmszRequiere: ['console.log'],
+            mmszSolucion: 'console.log("Hola, soy estudiante");',
           }),
           mmszPaso('Más líneas', `
             Agrega dos líneas para mostrar también «Estudio Ingeniería de Sistemas» y «Me gusta programar».
           `, {
-            salida: 'Hola, soy estudiante\nEstudio Ingeniería de Sistemas\nMe gusta programar',
-            solucion: 'console.log("Hola, soy estudiante");\nconsole.log("Estudio Ingeniería de Sistemas");\nconsole.log("Me gusta programar");',
+            mmszSalida: 'Hola, soy estudiante\nEstudio Ingeniería de Sistemas\nMe gusta programar',
+            mmszSolucion: 'console.log("Hola, soy estudiante");\nconsole.log("Estudio Ingeniería de Sistemas");\nconsole.log("Me gusta programar");',
           }),
         ]),
       ], [
@@ -113,17 +110,17 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Crea las variables', `
             Crea «const nombre = "Luis"», «let ciclo = 3» y «const promedio = 15.5». Muéstralas en ese orden, cada una en su propia línea.
           `, {
-            inicio: '',
-            salida: 'Luis\n3\n15.5',
-            requiere: ['const nombre', 'let ciclo'],
-            solucion: 'const nombre = "Luis";\nlet ciclo = 3;\nconst promedio = 15.5;\nconsole.log(nombre);\nconsole.log(ciclo);\nconsole.log(promedio);',
+            mmszInicio: '',
+            mmszSalida: 'Luis\n3\n15.5',
+            mmszRequiere: ['const nombre', 'let ciclo'],
+            mmszSolucion: 'const nombre = "Luis";\nlet ciclo = 3;\nconst promedio = 15.5;\nconsole.log(nombre);\nconsole.log(ciclo);\nconsole.log(promedio);',
           }),
           mmszPaso('Siguiente ciclo', `
             Antes de mostrar, aumenta «ciclo» en 1 («ciclo = ciclo + 1»).
           `, {
-            salida: 'Luis\n4\n15.5',
-            requiere: ['ciclo = ciclo + 1'],
-            solucion: 'const nombre = "Luis";\nlet ciclo = 3;\nconst promedio = 15.5;\nciclo = ciclo + 1;\nconsole.log(nombre);\nconsole.log(ciclo);\nconsole.log(promedio);',
+            mmszSalida: 'Luis\n4\n15.5',
+            mmszRequiere: ['ciclo = ciclo + 1'],
+            mmszSolucion: 'const nombre = "Luis";\nlet ciclo = 3;\nconst promedio = 15.5;\nciclo = ciclo + 1;\nconsole.log(nombre);\nconsole.log(ciclo);\nconsole.log(promedio);',
           }),
         ]),
         mmszProyecto('ficha personal', [
@@ -138,16 +135,16 @@ export const mmszJavascript: MmszCourse = {
 
             Usa «console.log("Nombre:", nombre)».
           `, {
-            inicio: '',
-            salida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20',
-            requiere: ['nombre', 'carrera', 'edad'],
-            solucion: 'const nombre = "Mario";\nconst carrera = "Sistemas";\nlet edad = 20;\nconsole.log("Nombre:", nombre);\nconsole.log("Carrera:", carrera);\nconsole.log("Edad:", edad);',
+            mmszInicio: '',
+            mmszSalida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20',
+            mmszRequiere: ['nombre', 'carrera', 'edad'],
+            mmszSolucion: 'const nombre = "Mario";\nconst carrera = "Sistemas";\nlet edad = 20;\nconsole.log("Nombre:", nombre);\nconsole.log("Carrera:", carrera);\nconsole.log("Edad:", edad);',
           }),
           mmszPaso('Cumpleaños', `
             Suma 1 a «edad» y muestra «Edad el próximo año: 21». (Si declaraste edad con «const», cámbiala a «let».)
           `, {
-            salida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20\nEdad el próximo año: 21',
-            solucion: 'const nombre = "Mario";\nconst carrera = "Sistemas";\nlet edad = 20;\nconsole.log("Nombre:", nombre);\nconsole.log("Carrera:", carrera);\nconsole.log("Edad:", edad);\nedad = edad + 1;\nconsole.log("Edad el próximo año:", edad);',
+            mmszSalida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20\nEdad el próximo año: 21',
+            mmszSolucion: 'const nombre = "Mario";\nconst carrera = "Sistemas";\nlet edad = 20;\nconsole.log("Nombre:", nombre);\nconsole.log("Carrera:", carrera);\nconsole.log("Edad:", edad);\nedad = edad + 1;\nconsole.log("Edad el próximo año:", edad);',
           }),
         ]),
         mmszRepaso('primeros pasos', `
@@ -196,18 +193,18 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Promedio', `
             Con «n1 = 14», «n2 = 17» y «n3 = 11», calcula el promedio y muéstralo.
           `, {
-            inicio: 'const n1 = 14;\nconst n2 = 17;\nconst n3 = 11;\n',
-            salida: '14',
-            requiere: ['promedio'],
-            solucion: 'const n1 = 14;\nconst n2 = 17;\nconst n3 = 11;\nconst promedio = (n1 + n2 + n3) / 3;\nconsole.log(promedio);',
+            mmszInicio: 'const n1 = 14;\nconst n2 = 17;\nconst n3 = 11;\n',
+            mmszSalida: '14',
+            mmszRequiere: ['promedio'],
+            mmszSolucion: 'const n1 = 14;\nconst n2 = 17;\nconst n3 = 11;\nconst promedio = (n1 + n2 + n3) / 3;\nconsole.log(promedio);',
           }),
           mmszPaso('Redondeo', `
             Ahora calcula el promedio de «13, 15 y 15» en una variable «otro» y muéstralo redondeado con «Math.round()».
           `, {
-            pista: 'console.log(Math.round(otro));',
-            salida: '14\n14',
-            requiere: ['Math.round'],
-            solucion: 'const n1 = 14;\nconst n2 = 17;\nconst n3 = 11;\nconst promedio = (n1 + n2 + n3) / 3;\nconsole.log(promedio);\nconst otro = (13 + 15 + 15) / 3;\nconsole.log(Math.round(otro));',
+            mmszPista: 'console.log(Math.round(otro));',
+            mmszSalida: '14\n14',
+            mmszRequiere: ['Math.round'],
+            mmszSolucion: 'const n1 = 14;\nconst n2 = 17;\nconst n3 = 11;\nconst promedio = (n1 + n2 + n3) / 3;\nconsole.log(promedio);\nconst otro = (13 + 15 + 15) / 3;\nconsole.log(Math.round(otro));',
           }),
         ]),
       ], [
@@ -253,34 +250,34 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Total', `
             Con «producto = "Cuaderno"», «precio = 4.5» y «cantidad = 3», calcula «total» y muestra con un template literal: «Cuaderno x3 = 13.5».
           `, {
-            inicio: 'const producto = "Cuaderno";\nconst precio = 4.5;\nconst cantidad = 3;\n',
-            pista: 'console.log(`${producto} x${cantidad} = ${total}`);',
-            salida: 'Cuaderno x3 = 13.5',
-            requiere: ['`', 'total'],
-            solucion: 'const producto = "Cuaderno";\nconst precio = 4.5;\nconst cantidad = 3;\nconst total = precio * cantidad;\nconsole.log(`${producto} x${cantidad} = ${total}`);',
+            mmszInicio: 'const producto = "Cuaderno";\nconst precio = 4.5;\nconst cantidad = 3;\n',
+            mmszPista: 'console.log(`${producto} x${cantidad} = ${total}`);',
+            mmszSalida: 'Cuaderno x3 = 13.5',
+            mmszRequiere: ['`', 'total'],
+            mmszSolucion: 'const producto = "Cuaderno";\nconst precio = 4.5;\nconst cantidad = 3;\nconst total = precio * cantidad;\nconsole.log(`${producto} x${cantidad} = ${total}`);',
           }),
           mmszPaso('Con IGV', `
             Muestra el total con 18% de IGV y 2 decimales usando «toFixed(2)»: «Con IGV: 15.93».
           `, {
-            salida: 'Cuaderno x3 = 13.5\nCon IGV: 15.93',
-            requiere: ['toFixed'],
-            solucion: 'const producto = "Cuaderno";\nconst precio = 4.5;\nconst cantidad = 3;\nconst total = precio * cantidad;\nconsole.log(`${producto} x${cantidad} = ${total}`);\nconsole.log(`Con IGV: ${(total * 1.18).toFixed(2)}`);',
+            mmszSalida: 'Cuaderno x3 = 13.5\nCon IGV: 15.93',
+            mmszRequiere: ['toFixed'],
+            mmszSolucion: 'const producto = "Cuaderno";\nconst precio = 4.5;\nconst cantidad = 3;\nconst total = precio * cantidad;\nconsole.log(`${producto} x${cantidad} = ${total}`);\nconsole.log(`Con IGV: ${(total * 1.18).toFixed(2)}`);',
           }),
         ]),
         mmszProyecto('generador de usuario', [
           mmszPaso('Usuario', `
             Con «nombre = "Mario"» y «apellido = "Soto"», genera un usuario con la primera letra del nombre y el apellido en minúsculas: «msoto». Usa «nombre[0]» y «toLowerCase()».
           `, {
-            inicio: 'const nombre = "Mario";\nconst apellido = "Soto";\n',
-            salida: 'msoto',
-            requiere: ['toLowerCase'],
-            solucion: 'const nombre = "Mario";\nconst apellido = "Soto";\nconst usuario = (nombre[0] + apellido).toLowerCase();\nconsole.log(usuario);',
+            mmszInicio: 'const nombre = "Mario";\nconst apellido = "Soto";\n',
+            mmszSalida: 'msoto',
+            mmszRequiere: ['toLowerCase'],
+            mmszSolucion: 'const nombre = "Mario";\nconst apellido = "Soto";\nconst usuario = (nombre[0] + apellido).toLowerCase();\nconsole.log(usuario);',
           }),
           mmszPaso('Correo', `
             Muestra también el correo «msoto@novexa.edu» con un template literal.
           `, {
-            salida: 'msoto\nmsoto@novexa.edu',
-            solucion: 'const nombre = "Mario";\nconst apellido = "Soto";\nconst usuario = (nombre[0] + apellido).toLowerCase();\nconsole.log(usuario);\nconsole.log(`${usuario}@novexa.edu`);',
+            mmszSalida: 'msoto\nmsoto@novexa.edu',
+            mmszSolucion: 'const nombre = "Mario";\nconst apellido = "Soto";\nconst usuario = (nombre[0] + apellido).toLowerCase();\nconsole.log(usuario);\nconsole.log(`${usuario}@novexa.edu`);',
           }),
         ]),
         mmszRepaso('operadores y textos', `
@@ -330,17 +327,17 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Mayor de edad', `
             Con «edad = 17», muestra si la edad es mayor o igual a 18.
           `, {
-            inicio: 'const edad = 17;\n',
-            salida: 'false',
-            requiere: ['>='],
-            solucion: 'const edad = 17;\nconsole.log(edad >= 18);',
+            mmszInicio: 'const edad = 17;\n',
+            mmszSalida: 'false',
+            mmszRequiere: ['>='],
+            mmszSolucion: 'const edad = 17;\nconsole.log(edad >= 18);',
           }),
           mmszPaso('Adolescente', `
             Muestra si la edad está entre 13 y 19 (incluidos) usando «&&».
           `, {
-            salida: 'false\ntrue',
-            requiere: ['&&'],
-            solucion: 'const edad = 17;\nconsole.log(edad >= 18);\nconsole.log(edad >= 13 && edad <= 19);',
+            mmszSalida: 'false\ntrue',
+            mmszRequiere: ['&&'],
+            mmszSolucion: 'const edad = 17;\nconsole.log(edad >= 18);\nconsole.log(edad >= 13 && edad <= 19);',
           }),
         ]),
       ], [
@@ -396,36 +393,36 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Revisa el número', `
             Con «numero = 7», usa «if/else» y «%» para mostrar «7 es impar» (o «es par»). Usa template literals.
           `, {
-            inicio: 'const numero = 7;\n',
-            salida: '7 es impar',
-            requiere: ['if', 'else', '%'],
-            solucion: 'const numero = 7;\nif (numero % 2 === 0) {\n  console.log(`${numero} es par`);\n} else {\n  console.log(`${numero} es impar`);\n}',
+            mmszInicio: 'const numero = 7;\n',
+            mmszSalida: '7 es impar',
+            mmszRequiere: ['if', 'else', '%'],
+            mmszSolucion: 'const numero = 7;\nif (numero % 2 === 0) {\n  console.log(`${numero} es par`);\n} else {\n  console.log(`${numero} es impar`);\n}',
           }),
           mmszPaso('Con ternario', `
             Agrega una línea que haga lo mismo con el operador ternario para «numero + 1».
           `, {
-            pista: 'const n = numero + 1;\nconsole.log(n % 2 === 0 ? `${n} es par` : `${n} es impar`);',
-            salida: '7 es impar\n8 es par',
-            requiere: ['?'],
-            solucion: 'const numero = 7;\nif (numero % 2 === 0) {\n  console.log(`${numero} es par`);\n} else {\n  console.log(`${numero} es impar`);\n}\nconst n = numero + 1;\nconsole.log(n % 2 === 0 ? `${n} es par` : `${n} es impar`);',
+            mmszPista: 'const n = numero + 1;\nconsole.log(n % 2 === 0 ? `${n} es par` : `${n} es impar`);',
+            mmszSalida: '7 es impar\n8 es par',
+            mmszRequiere: ['?'],
+            mmszSolucion: 'const numero = 7;\nif (numero % 2 === 0) {\n  console.log(`${numero} es par`);\n} else {\n  console.log(`${numero} es impar`);\n}\nconst n = numero + 1;\nconsole.log(n % 2 === 0 ? `${n} es par` : `${n} es impar`);',
           }),
         ]),
         mmszProyecto('sistema de calificaciones', [
           mmszPaso('Letra', `
             Con «nota = 14», muestra «A» (18+), «B» (14-17), «C» (11-13) o «D» (menos de 11) usando «if / else if / else».
           `, {
-            inicio: 'const nota = 14;\n',
-            salida: 'B',
-            requiere: ['else if'],
-            solucion: 'const nota = 14;\nif (nota >= 18) {\n  console.log("A");\n} else if (nota >= 14) {\n  console.log("B");\n} else if (nota >= 11) {\n  console.log("C");\n} else {\n  console.log("D");\n}',
+            mmszInicio: 'const nota = 14;\n',
+            mmszSalida: 'B',
+            mmszRequiere: ['else if'],
+            mmszSolucion: 'const nota = 14;\nif (nota >= 18) {\n  console.log("A");\n} else if (nota >= 14) {\n  console.log("B");\n} else if (nota >= 11) {\n  console.log("C");\n} else {\n  console.log("D");\n}',
           }),
           mmszPaso('Mensaje con switch', `
             Guarda la letra en una variable «letra» y usa «switch (letra)» para mostrar «Muy bien» para A y B, y «Sigue practicando» para las demás.
           `, {
-            pista: 'case "A":\ncase "B":\n  console.log("Muy bien");\n  break;',
-            salida: 'B\nMuy bien',
-            requiere: ['switch', 'case'],
-            solucion: 'const nota = 14;\nlet letra;\nif (nota >= 18) {\n  letra = "A";\n} else if (nota >= 14) {\n  letra = "B";\n} else if (nota >= 11) {\n  letra = "C";\n} else {\n  letra = "D";\n}\nconsole.log(letra);\nswitch (letra) {\n  case "A":\n  case "B":\n    console.log("Muy bien");\n    break;\n  default:\n    console.log("Sigue practicando");\n}',
+            mmszPista: 'case "A":\ncase "B":\n  console.log("Muy bien");\n  break;',
+            mmszSalida: 'B\nMuy bien',
+            mmszRequiere: ['switch', 'case'],
+            mmszSolucion: 'const nota = 14;\nlet letra;\nif (nota >= 18) {\n  letra = "A";\n} else if (nota >= 14) {\n  letra = "B";\n} else if (nota >= 11) {\n  letra = "C";\n} else {\n  letra = "D";\n}\nconsole.log(letra);\nswitch (letra) {\n  case "A":\n  case "B":\n    console.log("Muy bien");\n    break;\n  default:\n    console.log("Sigue practicando");\n}',
           }),
         ]),
         mmszRepaso('decisiones', `
@@ -444,7 +441,6 @@ export const mmszJavascript: MmszCourse = {
       ]),
     ]),
 
-    /* ============================= INTERMEDIO ============================= */
     mmszUnidad('Intermedio', 'Bucles', 'Repetir instrucciones con for, while y do...while.', [
       mmszLeccion('js-4-1', 'Bucle for', 'Inicio, condición y paso; acumuladores.', [
         mmszLectura('El bucle for', `
@@ -481,17 +477,17 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Tabla del 7', `
             Muestra la tabla del 7 del 1 al 5 con el formato «7 x 1 = 7».
           `, {
-            inicio: 'const numero = 7;\n',
-            salida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35',
-            requiere: ['for'],
-            solucion: 'const numero = 7;\nfor (let i = 1; i <= 5; i++) {\n  console.log(`${numero} x ${i} = ${numero * i}`);\n}',
+            mmszInicio: 'const numero = 7;\n',
+            mmszSalida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35',
+            mmszRequiere: ['for'],
+            mmszSolucion: 'const numero = 7;\nfor (let i = 1; i <= 5; i++) {\n  console.log(`${numero} x ${i} = ${numero * i}`);\n}',
           }),
           mmszPaso('Suma', `
             Acumula los resultados en «suma» y muéstrala al final: «Suma: 105».
           `, {
-            salida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\nSuma: 105',
-            requiere: ['suma'],
-            solucion: 'const numero = 7;\nlet suma = 0;\nfor (let i = 1; i <= 5; i++) {\n  console.log(`${numero} x ${i} = ${numero * i}`);\n  suma += numero * i;\n}\nconsole.log(`Suma: ${suma}`);',
+            mmszSalida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\nSuma: 105',
+            mmszRequiere: ['suma'],
+            mmszSolucion: 'const numero = 7;\nlet suma = 0;\nfor (let i = 1; i <= 5; i++) {\n  console.log(`${numero} x ${i} = ${numero * i}`);\n  suma += numero * i;\n}\nconsole.log(`Suma: ${suma}`);',
           }),
         ]),
       ], [
@@ -537,26 +533,26 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Meses', `
             Ahorras 150 por mes y quieres llegar a 1000. Usa «while» y muestra «Meses: 7».
           `, {
-            inicio: 'let ahorro = 0;\nlet meses = 0;\n',
-            salida: 'Meses: 7',
-            requiere: ['while'],
-            solucion: 'let ahorro = 0;\nlet meses = 0;\nwhile (ahorro < 1000) {\n  ahorro += 150;\n  meses++;\n}\nconsole.log(`Meses: ${meses}`);',
+            mmszInicio: 'let ahorro = 0;\nlet meses = 0;\n',
+            mmszSalida: 'Meses: 7',
+            mmszRequiere: ['while'],
+            mmszSolucion: 'let ahorro = 0;\nlet meses = 0;\nwhile (ahorro < 1000) {\n  ahorro += 150;\n  meses++;\n}\nconsole.log(`Meses: ${meses}`);',
           }),
         ]),
         mmszProyecto('números primos', [
           mmszPaso('¿Es primo?', `
             Con «n = 29», usa un bucle que pruebe divisores desde 2 hasta n-1. Si alguno divide exacto, marca «esPrimo = false» y sal con «break». Muestra «29 es primo: true».
           `, {
-            inicio: 'const n = 29;\nlet esPrimo = true;\n',
-            salida: '29 es primo: true',
-            requiere: ['break'],
-            solucion: 'const n = 29;\nlet esPrimo = true;\nfor (let d = 2; d < n; d++) {\n  if (n % d === 0) {\n    esPrimo = false;\n    break;\n  }\n}\nconsole.log(`${n} es primo: ${esPrimo}`);',
+            mmszInicio: 'const n = 29;\nlet esPrimo = true;\n',
+            mmszSalida: '29 es primo: true',
+            mmszRequiere: ['break'],
+            mmszSolucion: 'const n = 29;\nlet esPrimo = true;\nfor (let d = 2; d < n; d++) {\n  if (n % d === 0) {\n    esPrimo = false;\n    break;\n  }\n}\nconsole.log(`${n} es primo: ${esPrimo}`);',
           }),
           mmszPaso('Primos hasta 20', `
             Debajo, muestra en una sola línea los primos del 2 al 20 separados por espacios: «2 3 5 7 11 13 17 19». Usa un bucle dentro de otro y acumula en un texto.
           `, {
-            salida: '29 es primo: true\n2 3 5 7 11 13 17 19',
-            solucion: 'const n = 29;\nlet esPrimo = true;\nfor (let d = 2; d < n; d++) {\n  if (n % d === 0) {\n    esPrimo = false;\n    break;\n  }\n}\nconsole.log(`${n} es primo: ${esPrimo}`);\nlet lista = "";\nfor (let k = 2; k <= 20; k++) {\n  let primo = true;\n  for (let d = 2; d < k; d++) {\n    if (k % d === 0) {\n      primo = false;\n      break;\n    }\n  }\n  if (primo) lista += k + " ";\n}\nconsole.log(lista.trim());',
+            mmszSalida: '29 es primo: true\n2 3 5 7 11 13 17 19',
+            mmszSolucion: 'const n = 29;\nlet esPrimo = true;\nfor (let d = 2; d < n; d++) {\n  if (n % d === 0) {\n    esPrimo = false;\n    break;\n  }\n}\nconsole.log(`${n} es primo: ${esPrimo}`);\nlet lista = "";\nfor (let k = 2; k <= 20; k++) {\n  let primo = true;\n  for (let d = 2; d < k; d++) {\n    if (k % d === 0) {\n      primo = false;\n      break;\n    }\n  }\n  if (primo) lista += k + " ";\n}\nconsole.log(lista.trim());',
           }),
         ]),
         mmszRepaso('bucles', `
@@ -609,17 +605,17 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Agrega', `
             Con «compras = ["pan", "leche"]», agrega «"huevos"» con «push» y muestra «compras.join(", ")».
           `, {
-            inicio: 'const compras = ["pan", "leche"];\n',
-            salida: 'pan, leche, huevos',
-            requiere: ['push'],
-            solucion: 'const compras = ["pan", "leche"];\ncompras.push("huevos");\nconsole.log(compras.join(", "));',
+            mmszInicio: 'const compras = ["pan", "leche"];\n',
+            mmszSalida: 'pan, leche, huevos',
+            mmszRequiere: ['push'],
+            mmszSolucion: 'const compras = ["pan", "leche"];\ncompras.push("huevos");\nconsole.log(compras.join(", "));',
           }),
           mmszPaso('Cuenta', `
             Muestra «Total: 3» usando «length» y si la lista incluye «"queso"» (debe mostrar «false»).
           `, {
-            salida: 'pan, leche, huevos\nTotal: 3\nfalse',
-            requiere: ['length', 'includes'],
-            solucion: 'const compras = ["pan", "leche"];\ncompras.push("huevos");\nconsole.log(compras.join(", "));\nconsole.log(`Total: ${compras.length}`);\nconsole.log(compras.includes("queso"));',
+            mmszSalida: 'pan, leche, huevos\nTotal: 3\nfalse',
+            mmszRequiere: ['length', 'includes'],
+            mmszSolucion: 'const compras = ["pan", "leche"];\ncompras.push("huevos");\nconsole.log(compras.join(", "));\nconsole.log(`Total: ${compras.length}`);\nconsole.log(compras.includes("queso"));',
           }),
         ]),
       ], [
@@ -670,33 +666,33 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Promedio y máximo', `
             Con «notas = [12, 17, 9, 15, 20]», muestra «Promedio: 14.6» y «Mayor: 20» (usa un bucle para sumar y «Math.max(...notas)»).
           `, {
-            inicio: 'const notas = [12, 17, 9, 15, 20];\n',
-            salida: 'Promedio: 14.6\nMayor: 20',
-            requiere: ['for', 'Math.max'],
-            solucion: 'const notas = [12, 17, 9, 15, 20];\nlet suma = 0;\nfor (const n of notas) suma += n;\nconsole.log(`Promedio: ${suma / notas.length}`);\nconsole.log(`Mayor: ${Math.max(...notas)}`);',
+            mmszInicio: 'const notas = [12, 17, 9, 15, 20];\n',
+            mmszSalida: 'Promedio: 14.6\nMayor: 20',
+            mmszRequiere: ['for', 'Math.max'],
+            mmszSolucion: 'const notas = [12, 17, 9, 15, 20];\nlet suma = 0;\nfor (const n of notas) suma += n;\nconsole.log(`Promedio: ${suma / notas.length}`);\nconsole.log(`Mayor: ${Math.max(...notas)}`);',
           }),
           mmszPaso('Aprobados', `
             Cuenta las notas mayores o iguales a 11 y muestra «Aprobados: 4».
           `, {
-            salida: 'Promedio: 14.6\nMayor: 20\nAprobados: 4',
-            solucion: 'const notas = [12, 17, 9, 15, 20];\nlet suma = 0;\nfor (const n of notas) suma += n;\nconsole.log(`Promedio: ${suma / notas.length}`);\nconsole.log(`Mayor: ${Math.max(...notas)}`);\nlet aprobados = 0;\nfor (const n of notas) {\n  if (n >= 11) aprobados++;\n}\nconsole.log(`Aprobados: ${aprobados}`);',
+            mmszSalida: 'Promedio: 14.6\nMayor: 20\nAprobados: 4',
+            mmszSolucion: 'const notas = [12, 17, 9, 15, 20];\nlet suma = 0;\nfor (const n of notas) suma += n;\nconsole.log(`Promedio: ${suma / notas.length}`);\nconsole.log(`Mayor: ${Math.max(...notas)}`);\nlet aprobados = 0;\nfor (const n of notas) {\n  if (n >= 11) aprobados++;\n}\nconsole.log(`Aprobados: ${aprobados}`);',
           }),
         ]),
         mmszProyecto('ranking de puntajes', [
           mmszPaso('Ordena', `
             Con «puntajes = [45, 90, 72, 88, 60]», ordénalos de mayor a menor con «sort((a, b) => b - a)» y muéstralos unidos por espacios.
           `, {
-            inicio: 'const puntajes = [45, 90, 72, 88, 60];\n',
-            salida: '90 88 72 60 45',
-            requiere: ['sort'],
-            solucion: 'const puntajes = [45, 90, 72, 88, 60];\npuntajes.sort((a, b) => b - a);\nconsole.log(puntajes.join(" "));',
+            mmszInicio: 'const puntajes = [45, 90, 72, 88, 60];\n',
+            mmszSalida: '90 88 72 60 45',
+            mmszRequiere: ['sort'],
+            mmszSolucion: 'const puntajes = [45, 90, 72, 88, 60];\npuntajes.sort((a, b) => b - a);\nconsole.log(puntajes.join(" "));',
           }),
           mmszPaso('Podio', `
             Toma los 3 primeros con «slice(0, 3)» y muéstralos con su puesto: «1. 90», «2. 88», «3. 72».
           `, {
-            salida: '90 88 72 60 45\n1. 90\n2. 88\n3. 72',
-            requiere: ['slice'],
-            solucion: 'const puntajes = [45, 90, 72, 88, 60];\npuntajes.sort((a, b) => b - a);\nconsole.log(puntajes.join(" "));\npuntajes.slice(0, 3).forEach((p, i) => {\n  console.log(`${i + 1}. ${p}`);\n});',
+            mmszSalida: '90 88 72 60 45\n1. 90\n2. 88\n3. 72',
+            mmszRequiere: ['slice'],
+            mmszSolucion: 'const puntajes = [45, 90, 72, 88, 60];\npuntajes.sort((a, b) => b - a);\nconsole.log(puntajes.join(" "));\npuntajes.slice(0, 3).forEach((p, i) => {\n  console.log(`${i + 1}. ${p}`);\n});',
           }),
         ]),
         mmszRepaso('arreglos', `
@@ -744,17 +740,17 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Presentación', `
             Crea «presentar(nombre, carrera)» que muestre «Soy Ana y estudio Sistemas» y llámala.
           `, {
-            inicio: '',
-            salida: 'Soy Ana y estudio Sistemas',
-            requiere: ['function presentar'],
-            solucion: 'function presentar(nombre, carrera) {\n  console.log(`Soy ${nombre} y estudio ${carrera}`);\n}\npresentar("Ana", "Sistemas");',
+            mmszInicio: '',
+            mmszSalida: 'Soy Ana y estudio Sistemas',
+            mmszRequiere: ['function presentar'],
+            mmszSolucion: 'function presentar(nombre, carrera) {\n  console.log(`Soy ${nombre} y estudio ${carrera}`);\n}\npresentar("Ana", "Sistemas");',
           }),
           mmszPaso('Por defecto', `
             Haz que «carrera» sea «"Sistemas"» por defecto y agrega «presentar("Luis")».
           `, {
-            salida: 'Soy Ana y estudio Sistemas\nSoy Luis y estudio Sistemas',
-            requiere: ['carrera = "Sistemas"'],
-            solucion: 'function presentar(nombre, carrera = "Sistemas") {\n  console.log(`Soy ${nombre} y estudio ${carrera}`);\n}\npresentar("Ana", "Sistemas");\npresentar("Luis");',
+            mmszSalida: 'Soy Ana y estudio Sistemas\nSoy Luis y estudio Sistemas',
+            mmszRequiere: ['carrera = "Sistemas"'],
+            mmszSolucion: 'function presentar(nombre, carrera = "Sistemas") {\n  console.log(`Soy ${nombre} y estudio ${carrera}`);\n}\npresentar("Ana", "Sistemas");\npresentar("Luis");',
           }),
         ]),
       ], [
@@ -803,32 +799,32 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Operaciones', `
             Crea «calcular(a, b, op)» que devuelva la suma, resta, multiplicación o división según «op». Muestra «calcular(8, 2, "+")» y «calcular(8, 2, "/")».
           `, {
-            inicio: '',
-            salida: '10\n4',
-            requiere: ['return'],
-            solucion: 'function calcular(a, b, op) {\n  if (op === "+") return a + b;\n  if (op === "-") return a - b;\n  if (op === "*") return a * b;\n  if (op === "/") return a / b;\n}\nconsole.log(calcular(8, 2, "+"));\nconsole.log(calcular(8, 2, "/"));',
+            mmszInicio: '',
+            mmszSalida: '10\n4',
+            mmszRequiere: ['return'],
+            mmszSolucion: 'function calcular(a, b, op) {\n  if (op === "+") return a + b;\n  if (op === "-") return a - b;\n  if (op === "*") return a * b;\n  if (op === "/") return a / b;\n}\nconsole.log(calcular(8, 2, "+"));\nconsole.log(calcular(8, 2, "/"));',
           }),
           mmszPaso('Entre cero', `
             Si «op» es «"/"» y «b» es 0, devuelve «"Error"». Agrega «console.log(calcular(5, 0, "/"))».
           `, {
-            salida: '10\n4\nError',
-            solucion: 'function calcular(a, b, op) {\n  if (op === "+") return a + b;\n  if (op === "-") return a - b;\n  if (op === "*") return a * b;\n  if (op === "/") {\n    if (b === 0) return "Error";\n    return a / b;\n  }\n}\nconsole.log(calcular(8, 2, "+"));\nconsole.log(calcular(8, 2, "/"));\nconsole.log(calcular(5, 0, "/"));',
+            mmszSalida: '10\n4\nError',
+            mmszSolucion: 'function calcular(a, b, op) {\n  if (op === "+") return a + b;\n  if (op === "-") return a - b;\n  if (op === "*") return a * b;\n  if (op === "/") {\n    if (b === 0) return "Error";\n    return a / b;\n  }\n}\nconsole.log(calcular(8, 2, "+"));\nconsole.log(calcular(8, 2, "/"));\nconsole.log(calcular(5, 0, "/"));',
           }),
         ]),
         mmszProyecto('conversor de unidades', [
           mmszPaso('Funciones flecha', `
             Crea las funciones flecha «aFahrenheit(c)» (c * 9 / 5 + 32) y «aKelvin(c)» (c + 273.15). Muestra «aFahrenheit(25)» y «aKelvin(25)».
           `, {
-            inicio: '',
-            salida: '77\n298.15',
-            requiere: ['=>'],
-            solucion: 'const aFahrenheit = (c) => c * 9 / 5 + 32;\nconst aKelvin = (c) => c + 273.15;\nconsole.log(aFahrenheit(25));\nconsole.log(aKelvin(25));',
+            mmszInicio: '',
+            mmszSalida: '77\n298.15',
+            mmszRequiere: ['=>'],
+            mmszSolucion: 'const aFahrenheit = (c) => c * 9 / 5 + 32;\nconst aKelvin = (c) => c + 273.15;\nconsole.log(aFahrenheit(25));\nconsole.log(aKelvin(25));',
           }),
           mmszPaso('Tabla', `
             Recorre «[0, 10, 20]» y muestra para cada uno «0°C = 32°F».
           `, {
-            salida: '77\n298.15\n0°C = 32°F\n10°C = 50°F\n20°C = 68°F',
-            solucion: 'const aFahrenheit = (c) => c * 9 / 5 + 32;\nconst aKelvin = (c) => c + 273.15;\nconsole.log(aFahrenheit(25));\nconsole.log(aKelvin(25));\nfor (const c of [0, 10, 20]) {\n  console.log(`${c}°C = ${aFahrenheit(c)}°F`);\n}',
+            mmszSalida: '77\n298.15\n0°C = 32°F\n10°C = 50°F\n20°C = 68°F',
+            mmszSolucion: 'const aFahrenheit = (c) => c * 9 / 5 + 32;\nconst aKelvin = (c) => c + 273.15;\nconsole.log(aFahrenheit(25));\nconsole.log(aKelvin(25));\nfor (const c of [0, 10, 20]) {\n  console.log(`${c}°C = ${aFahrenheit(c)}°F`);\n}',
           }),
         ]),
         mmszRepaso('funciones', `
@@ -846,7 +842,6 @@ export const mmszJavascript: MmszCourse = {
       ]),
     ]),
 
-    /* ============================== AVANZADO ============================== */
     mmszUnidad('Avanzado', 'Objetos', 'Agrupar datos y comportamiento en objetos, y trabajar con arreglos de objetos y JSON.', [
       mmszLeccion('js-7-1', 'Objetos literales', 'Propiedades, métodos, this y recorrer objetos.', [
         mmszLectura('Objetos', `
@@ -893,10 +888,10 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Retirar', `
             Agrega al objeto «cuenta» un método «retirar(monto)» que reste solo si hay saldo; si no, que muestre «Saldo insuficiente». Deposita 100, retira 30, retira 200 y muestra el saldo.
           `, {
-            inicio: 'const cuenta = {\n  titular: "Ana",\n  saldo: 0,\n  depositar(monto) {\n    this.saldo += monto;\n  },\n};\n',
-            salida: 'Saldo insuficiente\n70',
-            requiere: ['retirar'],
-            solucion: 'const cuenta = {\n  titular: "Ana",\n  saldo: 0,\n  depositar(monto) {\n    this.saldo += monto;\n  },\n  retirar(monto) {\n    if (monto <= this.saldo) {\n      this.saldo -= monto;\n    } else {\n      console.log("Saldo insuficiente");\n    }\n  },\n};\ncuenta.depositar(100);\ncuenta.retirar(30);\ncuenta.retirar(200);\nconsole.log(cuenta.saldo);',
+            mmszInicio: 'const cuenta = {\n  titular: "Ana",\n  saldo: 0,\n  depositar(monto) {\n    this.saldo += monto;\n  },\n};\n',
+            mmszSalida: 'Saldo insuficiente\n70',
+            mmszRequiere: ['retirar'],
+            mmszSolucion: 'const cuenta = {\n  titular: "Ana",\n  saldo: 0,\n  depositar(monto) {\n    this.saldo += monto;\n  },\n  retirar(monto) {\n    if (monto <= this.saldo) {\n      this.saldo -= monto;\n    } else {\n      console.log("Saldo insuficiente");\n    }\n  },\n};\ncuenta.depositar(100);\ncuenta.retirar(30);\ncuenta.retirar(200);\nconsole.log(cuenta.saldo);',
           }),
         ]),
       ], [
@@ -939,33 +934,33 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Busca al mejor', `
             Recorre «alumnos» y encuentra el de nota más alta. Muestra «Mejor: Ana (17)».
           `, {
-            inicio: 'const alumnos = [\n  { nombre: "Ana", nota: 17 },\n  { nombre: "Luis", nota: 9 },\n  { nombre: "Rosa", nota: 14 },\n];\n',
-            salida: 'Mejor: Ana (17)',
-            requiere: ['for'],
-            solucion: 'const alumnos = [\n  { nombre: "Ana", nota: 17 },\n  { nombre: "Luis", nota: 9 },\n  { nombre: "Rosa", nota: 14 },\n];\nlet mejor = alumnos[0];\nfor (const a of alumnos) {\n  if (a.nota > mejor.nota) mejor = a;\n}\nconsole.log(`Mejor: ${mejor.nombre} (${mejor.nota})`);',
+            mmszInicio: 'const alumnos = [\n  { nombre: "Ana", nota: 17 },\n  { nombre: "Luis", nota: 9 },\n  { nombre: "Rosa", nota: 14 },\n];\n',
+            mmszSalida: 'Mejor: Ana (17)',
+            mmszRequiere: ['for'],
+            mmszSolucion: 'const alumnos = [\n  { nombre: "Ana", nota: 17 },\n  { nombre: "Luis", nota: 9 },\n  { nombre: "Rosa", nota: 14 },\n];\nlet mejor = alumnos[0];\nfor (const a of alumnos) {\n  if (a.nota > mejor.nota) mejor = a;\n}\nconsole.log(`Mejor: ${mejor.nombre} (${mejor.nota})`);',
           }),
           mmszPaso('A JSON', `
             Muestra el objeto «mejor» convertido a JSON.
           `, {
-            salida: 'Mejor: Ana (17)\n{"nombre":"Ana","nota":17}',
-            requiere: ['JSON.stringify'],
-            solucion: 'const alumnos = [\n  { nombre: "Ana", nota: 17 },\n  { nombre: "Luis", nota: 9 },\n  { nombre: "Rosa", nota: 14 },\n];\nlet mejor = alumnos[0];\nfor (const a of alumnos) {\n  if (a.nota > mejor.nota) mejor = a;\n}\nconsole.log(`Mejor: ${mejor.nombre} (${mejor.nota})`);\nconsole.log(JSON.stringify(mejor));',
+            mmszSalida: 'Mejor: Ana (17)\n{"nombre":"Ana","nota":17}',
+            mmszRequiere: ['JSON.stringify'],
+            mmszSolucion: 'const alumnos = [\n  { nombre: "Ana", nota: 17 },\n  { nombre: "Luis", nota: 9 },\n  { nombre: "Rosa", nota: 14 },\n];\nlet mejor = alumnos[0];\nfor (const a of alumnos) {\n  if (a.nota > mejor.nota) mejor = a;\n}\nconsole.log(`Mejor: ${mejor.nombre} (${mejor.nota})`);\nconsole.log(JSON.stringify(mejor));',
           }),
         ]),
         mmszProyecto('carrito de compras', [
           mmszPaso('Total', `
             Con el arreglo «carrito», calcula el total (precio × cantidad de cada producto) y muestra «Total: 23.1».
           `, {
-            inicio: 'const carrito = [\n  { producto: "Cuaderno", precio: 4.5, cantidad: 3 },\n  { producto: "Lapicero", precio: 1.2, cantidad: 5 },\n  { producto: "Regla", precio: 3.6, cantidad: 1 },\n];\n',
-            salida: 'Total: 23.1',
-            requiere: ['total'],
-            solucion: 'const carrito = [\n  { producto: "Cuaderno", precio: 4.5, cantidad: 3 },\n  { producto: "Lapicero", precio: 1.2, cantidad: 5 },\n  { producto: "Regla", precio: 3.6, cantidad: 1 },\n];\nlet total = 0;\nfor (const item of carrito) {\n  total += item.precio * item.cantidad;\n}\nconsole.log(`Total: ${total.toFixed(1)}`);',
+            mmszInicio: 'const carrito = [\n  { producto: "Cuaderno", precio: 4.5, cantidad: 3 },\n  { producto: "Lapicero", precio: 1.2, cantidad: 5 },\n  { producto: "Regla", precio: 3.6, cantidad: 1 },\n];\n',
+            mmszSalida: 'Total: 23.1',
+            mmszRequiere: ['total'],
+            mmszSolucion: 'const carrito = [\n  { producto: "Cuaderno", precio: 4.5, cantidad: 3 },\n  { producto: "Lapicero", precio: 1.2, cantidad: 5 },\n  { producto: "Regla", precio: 3.6, cantidad: 1 },\n];\nlet total = 0;\nfor (const item of carrito) {\n  total += item.precio * item.cantidad;\n}\nconsole.log(`Total: ${total.toFixed(1)}`);',
           }),
           mmszPaso('Detalle', `
             Antes del total, muestra una línea por producto: «Cuaderno x3 = 13.50» (subtotal con 2 decimales).
           `, {
-            salida: 'Cuaderno x3 = 13.50\nLapicero x5 = 6.00\nRegla x1 = 3.60\nTotal: 23.1',
-            solucion: 'const carrito = [\n  { producto: "Cuaderno", precio: 4.5, cantidad: 3 },\n  { producto: "Lapicero", precio: 1.2, cantidad: 5 },\n  { producto: "Regla", precio: 3.6, cantidad: 1 },\n];\nlet total = 0;\nfor (const item of carrito) {\n  const sub = item.precio * item.cantidad;\n  console.log(`${item.producto} x${item.cantidad} = ${sub.toFixed(2)}`);\n  total += sub;\n}\nconsole.log(`Total: ${total.toFixed(1)}`);',
+            mmszSalida: 'Cuaderno x3 = 13.50\nLapicero x5 = 6.00\nRegla x1 = 3.60\nTotal: 23.1',
+            mmszSolucion: 'const carrito = [\n  { producto: "Cuaderno", precio: 4.5, cantidad: 3 },\n  { producto: "Lapicero", precio: 1.2, cantidad: 5 },\n  { producto: "Regla", precio: 3.6, cantidad: 1 },\n];\nlet total = 0;\nfor (const item of carrito) {\n  const sub = item.precio * item.cantidad;\n  console.log(`${item.producto} x${item.cantidad} = ${sub.toFixed(2)}`);\n  total += sub;\n}\nconsole.log(`Total: ${total.toFixed(1)}`);',
           }),
         ]),
         mmszRepaso('objetos', `
@@ -1020,17 +1015,17 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Aprobados', `
             Con «notas = [15, 8, 18, 10, 20]», usa «filter» para obtener las aprobadas (>= 11) y muéstralas unidas por espacios.
           `, {
-            inicio: 'const notas = [15, 8, 18, 10, 20];\n',
-            salida: '15 18 20',
-            requiere: ['filter'],
-            solucion: 'const notas = [15, 8, 18, 10, 20];\nconst aprobadas = notas.filter((n) => n >= 11);\nconsole.log(aprobadas.join(" "));',
+            mmszInicio: 'const notas = [15, 8, 18, 10, 20];\n',
+            mmszSalida: '15 18 20',
+            mmszRequiere: ['filter'],
+            mmszSolucion: 'const notas = [15, 8, 18, 10, 20];\nconst aprobadas = notas.filter((n) => n >= 11);\nconsole.log(aprobadas.join(" "));',
           }),
           mmszPaso('Promedio con reduce', `
             Calcula el promedio de **todas** las notas con «reduce» y muestra «Promedio: 14.2».
           `, {
-            salida: '15 18 20\nPromedio: 14.2',
-            requiere: ['reduce'],
-            solucion: 'const notas = [15, 8, 18, 10, 20];\nconst aprobadas = notas.filter((n) => n >= 11);\nconsole.log(aprobadas.join(" "));\nconst promedio = notas.reduce((a, n) => a + n, 0) / notas.length;\nconsole.log(`Promedio: ${promedio}`);',
+            mmszSalida: '15 18 20\nPromedio: 14.2',
+            mmszRequiere: ['reduce'],
+            mmszSolucion: 'const notas = [15, 8, 18, 10, 20];\nconst aprobadas = notas.filter((n) => n >= 11);\nconsole.log(aprobadas.join(" "));\nconst promedio = notas.reduce((a, n) => a + n, 0) / notas.length;\nconsole.log(`Promedio: ${promedio}`);',
           }),
         ]),
       ], [
@@ -1080,35 +1075,35 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Extrae datos', `
             Del objeto «usuario», saca «nombre» y «ciudad» con desestructuración y muestra «Ana vive en Lima».
           `, {
-            inicio: 'const usuario = { nombre: "Ana", edad: 22, ciudad: "Lima" };\n',
-            salida: 'Ana vive en Lima',
-            requiere: ['const {'],
-            solucion: 'const usuario = { nombre: "Ana", edad: 22, ciudad: "Lima" };\nconst { nombre, ciudad } = usuario;\nconsole.log(`${nombre} vive en ${ciudad}`);',
+            mmszInicio: 'const usuario = { nombre: "Ana", edad: 22, ciudad: "Lima" };\n',
+            mmszSalida: 'Ana vive en Lima',
+            mmszRequiere: ['const {'],
+            mmszSolucion: 'const usuario = { nombre: "Ana", edad: 22, ciudad: "Lima" };\nconst { nombre, ciudad } = usuario;\nconsole.log(`${nombre} vive en ${ciudad}`);',
           }),
           mmszPaso('Actualiza con spread', `
             Crea «actualizado» copiando «usuario» con spread pero con «ciudad: "Cusco"». Muestra «actualizado.ciudad» y «usuario.ciudad» (el original no cambia).
           `, {
-            salida: 'Ana vive en Lima\nCusco\nLima',
-            requiere: ['...usuario'],
-            solucion: 'const usuario = { nombre: "Ana", edad: 22, ciudad: "Lima" };\nconst { nombre, ciudad } = usuario;\nconsole.log(`${nombre} vive en ${ciudad}`);\nconst actualizado = { ...usuario, ciudad: "Cusco" };\nconsole.log(actualizado.ciudad);\nconsole.log(usuario.ciudad);',
+            mmszSalida: 'Ana vive en Lima\nCusco\nLima',
+            mmszRequiere: ['...usuario'],
+            mmszSolucion: 'const usuario = { nombre: "Ana", edad: 22, ciudad: "Lima" };\nconst { nombre, ciudad } = usuario;\nconsole.log(`${nombre} vive en ${ciudad}`);\nconst actualizado = { ...usuario, ciudad: "Cusco" };\nconsole.log(actualizado.ciudad);\nconsole.log(usuario.ciudad);',
           }),
         ]),
         mmszProyecto('reporte de ventas', [
           mmszPaso('Ventas por vendedor', `
             Con el arreglo «ventas», usa «reduce» para crear un objeto con el total por vendedor y muéstralo con «JSON.stringify». Resultado: «{"Ana":350,"Luis":200}».
           `, {
-            inicio: 'const ventas = [\n  { vendedor: "Ana", monto: 200 },\n  { vendedor: "Luis", monto: 120 },\n  { vendedor: "Ana", monto: 150 },\n  { vendedor: "Luis", monto: 80 },\n];\n',
-            pista: 'const totales = ventas.reduce((acc, { vendedor, monto }) => {\n  acc[vendedor] = (acc[vendedor] || 0) + monto;\n  return acc;\n}, {});',
-            salida: '{"Ana":350,"Luis":200}',
-            requiere: ['reduce'],
-            solucion: 'const ventas = [\n  { vendedor: "Ana", monto: 200 },\n  { vendedor: "Luis", monto: 120 },\n  { vendedor: "Ana", monto: 150 },\n  { vendedor: "Luis", monto: 80 },\n];\nconst totales = ventas.reduce((acc, { vendedor, monto }) => {\n  acc[vendedor] = (acc[vendedor] || 0) + monto;\n  return acc;\n}, {});\nconsole.log(JSON.stringify(totales));',
+            mmszInicio: 'const ventas = [\n  { vendedor: "Ana", monto: 200 },\n  { vendedor: "Luis", monto: 120 },\n  { vendedor: "Ana", monto: 150 },\n  { vendedor: "Luis", monto: 80 },\n];\n',
+            mmszPista: 'const totales = ventas.reduce((acc, { vendedor, monto }) => {\n  acc[vendedor] = (acc[vendedor] || 0) + monto;\n  return acc;\n}, {});',
+            mmszSalida: '{"Ana":350,"Luis":200}',
+            mmszRequiere: ['reduce'],
+            mmszSolucion: 'const ventas = [\n  { vendedor: "Ana", monto: 200 },\n  { vendedor: "Luis", monto: 120 },\n  { vendedor: "Ana", monto: 150 },\n  { vendedor: "Luis", monto: 80 },\n];\nconst totales = ventas.reduce((acc, { vendedor, monto }) => {\n  acc[vendedor] = (acc[vendedor] || 0) + monto;\n  return acc;\n}, {});\nconsole.log(JSON.stringify(totales));',
           }),
           mmszPaso('Ranking', `
             Convierte «totales» en pares con «Object.entries», ordénalos de mayor a menor y muestra «1. Ana: 350» y «2. Luis: 200».
           `, {
-            salida: '{"Ana":350,"Luis":200}\n1. Ana: 350\n2. Luis: 200',
-            requiere: ['Object.entries'],
-            solucion: 'const ventas = [\n  { vendedor: "Ana", monto: 200 },\n  { vendedor: "Luis", monto: 120 },\n  { vendedor: "Ana", monto: 150 },\n  { vendedor: "Luis", monto: 80 },\n];\nconst totales = ventas.reduce((acc, { vendedor, monto }) => {\n  acc[vendedor] = (acc[vendedor] || 0) + monto;\n  return acc;\n}, {});\nconsole.log(JSON.stringify(totales));\nObject.entries(totales)\n  .sort((a, b) => b[1] - a[1])\n  .forEach(([nombre, total], i) => console.log(`${i + 1}. ${nombre}: ${total}`));',
+            mmszSalida: '{"Ana":350,"Luis":200}\n1. Ana: 350\n2. Luis: 200',
+            mmszRequiere: ['Object.entries'],
+            mmszSolucion: 'const ventas = [\n  { vendedor: "Ana", monto: 200 },\n  { vendedor: "Luis", monto: 120 },\n  { vendedor: "Ana", monto: 150 },\n  { vendedor: "Luis", monto: 80 },\n];\nconst totales = ventas.reduce((acc, { vendedor, monto }) => {\n  acc[vendedor] = (acc[vendedor] || 0) + monto;\n  return acc;\n}, {});\nconsole.log(JSON.stringify(totales));\nObject.entries(totales)\n  .sort((a, b) => b[1] - a[1])\n  .forEach(([nombre, total], i) => console.log(`${i + 1}. ${nombre}: ${total}`));',
           }),
         ]),
         mmszRepaso('programación funcional', `
@@ -1171,10 +1166,10 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Área polimórfica', `
             Crea «Rectangulo(base, altura)» y «Circulo(radio)» que extiendan «Figura» y tengan su método «area()». Usa 3.14 para pi. Muestra el área de «new Rectangulo(4, 5)» y «new Circulo(2)».
           `, {
-            inicio: 'class Figura {\n  area() {\n    return 0;\n  }\n}\n',
-            salida: '20\n12.56',
-            requiere: ['extends Figura'],
-            solucion: 'class Figura {\n  area() {\n    return 0;\n  }\n}\nclass Rectangulo extends Figura {\n  constructor(base, altura) {\n    super();\n    this.base = base;\n    this.altura = altura;\n  }\n  area() {\n    return this.base * this.altura;\n  }\n}\nclass Circulo extends Figura {\n  constructor(radio) {\n    super();\n    this.radio = radio;\n  }\n  area() {\n    return 3.14 * this.radio ** 2;\n  }\n}\nfor (const f of [new Rectangulo(4, 5), new Circulo(2)]) {\n  console.log(f.area());\n}',
+            mmszInicio: 'class Figura {\n  area() {\n    return 0;\n  }\n}\n',
+            mmszSalida: '20\n12.56',
+            mmszRequiere: ['extends Figura'],
+            mmszSolucion: 'class Figura {\n  area() {\n    return 0;\n  }\n}\nclass Rectangulo extends Figura {\n  constructor(base, altura) {\n    super();\n    this.base = base;\n    this.altura = altura;\n  }\n  area() {\n    return this.base * this.altura;\n  }\n}\nclass Circulo extends Figura {\n  constructor(radio) {\n    super();\n    this.radio = radio;\n  }\n  area() {\n    return 3.14 * this.radio ** 2;\n  }\n}\nfor (const f of [new Rectangulo(4, 5), new Circulo(2)]) {\n  console.log(f.area());\n}',
           }),
         ]),
       ], [
@@ -1222,27 +1217,27 @@ export const mmszJavascript: MmszCourse = {
           mmszPaso('Valida', `
             Crea «validarEdad(edad)» que lance «new Error("Edad inválida")» si la edad es menor que 0 o mayor que 120, y si no devuelva «"Edad válida"». Prueba con 25 y con -5 dentro de un «try/catch» (muestra «e.message»).
           `, {
-            inicio: '',
-            salida: 'Edad válida\nEdad inválida',
-            requiere: ['throw', 'catch'],
-            solucion: 'function validarEdad(edad) {\n  if (edad < 0 || edad > 120) throw new Error("Edad inválida");\n  return "Edad válida";\n}\nfor (const e of [25, -5]) {\n  try {\n    console.log(validarEdad(e));\n  } catch (err) {\n    console.log(err.message);\n  }\n}',
+            mmszInicio: '',
+            mmszSalida: 'Edad válida\nEdad inválida',
+            mmszRequiere: ['throw', 'catch'],
+            mmszSolucion: 'function validarEdad(edad) {\n  if (edad < 0 || edad > 120) throw new Error("Edad inválida");\n  return "Edad válida";\n}\nfor (const e of [25, -5]) {\n  try {\n    console.log(validarEdad(e));\n  } catch (err) {\n    console.log(err.message);\n  }\n}',
           }),
         ]),
         mmszProyecto('sistema de inventario', [
           mmszPaso('Clase Inventario', `
             Crea la clase «Inventario» con un objeto «stock» y los métodos «agregar(producto, cantidad)» y «sacar(producto, cantidad)». «sacar» debe lanzar «new Error(\`Sin stock de \${producto}\`)» si no hay suficiente. Agrega 10 lápices, saca 3 y muestra «stock.lapiz».
           `, {
-            inicio: '',
-            salida: '7',
-            requiere: ['class Inventario', 'throw'],
-            solucion: 'class Inventario {\n  constructor() {\n    this.stock = {};\n  }\n  agregar(producto, cantidad) {\n    this.stock[producto] = (this.stock[producto] || 0) + cantidad;\n  }\n  sacar(producto, cantidad) {\n    if ((this.stock[producto] || 0) < cantidad) throw new Error(`Sin stock de ${producto}`);\n    this.stock[producto] -= cantidad;\n  }\n}\nconst inv = new Inventario();\ninv.agregar("lapiz", 10);\ninv.sacar("lapiz", 3);\nconsole.log(inv.stock.lapiz);',
+            mmszInicio: '',
+            mmszSalida: '7',
+            mmszRequiere: ['class Inventario', 'throw'],
+            mmszSolucion: 'class Inventario {\n  constructor() {\n    this.stock = {};\n  }\n  agregar(producto, cantidad) {\n    this.stock[producto] = (this.stock[producto] || 0) + cantidad;\n  }\n  sacar(producto, cantidad) {\n    if ((this.stock[producto] || 0) < cantidad) throw new Error(`Sin stock de ${producto}`);\n    this.stock[producto] -= cantidad;\n  }\n}\nconst inv = new Inventario();\ninv.agregar("lapiz", 10);\ninv.sacar("lapiz", 3);\nconsole.log(inv.stock.lapiz);',
           }),
           mmszPaso('Pedido grande', `
             Intenta sacar 20 lápices dentro de un «try/catch» y muestra el mensaje de error: «Sin stock de lapiz».
           `, {
-            salida: '7\nSin stock de lapiz',
-            requiere: ['try'],
-            solucion: 'class Inventario {\n  constructor() {\n    this.stock = {};\n  }\n  agregar(producto, cantidad) {\n    this.stock[producto] = (this.stock[producto] || 0) + cantidad;\n  }\n  sacar(producto, cantidad) {\n    if ((this.stock[producto] || 0) < cantidad) throw new Error(`Sin stock de ${producto}`);\n    this.stock[producto] -= cantidad;\n  }\n}\nconst inv = new Inventario();\ninv.agregar("lapiz", 10);\ninv.sacar("lapiz", 3);\nconsole.log(inv.stock.lapiz);\ntry {\n  inv.sacar("lapiz", 20);\n} catch (e) {\n  console.log(e.message);\n}',
+            mmszSalida: '7\nSin stock de lapiz',
+            mmszRequiere: ['try'],
+            mmszSolucion: 'class Inventario {\n  constructor() {\n    this.stock = {};\n  }\n  agregar(producto, cantidad) {\n    this.stock[producto] = (this.stock[producto] || 0) + cantidad;\n  }\n  sacar(producto, cantidad) {\n    if ((this.stock[producto] || 0) < cantidad) throw new Error(`Sin stock de ${producto}`);\n    this.stock[producto] -= cantidad;\n  }\n}\nconst inv = new Inventario();\ninv.agregar("lapiz", 10);\ninv.sacar("lapiz", 3);\nconsole.log(inv.stock.lapiz);\ntry {\n  inv.sacar("lapiz", 20);\n} catch (e) {\n  console.log(e.message);\n}',
           }),
         ]),
         mmszRepaso('clases y errores', `

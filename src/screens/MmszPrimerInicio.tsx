@@ -1,6 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Bienvenida del primer inicio (cuando alguien instala Novexa):
-// paso 1 = nombre y apellido; paso 2 = elegir los cursos que quiere aprender.
 import { useMemo, useState } from 'react';
 import { mmszCourses, mmszAllLessons } from '../content';
 
@@ -19,46 +16,45 @@ const MMSZ_DATOS_CURIOSOS = [
 const MMSZ_PROXIMAMENTE = ['SQL y bases de datos', 'HTML y CSS', 'Java', 'Estructuras de datos'];
 
 export default function MmszPrimerInicio({ mmszTerminar }: MmszProps) {
-  const [mmszPaso, setMmszPaso] = useState<1 | 2>(1);
-  const [mmszNombre, setMmszNombre] = useState('');
-  const [mmszApellido, setMmszApellido] = useState('');
-  const [mmszIntento, setMmszIntento] = useState(false);
-  const [mmszElegidos, setMmszElegidos] = useState<string[]>([]);
+  const [mmszPaso, mmszSetPaso] = useState<1 | 2>(1);
+  const [mmszNombre, mmszSetNombre] = useState('');
+  const [mmszApellido, mmszSetApellido] = useState('');
+  const [mmszIntento, mmszSetIntento] = useState(false);
+  const [mmszElegidos, mmszSetElegidos] = useState<string[]>([]);
   const mmszDato = useMemo(() => MMSZ_DATOS_CURIOSOS[Math.floor(Math.random() * MMSZ_DATOS_CURIOSOS.length)], []);
 
   const mmszFaltaNombre = !mmszNombre.trim();
   const mmszFaltaApellido = !mmszApellido.trim();
 
-  function mmszContinuar(e: React.FormEvent) {
-    e.preventDefault();
-    setMmszIntento(true);
-    if (!mmszFaltaNombre && !mmszFaltaApellido) setMmszPaso(2);
+  function mmszContinuar(mmszE: React.FormEvent) {
+    mmszE.preventDefault();
+    mmszSetIntento(true);
+    if (!mmszFaltaNombre && !mmszFaltaApellido) mmszSetPaso(2);
   }
 
   function mmszAlternar(mmszId: string) {
-    setMmszElegidos((l) => (l.includes(mmszId) ? l.filter((x) => x !== mmszId) : [...l, mmszId]));
+    mmszSetElegidos((mmszL) => (mmszL.includes(mmszId) ? mmszL.filter((mmszX) => mmszX !== mmszId) : [...mmszL, mmszId]));
   }
 
   function mmszEmpezar() {
-    const mmszOcultos = mmszCourses.map((c) => c.id).filter((id) => !mmszElegidos.includes(id));
+    const mmszOcultos = mmszCourses.map((mmszC) => mmszC.mmszId).filter((mmszId) => !mmszElegidos.includes(mmszId));
     mmszTerminar(`${mmszNombre.trim()} ${mmszApellido.trim()}`, mmszOcultos);
   }
 
   return (
     <div className="mmsz-inicio">
       <header className="mmsz-inicio-cabecera">
-        <span className="logo">{'</>'}</span> Novexa
+        Novexa
       </header>
 
       {mmszPaso === 1 ? (
         <main className="mmsz-inicio-paso1">
-          {/* ---------- Ilustración ---------- */}
           <section className="mmsz-inicio-arte" aria-hidden>
             <div className="mmsz-arte">
               <span className="mmsz-arte-rombo" />
               <span className="mmsz-arte-chispa">✳</span>
               <div className="mmsz-arte-tarjeta">
-                <div className="mmsz-arte-puntos">
+                <div className="mmsz-ventana-puntos">
                   <i /> <i /> <i />
                 </div>
                 <pre>
@@ -70,27 +66,19 @@ export default function MmszPrimerInicio({ mmszTerminar }: MmszProps) {
                   <b>return</b> <em>"¡programador!"</em>
                 </pre>
                 <div className="mmsz-arte-iconos">
-                  {mmszCourses.map((c) => (
-                    <span key={c.id} style={{ borderColor: c.color }}>
-                      {c.icon}
+                  {mmszCourses.map((mmszC) => (
+                    <span key={mmszC.mmszId} style={{ borderColor: mmszC.mmszColor }}>
+                      {mmszC.mmszIcon}
                     </span>
                   ))}
                 </div>
               </div>
-              <svg className="mmsz-arte-rulo" viewBox="0 0 240 70" fill="none">
-                <path
-                  d="M2 60 C 30 10, 60 10, 55 40 S 30 70, 45 40 C 60 10, 95 10, 90 40 S 65 70, 80 40 C 95 10, 130 10, 125 40 S 100 70, 115 40 C 130 15, 180 8, 238 12"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <span className="mmsz-arte-onda" />
             </div>
             <h3>¿Sabías que…?</h3>
             <p>{mmszDato}</p>
           </section>
 
-          {/* ---------- Formulario ---------- */}
           <form className="mmsz-inicio-formulario" onSubmit={mmszContinuar} noValidate>
             <h1>¡Bienvenido a Novexa!</h1>
             <p className="muted">
@@ -106,7 +94,7 @@ export default function MmszPrimerInicio({ mmszTerminar }: MmszProps) {
                   autoFocus
                   value={mmszNombre}
                   maxLength={30}
-                  onChange={(e) => setMmszNombre(e.target.value)}
+                  onChange={(mmszE) => mmszSetNombre(mmszE.target.value)}
                   aria-invalid={mmszIntento && mmszFaltaNombre}
                 />
                 {mmszIntento && mmszFaltaNombre && <small className="mmsz-error">Escribe tu nombre</small>}
@@ -118,7 +106,7 @@ export default function MmszPrimerInicio({ mmszTerminar }: MmszProps) {
                 <input
                   value={mmszApellido}
                   maxLength={30}
-                  onChange={(e) => setMmszApellido(e.target.value)}
+                  onChange={(mmszE) => mmszSetApellido(mmszE.target.value)}
                   aria-invalid={mmszIntento && mmszFaltaApellido}
                 />
                 {mmszIntento && mmszFaltaApellido && <small className="mmsz-error">Escribe tu apellido</small>}
@@ -143,22 +131,22 @@ export default function MmszPrimerInicio({ mmszTerminar }: MmszProps) {
             <div className="mmsz-dialogo-cuerpo">
               <h3>Lenguajes de programación</h3>
               <div className="mmsz-opciones-cursos">
-                {mmszCourses.map((c) => {
-                  const mmszMarcado = mmszElegidos.includes(c.id);
-                  const mmszLecciones = mmszAllLessons(c).length;
+                {mmszCourses.map((mmszC) => {
+                  const mmszMarcado = mmszElegidos.includes(mmszC.mmszId);
+                  const mmszLecciones = mmszAllLessons(mmszC).length;
                   return (
                     <label
-                      key={c.id}
+                      key={mmszC.mmszId}
                       className={`mmsz-opcion-curso ${mmszMarcado ? 'marcado' : ''}`}
-                      style={{ ['--accent' as string]: c.color }}
+                      style={{ ['--accent' as string]: mmszC.mmszColor }}
                     >
-                      <input type="checkbox" checked={mmszMarcado} onChange={() => mmszAlternar(c.id)} />
-                      <span className="mmsz-opcion-icono">{c.icon}</span>
+                      <input type="checkbox" checked={mmszMarcado} onChange={() => mmszAlternar(mmszC.mmszId)} />
+                      <span className="mmsz-opcion-icono">{mmszC.mmszIcon}</span>
                       <span className="mmsz-opcion-texto">
-                        <b>{c.name}</b>
-                        <small>{c.tagline}</small>
+                        <b>{mmszC.mmszName}</b>
+                        <small>{mmszC.mmszTagline}</small>
                         <small className="muted">
-                          {c.units.length} unidades · {mmszLecciones} lecciones · básico a avanzado
+                          {mmszC.mmszUnits.length} unidades · {mmszLecciones} lecciones · básico a avanzado
                         </small>
                       </span>
                     </label>
@@ -168,16 +156,16 @@ export default function MmszPrimerInicio({ mmszTerminar }: MmszProps) {
 
               <h3>Próximamente</h3>
               <div className="mmsz-opciones-pronto">
-                {MMSZ_PROXIMAMENTE.map((t) => (
-                  <label key={t}>
-                    <input type="checkbox" disabled /> {t}
+                {MMSZ_PROXIMAMENTE.map((mmszT) => (
+                  <label key={mmszT}>
+                    <input type="checkbox" disabled /> {mmszT}
                   </label>
                 ))}
               </div>
             </div>
 
             <footer className="mmsz-dialogo-pie">
-              <button className="mmsz-enlace" onClick={() => setMmszPaso(1)}>
+              <button className="mmsz-enlace" onClick={() => mmszSetPaso(1)}>
                 ← Atrás
               </button>
               <span className="muted">

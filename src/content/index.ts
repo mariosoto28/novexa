@@ -1,85 +1,77 @@
-// Autor: MMSZ (Mario Soto Zea)
 import { mmszPython } from './python';
 import { mmszJavascript } from './javascript';
 import { mmszCpp } from './cpp';
 import { mmszConVideos } from './mmszVideos';
 import type { MmszCourse, MmszLesson, MmszRecuerdo } from '../types';
 
-/** Agrega al inicio de la lección una "lección animada" (offline) hecha con sus lecturas. */
 function mmszConAnimada(mmszLeccion: MmszLesson, mmszRecuerdo?: MmszRecuerdo): MmszLesson {
-  const mmszLecturas = mmszLeccion.items.flatMap((it) => (it.tipo === 'lectura' ? [it.contenido] : []));
+  const mmszLecturas = mmszLeccion.mmszItems.flatMap((mmszIt) => (mmszIt.mmszTipo === 'lectura' ? [mmszIt.mmszContenido] : []));
   if (!mmszLecturas.length) return mmszLeccion;
   return {
     ...mmszLeccion,
-    items: [
+    mmszItems: [
       {
-        tipo: 'animada',
-        id: `${mmszLeccion.id}-a1`,
-        titulo: `Lección animada: ${mmszLeccion.title}`,
-        lecturas: mmszLecturas,
-        recuerdo: mmszRecuerdo,
+        mmszTipo: 'animada',
+        mmszId: `${mmszLeccion.mmszId}-a1`,
+        mmszTitulo: `Lección animada: ${mmszLeccion.mmszTitle}`,
+        mmszLecturas,
+        mmszRecuerdo,
       },
-      ...mmszLeccion.items,
+      ...mmszLeccion.mmszItems,
     ],
   };
 }
 
-/** Antes del programa guiado, agrega una "guía paso a paso" (video interactivo) del mismo programa. */
 function mmszConGuia(mmszLeccion: MmszLesson, mmszRecuerdo?: MmszRecuerdo): MmszLesson {
-  const i = mmszLeccion.items.findIndex((it) => it.tipo === 'guiado');
-  if (i === -1) return mmszLeccion;
-  const g = mmszLeccion.items[i];
-  if (g.tipo !== 'guiado') return mmszLeccion;
-  const mmszItems = [...mmszLeccion.items];
-  mmszItems.splice(i, 0, {
-    tipo: 'guia',
-    id: `${mmszLeccion.id}-p1`,
-    titulo: `Guía paso a paso: ${g.titulo.replace(/^Programa guiado: /, '')}`,
-    objetivo: g.objetivo,
-    codigo: g.codigo,
-    salida: g.salida,
-    recuerdo: mmszRecuerdo,
+  const mmszI = mmszLeccion.mmszItems.findIndex((mmszIt) => mmszIt.mmszTipo === 'guiado');
+  if (mmszI === -1) return mmszLeccion;
+  const mmszG = mmszLeccion.mmszItems[mmszI];
+  if (mmszG.mmszTipo !== 'guiado') return mmszLeccion;
+  const mmszItems = [...mmszLeccion.mmszItems];
+  mmszItems.splice(mmszI, 0, {
+    mmszTipo: 'guia',
+    mmszId: `${mmszLeccion.mmszId}-p1`,
+    mmszTitulo: `Guía paso a paso: ${mmszG.mmszTitulo.replace(/^Programa guiado: /, '')}`,
+    mmszObjetivo: mmszG.mmszObjetivo,
+    mmszCodigo: mmszG.mmszCodigo,
+    mmszSalida: mmszG.mmszSalida,
+    mmszRecuerdo,
   });
-  return { ...mmszLeccion, items: mmszItems };
+  return { ...mmszLeccion, mmszItems };
 }
 
-/** Antes del primer desafío de la lección, agrega un "programa guiado" que lo construye paso a paso. */
 function mmszConGuiado(mmszLeccion: MmszLesson): MmszLesson {
-  const i = mmszLeccion.items.findIndex((it) => it.tipo === 'desafio');
-  if (i === -1) return mmszLeccion;
-  const d = mmszLeccion.items[i];
-  if (d.tipo !== 'desafio') return mmszLeccion;
-  const mmszUltimo = d.pasos[d.pasos.length - 1];
+  const mmszI = mmszLeccion.mmszItems.findIndex((mmszIt) => mmszIt.mmszTipo === 'desafio');
+  if (mmszI === -1) return mmszLeccion;
+  const mmszD = mmszLeccion.mmszItems[mmszI];
+  if (mmszD.mmszTipo !== 'desafio') return mmszLeccion;
+  const mmszUltimo = mmszD.mmszPasos[mmszD.mmszPasos.length - 1];
   const mmszGuiado = {
-    tipo: 'guiado' as const,
-    id: `${mmszLeccion.id}-g1`,
-    titulo: `Programa guiado: ${d.titulo.replace(/^Desafío: /, '')}`,
-    objetivo: d.pasos.map((p) => p.instrucciones).join('\n\n'),
-    codigo: mmszUltimo.solucion,
-    salida: mmszUltimo.salida,
+    mmszTipo: 'guiado' as const,
+    mmszId: `${mmszLeccion.mmszId}-g1`,
+    mmszTitulo: `Programa guiado: ${mmszD.mmszTitulo.replace(/^Desafío: /, '')}`,
+    mmszObjetivo: mmszD.mmszPasos.map((mmszP) => mmszP.mmszInstrucciones).join('\n\n'),
+    mmszCodigo: mmszUltimo.mmszSolucion,
+    mmszSalida: mmszUltimo.mmszSalida,
   };
-  const mmszItems = [...mmszLeccion.items];
-  mmszItems.splice(i, 0, mmszGuiado);
-  return { ...mmszLeccion, items: mmszItems };
+  const mmszItems = [...mmszLeccion.mmszItems];
+  mmszItems.splice(mmszI, 0, mmszGuiado);
+  return { ...mmszLeccion, mmszItems };
 }
 
-/**
- * Agrega a cada lección: videos de YouTube, lección animada, guía paso a paso y programa guiado.
- * Cada lección "recuerda" la anterior del curso para decir "¿Recuerdas…?".
- */
 const mmszConTodo = (mmszCurso: MmszCourse): MmszCourse => {
-  const mmszOrden = mmszCurso.units.flatMap((u) => u.lessons);
-  const mmszRecuerdoDe = (l: MmszLesson): MmszRecuerdo | undefined => {
-    const p = mmszOrden[mmszOrden.findIndex((x) => x.id === l.id) - 1];
-    return p ? { leccion: p.title, resumen: p.intro } : undefined;
+  const mmszOrden = mmszCurso.mmszUnits.flatMap((mmszU) => mmszU.mmszLessons);
+  const mmszRecuerdoDe = (mmszL: MmszLesson): MmszRecuerdo | undefined => {
+    const mmszP = mmszOrden[mmszOrden.findIndex((mmszX) => mmszX.mmszId === mmszL.mmszId) - 1];
+    return mmszP ? { mmszLeccion: mmszP.mmszTitle, mmszResumen: mmszP.mmszIntro } : undefined;
   };
   return {
     ...mmszCurso,
-    units: mmszCurso.units.map((u) => ({
-      ...u,
-      lessons: u.lessons.map((l) => {
-        const r = mmszRecuerdoDe(l);
-        return mmszConGuia(mmszConGuiado(mmszConAnimada(mmszConVideos(l), r)), r);
+    mmszUnits: mmszCurso.mmszUnits.map((mmszU) => ({
+      ...mmszU,
+      mmszLessons: mmszU.mmszLessons.map((mmszL) => {
+        const mmszR = mmszRecuerdoDe(mmszL);
+        return mmszConGuia(mmszConGuiado(mmszConAnimada(mmszConVideos(mmszL), mmszR)), mmszR);
       }),
     })),
   };
@@ -87,34 +79,31 @@ const mmszConTodo = (mmszCurso: MmszCourse): MmszCourse => {
 
 export const mmszCourses: MmszCourse[] = [mmszPython, mmszJavascript, mmszCpp].map(mmszConTodo);
 
-/** Copia del curso sin los videos de YouTube (para el modo Sin conexión). */
 const mmszCacheSinVideos = new Map<string, MmszCourse>();
 export function mmszSinVideos(mmszCurso: MmszCourse): MmszCourse {
-  const mmszGuardado = mmszCacheSinVideos.get(mmszCurso.id);
+  const mmszGuardado = mmszCacheSinVideos.get(mmszCurso.mmszId);
   if (mmszGuardado) return mmszGuardado;
   const mmszNuevo: MmszCourse = {
     ...mmszCurso,
-    units: mmszCurso.units.map((u) => ({
-      ...u,
-      lessons: u.lessons.map((l) => ({ ...l, items: l.items.filter((it) => it.tipo !== 'video') })),
+    mmszUnits: mmszCurso.mmszUnits.map((mmszU) => ({
+      ...mmszU,
+      mmszLessons: mmszU.mmszLessons.map((mmszL) => ({ ...mmszL, mmszItems: mmszL.mmszItems.filter((mmszIt) => mmszIt.mmszTipo !== 'video') })),
     })),
   };
-  mmszCacheSinVideos.set(mmszCurso.id, mmszNuevo);
+  mmszCacheSinVideos.set(mmszCurso.mmszId, mmszNuevo);
   return mmszNuevo;
 }
 
-/** El curso tal como se debe mostrar según el modo elegido (con o sin videos de YouTube). */
 export function mmszCursoSegunModo(mmszCurso: MmszCourse, mmszOffline: boolean): MmszCourse {
   return mmszOffline ? mmszSinVideos(mmszCurso) : mmszCurso;
 }
 
-export function mmszGetCourse(id: string): MmszCourse {
-  const c = mmszCourses.find((x) => x.id === id);
-  if (!c) throw new Error(`Curso no encontrado: ${id}`);
-  return c;
+export function mmszGetCourse(mmszId: string): MmszCourse {
+  const mmszC = mmszCourses.find((mmszX) => mmszX.mmszId === mmszId);
+  if (!mmszC) throw new Error(`Curso no encontrado: ${mmszId}`);
+  return mmszC;
 }
 
-/** Todas las lecciones del curso en orden, para saber cuál se desbloquea. */
 export function mmszAllLessons(mmszCourse: MmszCourse): MmszLesson[] {
-  return mmszCourse.units.flatMap((u) => u.lessons);
+  return mmszCourse.mmszUnits.flatMap((mmszU) => mmszU.mmszLessons);
 }

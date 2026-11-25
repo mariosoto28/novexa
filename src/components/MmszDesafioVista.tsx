@@ -1,6 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Desafío o proyecto por pasos: instrucciones + pista, editor y salida.
-// Cada paso continúa el código del anterior (como en un proyecto real).
 import { useState } from 'react';
 import type { MmszDesafio } from '../types';
 import { mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
@@ -16,18 +13,14 @@ interface MmszProps {
   mmszAlCompletar: () => void;
 }
 
-/**
- * Si el error es por un nombre que no existe (por ejemplo "Print") y en la solución aparece
- * el mismo nombre con otras mayúsculas ("print"), lo dice claramente.
- */
 function mmszPistaDeError(mmszError: string, mmszSolucion: string): string {
   const mmszGenerico = 'Tu programa tiene un error. Revisa el mensaje en la salida.';
-  const m =
+  const mmszM =
     mmszError.match(/name '(\w+)' is not defined/) ||
     mmszError.match(/(\w+) is not defined/) ||
     mmszError.match(/variable (\w+) does not exist/);
-  if (!m) return mmszGenerico;
-  const mmszEscrito = m[1];
+  if (!mmszM) return mmszGenerico;
+  const mmszEscrito = mmszM[1];
   const mmszCorrecto = mmszSolucion.match(new RegExp(`\\b${mmszEscrito}\\b`, 'i'))?.[0];
   if (mmszCorrecto && mmszCorrecto !== mmszEscrito) {
     return `Revisa las mayúsculas: escribiste \`${mmszEscrito}\`, pero debe ser \`${mmszCorrecto}\`. En el código las mayúsculas sí importan.`;
@@ -35,7 +28,6 @@ function mmszPistaDeError(mmszError: string, mmszSolucion: string): string {
   return mmszGenerico;
 }
 
-/** Explica por qué la salida no coincide, según el caso más común. */
 function mmszPistaDeSalida(mmszObtenida: string, mmszEsperada: string, mmszLang: MmszRunnableLang): string {
   const mmszMostrar = mmszLang === 'python' ? 'print(...)' : mmszLang === 'javascript' ? 'console.log(...)' : 'cout << ... << endl;';
   const mmszLineasObt = mmszObtenida.trim() ? mmszObtenida.trim().split('\n').length : 0;
@@ -53,77 +45,75 @@ function mmszPistaDeSalida(mmszObtenida: string, mmszEsperada: string, mmszLang:
 }
 
 export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompletado, mmszAlCompletar }: MmszProps) {
-  const mmszPasos = mmszDesafio.pasos;
-  const [mmszIndice, setMmszIndice] = useState(0);
-  const [mmszCodigo, setMmszCodigo] = useState(mmszPasos[0].inicio ?? '');
-  const [mmszResultado, setMmszResultado] = useState<MmszRunResult | null>(null);
-  const [mmszCorriendo, setMmszCorriendo] = useState(false);
-  const [mmszMensaje, setMmszMensaje] = useState<{ ok: boolean; texto: string; info?: boolean } | null>(null);
-  const [mmszFallos, setMmszFallos] = useState(0);
-  const [mmszTerminado, setMmszTerminado] = useState(false);
+  const mmszPasos = mmszDesafio.mmszPasos;
+  const [mmszIndice, mmszSetIndice] = useState(0);
+  const [mmszCodigo, mmszSetCodigo] = useState(mmszPasos[0].mmszInicio ?? '');
+  const [mmszResultado, mmszSetResultado] = useState<MmszRunResult | null>(null);
+  const [mmszCorriendo, mmszSetCorriendo] = useState(false);
+  const [mmszMensaje, mmszSetMensaje] = useState<{ mmszOk: boolean; mmszTexto: string; mmszInfo?: boolean } | null>(null);
+  const [mmszFallos, mmszSetFallos] = useState(0);
+  const [mmszTerminado, mmszSetTerminado] = useState(false);
 
   const mmszPaso = mmszPasos[mmszIndice];
-  const mmszSeEjecuta = mmszPaso.salida !== undefined;
-  const mmszPasoListo = mmszMensaje?.ok === true;
+  const mmszSeEjecuta = mmszPaso.mmszSalida !== undefined;
+  const mmszPasoListo = mmszMensaje?.mmszOk === true;
 
   async function mmszEjecutar() {
-    setMmszCorriendo(true);
-    const r = await mmszRunCode(mmszLang, mmszCodigo);
-    setMmszResultado(r);
-    setMmszCorriendo(false);
-    return r;
+    mmszSetCorriendo(true);
+    const mmszR = await mmszRunCode(mmszLang, mmszCodigo);
+    mmszSetResultado(mmszR);
+    mmszSetCorriendo(false);
+    return mmszR;
   }
 
   async function mmszComprobar() {
-    // Lo que el código debe usar (print, for, if...) se revisa exacto: en el código las mayúsculas importan.
-    const mmszFaltan = (mmszPaso.requiere ?? []).filter((t) => !mmszCodigo.includes(t));
+    const mmszFaltan = (mmszPaso.mmszRequiere ?? []).filter((mmszT) => !mmszCodigo.includes(mmszT));
     if (mmszFaltan.length) {
       const mmszMinus = mmszCodigo.toLowerCase();
-      const mmszPorMayusculas = mmszFaltan.filter((t) => mmszMinus.includes(t.toLowerCase()));
-      setMmszFallos((f) => f + 1);
-      setMmszMensaje({
-        ok: false,
-        texto: mmszPorMayusculas.length
-          ? `Revisa las mayúsculas: en el código deben escribirse así: ${mmszPorMayusculas.map((t) => `\`${t}\``).join(', ')}. (En lo que muestra tu programa no importan, pero en las instrucciones sí.)`
-          : `Tu código todavía no usa: ${mmszFaltan.map((t) => `\`${t}\``).join(', ')}.`,
+      const mmszPorMayusculas = mmszFaltan.filter((mmszT) => mmszMinus.includes(mmszT.toLowerCase()));
+      mmszSetFallos((mmszF) => mmszF + 1);
+      mmszSetMensaje({
+        mmszOk: false,
+        mmszTexto: mmszPorMayusculas.length
+          ? `Revisa las mayúsculas: en el código deben escribirse así: ${mmszPorMayusculas.map((mmszT) => `\`${mmszT}\``).join(', ')}. (En lo que muestra tu programa no importan, pero en las instrucciones sí.)`
+          : `Tu código todavía no usa: ${mmszFaltan.map((mmszT) => `\`${mmszT}\``).join(', ')}.`,
       });
       return;
     }
     if (mmszSeEjecuta) {
-      const r = await mmszEjecutar();
-      if (r.error) {
-        setMmszFallos((f) => f + 1);
-        setMmszMensaje({ ok: false, texto: mmszPistaDeError(r.error, mmszPaso.solucion) });
+      const mmszR = await mmszEjecutar();
+      if (mmszR.mmszError) {
+        mmszSetFallos((mmszF) => mmszF + 1);
+        mmszSetMensaje({ mmszOk: false, mmszTexto: mmszPistaDeError(mmszR.mmszError, mmszPaso.mmszSolucion) });
         return;
       }
-      // En la salida no importan mayúsculas ni espacios extra.
-      if (!mmszMismaSalida(r.output, mmszPaso.salida!)) {
-        setMmszFallos((f) => f + 1);
-        setMmszMensaje({ ok: false, texto: mmszPistaDeSalida(r.output, mmszPaso.salida!, mmszLang) });
+      if (!mmszMismaSalida(mmszR.mmszOutput, mmszPaso.mmszSalida!)) {
+        mmszSetFallos((mmszF) => mmszF + 1);
+        mmszSetMensaje({ mmszOk: false, mmszTexto: mmszPistaDeSalida(mmszR.mmszOutput, mmszPaso.mmszSalida!, mmszLang) });
         return;
       }
     }
-    setMmszFallos(0);
+    mmszSetFallos(0);
     if (mmszIndice === mmszPasos.length - 1) {
-      setMmszTerminado(true);
-      setMmszMensaje({ ok: true, texto: mmszDesafio.tipo === 'proyecto' ? '¡Proyecto terminado! 🎉' : '¡Desafío completado! 🎉' });
+      mmszSetTerminado(true);
+      mmszSetMensaje({ mmszOk: true, mmszTexto: mmszDesafio.mmszTipo === 'proyecto' ? '¡Proyecto terminado! 🎉' : '¡Desafío completado! 🎉' });
       mmszAlCompletar();
     } else {
-      setMmszMensaje({ ok: true, texto: `¡Muy bien! Paso ${mmszIndice + 1} completado.` });
+      mmszSetMensaje({ mmszOk: true, mmszTexto: `¡Muy bien! Paso ${mmszIndice + 1} completado.` });
     }
   }
 
   function mmszSiguientePaso() {
-    setMmszIndice(mmszIndice + 1);
-    setMmszMensaje(null);
-    setMmszResultado(null);
+    mmszSetIndice(mmszIndice + 1);
+    mmszSetMensaje(null);
+    mmszSetResultado(null);
   }
 
   return (
     <div className="mmsz-desafio">
       <div className="mmsz-pasos-barra">
-        {mmszPasos.map((_, i) => (
-          <span key={i} className={i < mmszIndice || mmszTerminado ? 'hecho' : i === mmszIndice ? 'actual' : ''} />
+        {mmszPasos.map((mmszSinUso, mmszI) => (
+          <span key={mmszI} className={mmszI < mmszIndice || mmszTerminado ? 'hecho' : mmszI === mmszIndice ? 'actual' : ''} />
         ))}
         <small className="muted">
           Paso {mmszIndice + 1} de {mmszPasos.length}
@@ -134,9 +124,9 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
       <div className="mmsz-desafio-cabecera">
         <div className="mmsz-desafio-instrucciones">
           <h3>
-            Paso {mmszIndice + 1}: {mmszPaso.titulo}
+            Paso {mmszIndice + 1}: {mmszPaso.mmszTitulo}
           </h3>
-          <MmszMarkdown texto={mmszPaso.instrucciones} lang={mmszLang} />
+          <MmszMarkdown mmszTexto={mmszPaso.mmszInstrucciones} mmszLang={mmszLang} />
           {!mmszSeEjecuta && (
             <div className="mmsz-nota">
               Este tema usa partes del lenguaje que el simulador de Novexa todavía no ejecuta. Se revisa que tu código use lo
@@ -144,19 +134,19 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
             </div>
           )}
         </div>
-        {(mmszPaso.pista || mmszPaso.salida) && (
+        {(mmszPaso.mmszPista || mmszPaso.mmszSalida) && (
           <aside className="mmsz-pista">
-            {mmszPaso.pista && (
+            {mmszPaso.mmszPista && (
               <>
                 <b>Pista</b>
-                <pre>{mmszPaso.pista}</pre>
+                <pre>{mmszPaso.mmszPista}</pre>
               </>
             )}
-            {mmszPaso.salida !== undefined && (
+            {mmszPaso.mmszSalida !== undefined && (
               <>
                 <b>Salida esperada</b>
                 <small className="muted">No importan mayúsculas ni minúsculas</small>
-                <pre className="mmsz-pista-salida">{mmszPaso.salida}</pre>
+                <pre className="mmsz-pista-salida">{mmszPaso.mmszSalida}</pre>
               </>
             )}
           </aside>
@@ -166,9 +156,9 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
       <div className="mmsz-desafio-trabajo">
         <MmszEditor
           mmszValor={mmszCodigo}
-          mmszCambiar={(v) => {
-            setMmszCodigo(v);
-            if (mmszMensaje && !mmszMensaje.ok) setMmszMensaje(null);
+          mmszCambiar={(mmszV) => {
+            mmszSetCodigo(mmszV);
+            if (mmszMensaje && !mmszMensaje.mmszOk) mmszSetMensaje(null);
           }}
           mmszLang={mmszLang}
           mmszEjecutar={mmszSeEjecuta ? mmszEjecutar : undefined}
@@ -176,11 +166,11 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
         />
         <div className="mmsz-salida">
           <span className="small muted">Salida de tu programa</span>
-          <pre className={mmszResultado?.error ? 'out err' : 'out'}>
+          <pre className={mmszResultado?.mmszError ? 'out err' : 'out'}>
             {!mmszResultado && <span className="muted">{mmszSeEjecuta ? 'Presiona ▶ Ejecutar para ver el resultado' : 'Este paso no se ejecuta'}</span>}
-            {mmszResultado?.output}
-            {mmszResultado?.error ? `${mmszResultado.output ? '\n' : ''}${mmszResultado.error}` : ''}
-            {mmszResultado && !mmszResultado.output && !mmszResultado.error ? '(no se mostró nada)' : ''}
+            {mmszResultado?.mmszOutput}
+            {mmszResultado?.mmszError ? `${mmszResultado.mmszOutput ? '\n' : ''}${mmszResultado.mmszError}` : ''}
+            {mmszResultado && !mmszResultado.mmszOutput && !mmszResultado.mmszError ? '(no se mostró nada)' : ''}
           </pre>
         </div>
       </div>
@@ -205,11 +195,11 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
           <button
             className="mmsz-enlace"
             onClick={() => {
-              setMmszCodigo(mmszPaso.solucion);
-              setMmszMensaje({
-                ok: false,
-                info: true,
-                texto: 'Te mostramos una solución. Léela (usa 🧭 Paso a paso para entender cada línea), ejecútala y luego presiona “Comprobar paso”.',
+              mmszSetCodigo(mmszPaso.mmszSolucion);
+              mmszSetMensaje({
+                mmszOk: false,
+                mmszInfo: true,
+                mmszTexto: 'Te mostramos una solución. Léela (usa 🧭 Paso a paso para entender cada línea), ejecútala y luego presiona “Comprobar paso”.',
               });
             }}
           >
@@ -222,19 +212,19 @@ export default function MmszDesafioVista({ mmszDesafio, mmszLang, mmszYaCompleta
       {!mmszTerminado && !mmszPasoListo && (
         <MmszAyudaDesafio
           key={mmszIndice}
-          mmszSolucion={mmszPaso.solucion}
+          mmszSolucion={mmszPaso.mmszSolucion}
           mmszLang={mmszLang}
           mmszCodigo={mmszCodigo}
-          mmszCambiarCodigo={(c) => {
-            setMmszCodigo(c);
-            setMmszMensaje(null);
+          mmszCambiarCodigo={(mmszC) => {
+            mmszSetCodigo(mmszC);
+            mmszSetMensaje(null);
           }}
         />
       )}
 
       {mmszMensaje && (
-        <div className={`mmsz-mensaje ${mmszMensaje.ok ? 'ok' : mmszMensaje.info ? 'info' : 'error'}`}>
-          <MmszMarkdown texto={mmszMensaje.texto} lang={mmszLang} />
+        <div className={`mmsz-mensaje ${mmszMensaje.mmszOk ? 'ok' : mmszMensaje.mmszInfo ? 'info' : 'error'}`}>
+          <MmszMarkdown mmszTexto={mmszMensaje.mmszTexto} mmszLang={mmszLang} />
         </div>
       )}
     </div>

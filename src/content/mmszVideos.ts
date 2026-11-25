@@ -1,33 +1,27 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Videos de YouTube para cada lección. Cada video empieza y termina en el capítulo exacto
-// del tema, tomado de las marcas de tiempo que publicó su autor en YouTube.
 import type { MmszLesson, MmszVideo } from '../types';
 
 interface MmszFuente {
-  youtubeId: string;
-  canal: string;
-  titulo: string;
+  mmszYoutubeId: string;
+  mmszCanal: string;
+  mmszTitulo: string;
 }
 
 const MMSZ_FUENTES = {
-  pyBase: { youtubeId: 'Kp4Mvapo5kc', canal: 'MoureDev by Brais Moure', titulo: 'Curso completo de Python desde cero' },
-  pyIntermedio: { youtubeId: 'TbcEqkabAWU', canal: 'MoureDev by Brais Moure', titulo: 'Curso de Python desde cero [Intermedio]' },
-  js: { youtubeId: '1glVfFxj8a4', canal: 'MoureDev by Brais Moure', titulo: 'Curso completo de JavaScript desde cero' },
-  cpp: { youtubeId: 'jS6wb263CIM', canal: 'Sinergia | CURSOS', titulo: 'Curso de C++ desde cero para principiantes' },
+  pyBase: { mmszYoutubeId: 'Kp4Mvapo5kc', mmszCanal: 'MoureDev by Brais Moure', mmszTitulo: 'Curso completo de Python desde cero' },
+  pyIntermedio: { mmszYoutubeId: 'TbcEqkabAWU', mmszCanal: 'MoureDev by Brais Moure', mmszTitulo: 'Curso de Python desde cero [Intermedio]' },
+  js: { mmszYoutubeId: '1glVfFxj8a4', mmszCanal: 'MoureDev by Brais Moure', mmszTitulo: 'Curso completo de JavaScript desde cero' },
+  cpp: { mmszYoutubeId: 'jS6wb263CIM', mmszCanal: 'Sinergia | CURSOS', mmszTitulo: 'Curso de C++ desde cero para principiantes' },
 } satisfies Record<string, MmszFuente>;
 
 type MmszClaveFuente = keyof typeof MMSZ_FUENTES;
 
-/** "1:34:24" o "57:19" → segundos */
 function mmszSegundos(mmszTiempo: string): number {
-  return mmszTiempo.split(':').map(Number).reduce((total, parte) => total * 60 + parte, 0);
+  return mmszTiempo.split(':').map(Number).reduce((mmszTotal, mmszParte) => mmszTotal * 60 + mmszParte, 0);
 }
 
-/** [título que verá el estudiante, fuente, inicio, fin] */
 type MmszFragmento = [string, MmszClaveFuente, string, string?];
 
 const MMSZ_VIDEOS_POR_LECCION: Record<string, MmszFragmento[]> = {
-  /* ---------- Python ---------- */
   'py-1-1': [['Hola mundo en Python', 'pyBase', '25:17', '48:57']],
   'py-1-2': [['Variables', 'pyBase', '48:57', '1:34:24']],
   'py-2-1': [['Operadores', 'pyBase', '1:34:24', '2:24:03']],
@@ -48,7 +42,6 @@ const MMSZ_VIDEOS_POR_LECCION: Record<string, MmszFragmento[]> = {
   'py-8-2': [['List comprehension', 'pyIntermedio', '53:59', '1:09:02']],
   'py-9-1': [['Clases', 'pyBase', '8:08:47', '8:53:50']],
 
-  /* ---------- JavaScript ---------- */
   'js-1-1': [
     ['¿Qué es JavaScript? Contexto e historia', 'js', '2:54', '15:31'],
     ['Hola mundo en JavaScript', 'js', '39:50', '50:49'],
@@ -71,7 +64,6 @@ const MMSZ_VIDEOS_POR_LECCION: Record<string, MmszFragmento[]> = {
   ],
   'js-9-2': [['Manejo de errores', 'js', '5:12:31', '5:39:52']],
 
-  /* ---------- C++ ---------- */
   'cpp-1-1': [['Nuestro primer programa', 'cpp', '10:16', '16:34']],
   'cpp-1-2': [
     ['Variables', 'cpp', '16:34', '31:08'],
@@ -122,22 +114,21 @@ const MMSZ_VIDEOS_POR_LECCION: Record<string, MmszFragmento[]> = {
   ],
 };
 
-/** Agrega los videos al inicio de cada lección (como en las plataformas de cursos: primero el video). */
 export function mmszConVideos(mmszLeccion: MmszLesson): MmszLesson {
-  const mmszFragmentos = MMSZ_VIDEOS_POR_LECCION[mmszLeccion.id];
+  const mmszFragmentos = MMSZ_VIDEOS_POR_LECCION[mmszLeccion.mmszId];
   if (!mmszFragmentos) return mmszLeccion;
-  const mmszVideos: MmszVideo[] = mmszFragmentos.map(([titulo, clave, inicio, fin], i) => {
-    const mmszFuente = MMSZ_FUENTES[clave];
+  const mmszVideos: MmszVideo[] = mmszFragmentos.map(([mmszTitulo, mmszClave, mmszInicio, mmszFin], mmszI) => {
+    const mmszFuente = MMSZ_FUENTES[mmszClave];
     return {
-      tipo: 'video',
-      id: `${mmszLeccion.id}-v${i + 1}`,
-      titulo: `Video: ${titulo}`,
-      youtubeId: mmszFuente.youtubeId,
-      inicio: mmszSegundos(inicio),
-      fin: fin ? mmszSegundos(fin) : undefined,
-      canal: mmszFuente.canal,
-      descripcion: `Fragmento del video «${mmszFuente.titulo}» de ${mmszFuente.canal}, desde el capítulo «${titulo}».`,
+      mmszTipo: 'video',
+      mmszId: `${mmszLeccion.mmszId}-v${mmszI + 1}`,
+      mmszTitulo: `Video: ${mmszTitulo}`,
+      mmszYoutubeId: mmszFuente.mmszYoutubeId,
+      mmszInicio: mmszSegundos(mmszInicio),
+      mmszFin: mmszFin ? mmszSegundos(mmszFin) : undefined,
+      mmszCanal: mmszFuente.mmszCanal,
+      mmszDescripcion: `Fragmento del video «${mmszFuente.mmszTitulo}» de ${mmszFuente.mmszCanal}, desde el capítulo «${mmszTitulo}».`,
     };
   });
-  return { ...mmszLeccion, items: [...mmszVideos, ...mmszLeccion.items] };
+  return { ...mmszLeccion, mmszItems: [...mmszVideos, ...mmszLeccion.mmszItems] };
 }

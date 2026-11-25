@@ -1,25 +1,23 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Reproductor de un fragmento de video de YouTube (necesita internet).
 import { useEffect, useState } from 'react';
 import type { MmszVideo } from '../types';
 
-const mmszReloj = (s: number) => {
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const seg = String(s % 60).padStart(2, '0');
-  return h ? `${h}:${String(m).padStart(2, '0')}:${seg}` : `${m}:${seg}`;
+const mmszReloj = (mmszS: number) => {
+  const mmszH = Math.floor(mmszS / 3600);
+  const mmszM = Math.floor((mmszS % 3600) / 60);
+  const mmszSeg = String(mmszS % 60).padStart(2, '0');
+  return mmszH ? `${mmszH}:${String(mmszM).padStart(2, '0')}:${mmszSeg}` : `${mmszM}:${mmszSeg}`;
 };
 
 interface MmszProps {
   mmszVideo: MmszVideo;
-  mmszAlternativa?: () => void; // abre la lección animada (offline) de la misma lección
+  mmszAlternativa?: () => void;
 }
 
 export default function MmszVideoVista({ mmszVideo, mmszAlternativa }: MmszProps) {
-  const [mmszEnLinea, setMmszEnLinea] = useState(navigator.onLine);
+  const [mmszEnLinea, mmszSetEnLinea] = useState(navigator.onLine);
 
   useEffect(() => {
-    const mmszCambio = () => setMmszEnLinea(navigator.onLine);
+    const mmszCambio = () => mmszSetEnLinea(navigator.onLine);
     window.addEventListener('online', mmszCambio);
     window.addEventListener('offline', mmszCambio);
     return () => {
@@ -28,11 +26,11 @@ export default function MmszVideoVista({ mmszVideo, mmszAlternativa }: MmszProps
     };
   }, []);
 
-  const mmszParams = new URLSearchParams({ start: String(mmszVideo.inicio), rel: '0', modestbranding: '1' });
-  if (mmszVideo.fin) mmszParams.set('end', String(mmszVideo.fin));
-  const mmszEmbed = `https://www.youtube-nocookie.com/embed/${mmszVideo.youtubeId}?${mmszParams}`;
-  const mmszEnYoutube = `https://www.youtube.com/watch?v=${mmszVideo.youtubeId}&t=${mmszVideo.inicio}s`;
-  const mmszMinutos = mmszVideo.fin ? Math.round((mmszVideo.fin - mmszVideo.inicio) / 60) : null;
+  const mmszParams = new URLSearchParams({ start: String(mmszVideo.mmszInicio), rel: '0', modestbranding: '1' });
+  if (mmszVideo.mmszFin) mmszParams.set('end', String(mmszVideo.mmszFin));
+  const mmszEmbed = `https://www.youtube-nocookie.com/embed/${mmszVideo.mmszYoutubeId}?${mmszParams}`;
+  const mmszEnYoutube = `https://www.youtube.com/watch?v=${mmszVideo.mmszYoutubeId}&t=${mmszVideo.mmszInicio}s`;
+  const mmszMinutos = mmszVideo.mmszFin ? Math.round((mmszVideo.mmszFin - mmszVideo.mmszInicio) / 60) : null;
 
   return (
     <div className="mmsz-video">
@@ -40,7 +38,7 @@ export default function MmszVideoVista({ mmszVideo, mmszAlternativa }: MmszProps
         {mmszEnLinea ? (
           <iframe
             src={mmszEmbed}
-            title={mmszVideo.titulo}
+            title={mmszVideo.mmszTitulo}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
@@ -62,10 +60,10 @@ export default function MmszVideoVista({ mmszVideo, mmszAlternativa }: MmszProps
       <div className="mmsz-video-info">
         <div>
           <b>Acerca de este video</b>
-          <p>{mmszVideo.descripcion}</p>
+          <p>{mmszVideo.mmszDescripcion}</p>
           <small className="muted">
-            Desde {mmszReloj(mmszVideo.inicio)}
-            {mmszVideo.fin ? ` hasta ${mmszReloj(mmszVideo.fin)} · unos ${mmszMinutos} min` : ''} · Canal: {mmszVideo.canal}
+            Desde {mmszReloj(mmszVideo.mmszInicio)}
+            {mmszVideo.mmszFin ? ` hasta ${mmszReloj(mmszVideo.mmszFin)} · unos ${mmszMinutos} min` : ''} · Canal: {mmszVideo.mmszCanal}
           </small>
         </div>
         <a className="mmsz-btn" href={mmszEnYoutube} target="_blank" rel="noreferrer">

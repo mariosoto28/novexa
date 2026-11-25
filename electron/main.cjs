@@ -1,20 +1,14 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Proceso principal de Electron: crea la ventana y guarda el progreso en disco.
-const { app, BrowserWindow, dialog, ipcMain, Menu, protocol, session, shell } = require('electron');
+const { app: mmszApp, BrowserWindow: MmszBrowserWindow, dialog: mmszDialog, ipcMain: mmszIpcMain, Menu: MmszMenu, protocol: mmszProtocol, session: mmszSession, shell: mmszShell } = require('electron');
 const mmszPath = require('path');
-const fs = require('fs');
+const mmszFs = require('fs');
 
 const mmszIsDev = process.argv.includes('--dev');
 
-// Para pruebas: NOVEXA_DATOS=<carpeta> hace que la app use otra carpeta de datos
-// y así no se toca el progreso real del estudiante.
-if (process.env.NOVEXA_DATOS) app.setPath('userData', process.env.NOVEXA_DATOS);
+if (process.env.NOVEXA_DATOS) mmszApp.setPath('userData', process.env.NOVEXA_DATOS);
 const mmszDistDir = mmszPath.join(__dirname, '..', 'dist');
-const mmszProgressFile = () => mmszPath.join(app.getPath('userData'), 'progress.json');
+const mmszProgressFile = () => mmszPath.join(mmszApp.getPath('userData'), 'progress.json');
 
-// En la versión final la interfaz se sirve como app://bundle/... en lugar de file://
-// Así funcionan fetch, los workers y WebAssembly (necesarios para ejecutar Python).
-protocol.registerSchemesAsPrivileged([
+mmszProtocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } },
 ]);
 
@@ -26,132 +20,128 @@ const MMSZ_MIME = {
   '.json': 'application/json',
   '.wasm': 'application/wasm',
   '.zip': 'application/zip',
-  '.svg': 'image/svg+xml',
-  '.png': 'image/png',
 };
 
 function mmszServeApp(mmszRequest) {
   const { pathname: mmszPathname } = new URL(mmszRequest.url);
   const mmszFile = mmszPath.normalize(mmszPath.join(mmszDistDir, decodeURIComponent(mmszPathname)));
-  if (!mmszFile.startsWith(mmszDistDir) || !fs.existsSync(mmszFile) || fs.statSync(mmszFile).isDirectory()) {
+  if (!mmszFile.startsWith(mmszDistDir) || !mmszFs.existsSync(mmszFile) || mmszFs.statSync(mmszFile).isDirectory()) {
     return new Response('No encontrado', { status: 404 });
   }
   const mmszType = MMSZ_MIME[mmszPath.extname(mmszFile).toLowerCase()] || 'application/octet-stream';
-  return new Response(fs.readFileSync(mmszFile), { headers: { 'content-type': mmszType } });
+  return new Response(mmszFs.readFileSync(mmszFile), { headers: { 'content-type': mmszType } });
 }
 
-// Si existe progreso guardado con el nombre anterior de la app (CodeRuta), lo usa.
 function mmszProgresoAnterior() {
-  const mmszCarpetaDatos = mmszPath.dirname(app.getPath('userData'));
+  const mmszCarpetaDatos = mmszPath.dirname(mmszApp.getPath('userData'));
   for (const mmszNombre of ['CodeRuta', 'coderuta']) {
     const mmszArchivo = mmszPath.join(mmszCarpetaDatos, mmszNombre, 'progress.json');
-    if (fs.existsSync(mmszArchivo)) return mmszArchivo;
+    if (mmszFs.existsSync(mmszArchivo)) return mmszArchivo;
   }
   return null;
 }
 
-/* ---------------- Progreso: guardado seguro y copias de seguridad ---------------- */
-
-const MMSZ_COPIAS_DIARIAS = 14; // cuántas copias automáticas se conservan
-const mmszCarpetaCopias = () => mmszPath.join(app.getPath('userData'), 'copias');
+const MMSZ_COPIAS_DIARIAS = 14;
+const mmszCarpetaCopias = () => mmszPath.join(mmszApp.getPath('userData'), 'copias');
 
 function mmszHoy() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const mmszD = new Date();
+  return `${mmszD.getFullYear()}-${String(mmszD.getMonth() + 1).padStart(2, '0')}-${String(mmszD.getDate()).padStart(2, '0')}`;
 }
 
-function mmszEsProgreso(d) {
-  return Boolean(d) && typeof d === 'object' && typeof d.xp === 'number' && d.completed && typeof d.completed === 'object';
+function mmszEsProgreso(mmszD) {
+  return Boolean(mmszD) && typeof mmszD === 'object' && typeof mmszD.mmszXp === 'number' && mmszD.mmszCompleted && typeof mmszD.mmszCompleted === 'object';
+}
+
+function mmszMigrarClaves(mmszObj) {
+  if (!mmszObj || typeof mmszObj !== 'object' || Array.isArray(mmszObj)) return mmszObj;
+  return Object.fromEntries(
+    Object.entries(mmszObj).map(([mmszClave, mmszValor]) => [
+      /^mmsz/.test(mmszClave) ? mmszClave : 'mmsz' + mmszClave[0].toUpperCase() + mmszClave.slice(1),
+      mmszValor,
+    ]),
+  );
 }
 
 function mmszLeerProgreso(mmszArchivo) {
-  const d = JSON.parse(fs.readFileSync(mmszArchivo, 'utf8'));
-  if (!mmszEsProgreso(d)) throw new Error('El archivo no tiene el formato de progreso de Novexa');
-  return d;
+  const mmszD = mmszMigrarClaves(JSON.parse(mmszFs.readFileSync(mmszArchivo, 'utf8')));
+  if (!mmszEsProgreso(mmszD)) throw new Error('El archivo no tiene el formato de progreso de Novexa');
+  return mmszD;
 }
 
-/** Escribe primero en un archivo temporal y luego lo renombra: si se corta la luz, el original no se daña. */
 function mmszEscribirSeguro(mmszArchivo, mmszDatos) {
-  fs.mkdirSync(mmszPath.dirname(mmszArchivo), { recursive: true });
+  mmszFs.mkdirSync(mmszPath.dirname(mmszArchivo), { recursive: true });
   const mmszTemporal = mmszArchivo + '.tmp';
-  fs.writeFileSync(mmszTemporal, JSON.stringify(mmszDatos, null, 2), 'utf8');
-  fs.renameSync(mmszTemporal, mmszArchivo);
+  mmszFs.writeFileSync(mmszTemporal, JSON.stringify(mmszDatos, null, 2), 'utf8');
+  mmszFs.renameSync(mmszTemporal, mmszArchivo);
 }
 
-/** Una copia por día (se actualiza durante el día) y se borran las más antiguas. */
 function mmszCopiaDiaria(mmszDatos) {
   mmszEscribirSeguro(mmszPath.join(mmszCarpetaCopias(), `progreso-${mmszHoy()}.json`), mmszDatos);
-  const mmszDiarias = fs
+  const mmszDiarias = mmszFs
     .readdirSync(mmszCarpetaCopias())
-    .filter((f) => /^progreso-\d{4}-\d{2}-\d{2}\.json$/.test(f))
+    .filter((mmszF) => /^progreso-\d{4}-\d{2}-\d{2}\.json$/.test(mmszF))
     .sort()
     .reverse();
-  for (const f of mmszDiarias.slice(MMSZ_COPIAS_DIARIAS)) fs.unlinkSync(mmszPath.join(mmszCarpetaCopias(), f));
+  for (const mmszF of mmszDiarias.slice(MMSZ_COPIAS_DIARIAS)) mmszFs.unlinkSync(mmszPath.join(mmszCarpetaCopias(), mmszF));
 }
 
 function mmszListarCopias() {
-  if (!fs.existsSync(mmszCarpetaCopias())) return [];
-  return fs
+  if (!mmszFs.existsSync(mmszCarpetaCopias())) return [];
+  return mmszFs
     .readdirSync(mmszCarpetaCopias())
-    .filter((f) => /^progreso-[\w-]+\.json$/.test(f))
-    .map((f) => {
-      const mmszArchivo = mmszPath.join(mmszCarpetaCopias(), f);
+    .filter((mmszF) => /^progreso-[\w-]+\.json$/.test(mmszF))
+    .map((mmszF) => {
+      const mmszArchivo = mmszPath.join(mmszCarpetaCopias(), mmszF);
       try {
-        const d = mmszLeerProgreso(mmszArchivo);
-        return { nombre: f, fecha: fs.statSync(mmszArchivo).mtime.toISOString(), datos: d };
+        const mmszD = mmszLeerProgreso(mmszArchivo);
+        return { mmszNombre: mmszF, mmszFecha: mmszFs.statSync(mmszArchivo).mtime.toISOString(), mmszDatos: mmszD };
       } catch {
         return null;
       }
     })
     .filter(Boolean)
-    .sort((a, b) => b.fecha.localeCompare(a.fecha));
+    .sort((mmszA, mmszB) => mmszB.mmszFecha.localeCompare(mmszA.mmszFecha));
 }
 
-ipcMain.handle('progress:load', () => {
-  // 1) El archivo normal
-  if (fs.existsSync(mmszProgressFile())) {
+mmszIpcMain.handle('progress:load', () => {
+  if (mmszFs.existsSync(mmszProgressFile())) {
     try {
-      return { datos: mmszLeerProgreso(mmszProgressFile()), aviso: null };
+      return { mmszDatos: mmszLeerProgreso(mmszProgressFile()), mmszAviso: null };
     } catch {
-      // Está dañado: se aparta (no se borra) y se intenta recuperar desde una copia.
-      fs.renameSync(mmszProgressFile(), mmszProgressFile().replace(/\.json$/, `-danado-${Date.now()}.json`));
+      mmszFs.renameSync(mmszProgressFile(), mmszProgressFile().replace(/\.json$/, `-danado-${Date.now()}.json`));
       const mmszCopia = mmszListarCopias()[0];
       if (mmszCopia) {
-        mmszEscribirSeguro(mmszProgressFile(), mmszCopia.datos);
-        const mmszFecha = new Date(mmszCopia.fecha).toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short', hourCycle: 'h23' });
-        return { datos: mmszCopia.datos, aviso: `Tu archivo de progreso estaba dañado. Se recuperó la copia de seguridad del ${mmszFecha}` };
+        mmszEscribirSeguro(mmszProgressFile(), mmszCopia.mmszDatos);
+        const mmszFecha = new Date(mmszCopia.mmszFecha).toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short', hourCycle: 'h23' });
+        return { mmszDatos: mmszCopia.mmszDatos, mmszAviso: `Tu archivo de progreso estaba dañado. Se recuperó la copia de seguridad del ${mmszFecha}` };
       }
-      return { datos: null, aviso: 'Tu archivo de progreso estaba dañado y no había copias de seguridad. Se empezó un progreso nuevo.' };
+      return { mmszDatos: null, mmszAviso: 'Tu archivo de progreso estaba dañado y no había copias de seguridad. Se empezó un progreso nuevo.' };
     }
   }
-  // 2) Progreso guardado con el nombre anterior de la app
   const mmszAnterior = mmszProgresoAnterior();
   if (mmszAnterior) {
     try {
-      return { datos: mmszLeerProgreso(mmszAnterior), aviso: null };
-    } catch {
-      /* se ignora */
-    }
+      return { mmszDatos: mmszLeerProgreso(mmszAnterior), mmszAviso: null };
+    } catch {}
   }
-  return { datos: null, aviso: null };
+  return { mmszDatos: null, mmszAviso: null };
 });
 
-ipcMain.handle('progress:save', (_event, mmszDatos) => {
+mmszIpcMain.handle('progress:save', (mmszEvent, mmszDatos) => {
   if (!mmszEsProgreso(mmszDatos)) return false;
   mmszEscribirSeguro(mmszProgressFile(), mmszDatos);
   try {
     mmszCopiaDiaria(mmszDatos);
-  } catch {
-    /* una copia fallida no debe impedir guardar */
-  }
+  } catch {}
   return true;
 });
 
-ipcMain.handle('progress:copias', () =>
-  mmszListarCopias().map(({ nombre, fecha, datos }) => ({ nombre, fecha, datos })),
+mmszIpcMain.handle('progress:copias', () =>
+  mmszListarCopias().map(({ mmszNombre, mmszFecha, mmszDatos }) => ({ mmszNombre, mmszFecha, mmszDatos })),
 );
 
-ipcMain.handle('progress:copiaManual', (_event, mmszDatos, mmszEtiqueta) => {
+mmszIpcMain.handle('progress:copiaManual', (mmszEvent, mmszDatos, mmszEtiqueta) => {
   if (!mmszEsProgreso(mmszDatos)) return false;
   const mmszMarca = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const mmszLimpia = String(mmszEtiqueta || 'manual').replace(/[^\w-]/g, '').slice(0, 30);
@@ -159,33 +149,33 @@ ipcMain.handle('progress:copiaManual', (_event, mmszDatos, mmszEtiqueta) => {
   return true;
 });
 
-ipcMain.handle('progress:exportar', async (event, mmszContenido) => {
-  const mmszVentana = BrowserWindow.fromWebContents(event.sender);
-  const { canceled, filePath } = await dialog.showSaveDialog(mmszVentana, {
+mmszIpcMain.handle('progress:exportar', async (mmszEvent, mmszContenido) => {
+  const mmszVentana = MmszBrowserWindow.fromWebContents(mmszEvent.sender);
+  const { canceled: mmszCanceled, filePath: mmszFilePath } = await mmszDialog.showSaveDialog(mmszVentana, {
     title: 'Exportar progreso de Novexa',
-    defaultPath: mmszPath.join(app.getPath('documents'), `novexa-progreso-${mmszHoy()}.json`),
+    defaultPath: mmszPath.join(mmszApp.getPath('documents'), `novexa-progreso-${mmszHoy()}.json`),
     filters: [{ name: 'Progreso de Novexa', extensions: ['json'] }],
   });
-  if (canceled || !filePath) return { ok: false };
-  fs.writeFileSync(filePath, mmszContenido, 'utf8');
-  return { ok: true, ruta: filePath };
+  if (mmszCanceled || !mmszFilePath) return { mmszOk: false };
+  mmszFs.writeFileSync(mmszFilePath, mmszContenido, 'utf8');
+  return { mmszOk: true, mmszRuta: mmszFilePath };
 });
 
-ipcMain.handle('progress:importar', async (event) => {
-  const mmszVentana = BrowserWindow.fromWebContents(event.sender);
-  const { canceled, filePaths } = await dialog.showOpenDialog(mmszVentana, {
+mmszIpcMain.handle('progress:importar', async (mmszEvent) => {
+  const mmszVentana = MmszBrowserWindow.fromWebContents(mmszEvent.sender);
+  const { canceled: mmszCanceled, filePaths: mmszFilePaths } = await mmszDialog.showOpenDialog(mmszVentana, {
     title: 'Importar progreso de Novexa',
-    defaultPath: app.getPath('documents'),
+    defaultPath: mmszApp.getPath('documents'),
     filters: [{ name: 'Progreso de Novexa', extensions: ['json'] }],
     properties: ['openFile'],
   });
-  if (canceled || !filePaths[0]) return { ok: false };
-  if (fs.statSync(filePaths[0]).size > 5 * 1024 * 1024) return { ok: false, error: 'El archivo es demasiado grande.' };
-  return { ok: true, contenido: fs.readFileSync(filePaths[0], 'utf8') };
+  if (mmszCanceled || !mmszFilePaths[0]) return { mmszOk: false };
+  if (mmszFs.statSync(mmszFilePaths[0]).size > 5 * 1024 * 1024) return { mmszOk: false, mmszError: 'El archivo es demasiado grande.' };
+  return { mmszOk: true, mmszContenido: mmszFs.readFileSync(mmszFilePaths[0], 'utf8') };
 });
 
 function mmszCreateWindow() {
-  const mmszWin = new BrowserWindow({
+  const mmszWin = new MmszBrowserWindow({
     width: 1100,
     height: 760,
     minWidth: 800,
@@ -199,21 +189,18 @@ function mmszCreateWindow() {
     },
   });
 
-  // Los enlaces externos (por ejemplo "Ver en YouTube") se abren en el navegador del usuario.
-  mmszWin.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//.test(url)) shell.openExternal(url);
+  mmszWin.webContents.setWindowOpenHandler(({ url: mmszUrl }) => {
+    if (/^https?:\/\//.test(mmszUrl)) mmszShell.openExternal(mmszUrl);
     return { action: 'deny' };
   });
 
   mmszWin.loadURL(mmszIsDev ? 'http://localhost:5173' : 'app://bundle/index.html');
 }
 
-app.whenReady().then(() => {
-  protocol.handle('app', mmszServeApp);
+mmszApp.whenReady().then(() => {
+  mmszProtocol.handle('app', mmszServeApp);
 
-  // YouTube necesita saber desde qué página se inserta el video. Como la app se sirve
-  // desde app://, el navegador no envía esa información y el video mostraría un error.
-  session.defaultSession.webRequest.onBeforeSendHeaders(
+  mmszSession.defaultSession.webRequest.onBeforeSendHeaders(
     { urls: ['https://*.youtube-nocookie.com/*', 'https://*.youtube.com/*'] },
     (mmszDetalle, mmszResponder) => {
       const mmszCabeceras = mmszDetalle.requestHeaders;
@@ -221,13 +208,13 @@ app.whenReady().then(() => {
       mmszResponder({ requestHeaders: mmszCabeceras });
     },
   );
-  if (!mmszIsDev) Menu.setApplicationMenu(null);
+  if (!mmszIsDev) MmszMenu.setApplicationMenu(null);
   mmszCreateWindow();
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) mmszCreateWindow();
+  mmszApp.on('activate', () => {
+    if (MmszBrowserWindow.getAllWindows().length === 0) mmszCreateWindow();
   });
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+mmszApp.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') mmszApp.quit();
 });

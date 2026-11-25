@@ -1,5 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Curso de Python: de lo básico a lo avanzado (9 unidades).
 import type { MmszCourse } from '../types';
 import {
   mmszCompleta,
@@ -17,13 +15,12 @@ import {
 } from './mmszAutor';
 
 export const mmszPython: MmszCourse = {
-  id: 'python',
-  name: 'Python',
-  tagline: 'El lenguaje ideal para empezar',
-  color: '#3fb6a8',
-  icon: '🐍',
-  units: [
-    /* =============================== BÁSICO =============================== */
+  mmszId: 'python',
+  mmszName: 'Python',
+  mmszTagline: 'El lenguaje ideal para empezar',
+  mmszColor: '#3fb6a8',
+  mmszIcon: '🐍',
+  mmszUnits: [
     mmszUnidad('Básico', 'Primeros pasos', 'Qué es programar, cómo mostrar mensajes y cómo guardar datos en variables.', [
       mmszLeccion('py-1-1', 'Hola, mundo', 'Tu primer programa: mostrar texto en pantalla y escribir comentarios.', [
         mmszLectura('¿Qué es programar?', `
@@ -62,11 +59,11 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Saluda', `
             Escribe un programa que muestre exactamente el texto «Hola, soy estudiante».
           `, {
-            inicio: '# Escribe tu código aquí\n',
-            pista: 'print("...")',
-            salida: 'Hola, soy estudiante',
-            requiere: ['print'],
-            solucion: 'print("Hola, soy estudiante")',
+            mmszInicio: '# Escribe tu código aquí\n',
+            mmszPista: 'print("...")',
+            mmszSalida: 'Hola, soy estudiante',
+            mmszRequiere: ['print'],
+            mmszSolucion: 'print("Hola, soy estudiante")',
           }),
           mmszPaso('Agrega más líneas', `
             Debajo, agrega dos líneas más para que el programa muestre en total:
@@ -75,9 +72,9 @@ export const mmszPython: MmszCourse = {
             - «Estudio Ingeniería de Sistemas»
             - «Me gusta programar»
           `, {
-            pista: 'Cada print() muestra una línea.',
-            salida: 'Hola, soy estudiante\nEstudio Ingeniería de Sistemas\nMe gusta programar',
-            solucion: 'print("Hola, soy estudiante")\nprint("Estudio Ingeniería de Sistemas")\nprint("Me gusta programar")',
+            mmszPista: 'Cada print() muestra una línea.',
+            mmszSalida: 'Hola, soy estudiante\nEstudio Ingeniería de Sistemas\nMe gusta programar',
+            mmszSolucion: 'print("Hola, soy estudiante")\nprint("Estudio Ingeniería de Sistemas")\nprint("Me gusta programar")',
           }),
         ]),
       ], [
@@ -136,18 +133,18 @@ export const mmszPython: MmszCourse = {
             Crea tres variables: «nombre» con el valor «"Luis"», «ciclo» con el valor «3» y «promedio» con el valor «15.5».
             Luego muéstralas en ese orden, cada una con su propio «print()».
           `, {
-            inicio: '# Crea tus variables aquí\n',
-            pista: 'nombre = "Luis"\nprint(nombre)',
-            salida: 'Luis\n3\n15.5',
-            requiere: ['nombre', 'ciclo', 'promedio'],
-            solucion: 'nombre = "Luis"\nciclo = 3\npromedio = 15.5\nprint(nombre)\nprint(ciclo)\nprint(promedio)',
+            mmszInicio: '# Crea tus variables aquí\n',
+            mmszPista: 'nombre = "Luis"\nprint(nombre)',
+            mmszSalida: 'Luis\n3\n15.5',
+            mmszRequiere: ['nombre', 'ciclo', 'promedio'],
+            mmszSolucion: 'nombre = "Luis"\nciclo = 3\npromedio = 15.5\nprint(nombre)\nprint(ciclo)\nprint(promedio)',
           }),
           mmszPaso('Pasa al siguiente ciclo', `
             Antes de los «print()», agrega una línea que aumente «ciclo» en 1 usando la misma variable («ciclo = ciclo + 1»). Ahora debe mostrarse 4.
           `, {
-            salida: 'Luis\n4\n15.5',
-            requiere: ['ciclo = ciclo + 1'],
-            solucion: 'nombre = "Luis"\nciclo = 3\npromedio = 15.5\nciclo = ciclo + 1\nprint(nombre)\nprint(ciclo)\nprint(promedio)',
+            mmszSalida: 'Luis\n4\n15.5',
+            mmszRequiere: ['ciclo = ciclo + 1'],
+            mmszSolucion: 'nombre = "Luis"\nciclo = 3\npromedio = 15.5\nciclo = ciclo + 1\nprint(nombre)\nprint(ciclo)\nprint(promedio)',
           }),
         ]),
         mmszProyecto('ficha personal', [
@@ -161,17 +158,17 @@ export const mmszPython: MmszCourse = {
             Edad: 20
             ~~~
           `, {
-            inicio: '',
-            pista: 'print("Nombre:", nombre)',
-            salida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20',
-            requiere: ['nombre', 'carrera', 'edad'],
-            solucion: 'nombre = "Mario"\ncarrera = "Sistemas"\nedad = 20\nprint("Nombre:", nombre)\nprint("Carrera:", carrera)\nprint("Edad:", edad)',
+            mmszInicio: '',
+            mmszPista: 'print("Nombre:", nombre)',
+            mmszSalida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20',
+            mmszRequiere: ['nombre', 'carrera', 'edad'],
+            mmszSolucion: 'nombre = "Mario"\ncarrera = "Sistemas"\nedad = 20\nprint("Nombre:", nombre)\nprint("Carrera:", carrera)\nprint("Edad:", edad)',
           }),
           mmszPaso('Cumpleaños', `
             Al final, suma 1 a «edad» y muestra «Edad el próximo año: 21».
           `, {
-            salida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20\nEdad el próximo año: 21',
-            solucion: 'nombre = "Mario"\ncarrera = "Sistemas"\nedad = 20\nprint("Nombre:", nombre)\nprint("Carrera:", carrera)\nprint("Edad:", edad)\nedad = edad + 1\nprint("Edad el próximo año:", edad)',
+            mmszSalida: 'Nombre: Mario\nCarrera: Sistemas\nEdad: 20\nEdad el próximo año: 21',
+            mmszSolucion: 'nombre = "Mario"\ncarrera = "Sistemas"\nedad = 20\nprint("Nombre:", nombre)\nprint("Carrera:", carrera)\nprint("Edad:", edad)\nedad = edad + 1\nprint("Edad el próximo año:", edad)',
           }),
         ]),
         mmszRepaso('primeros pasos', `
@@ -231,18 +228,18 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Promedio', `
             Tienes tres notas: «n1 = 14», «n2 = 17» y «n3 = 11». Calcula el promedio en una variable «promedio» y muéstralo.
           `, {
-            inicio: 'n1 = 14\nn2 = 17\nn3 = 11\n',
-            pista: 'promedio = (n1 + n2 + n3) / 3',
-            salida: '14.0',
-            requiere: ['promedio'],
-            solucion: 'n1 = 14\nn2 = 17\nn3 = 11\npromedio = (n1 + n2 + n3) / 3\nprint(promedio)',
+            mmszInicio: 'n1 = 14\nn2 = 17\nn3 = 11\n',
+            mmszPista: 'promedio = (n1 + n2 + n3) / 3',
+            mmszSalida: '14.0',
+            mmszRequiere: ['promedio'],
+            mmszSolucion: 'n1 = 14\nn2 = 17\nn3 = 11\npromedio = (n1 + n2 + n3) / 3\nprint(promedio)',
           }),
           mmszPaso('Puntos que faltan', `
             Para llegar a 20 de promedio, ¿cuántos puntos faltan? Agrega «faltan = 20 - promedio» y muéstralo debajo.
           `, {
-            salida: '14.0\n6.0',
-            requiere: ['faltan'],
-            solucion: 'n1 = 14\nn2 = 17\nn3 = 11\npromedio = (n1 + n2 + n3) / 3\nprint(promedio)\nfaltan = 20 - promedio\nprint(faltan)',
+            mmszSalida: '14.0\n6.0',
+            mmszRequiere: ['faltan'],
+            mmszSolucion: 'n1 = 14\nn2 = 17\nn3 = 11\npromedio = (n1 + n2 + n3) / 3\nprint(promedio)\nfaltan = 20 - promedio\nprint(faltan)',
           }),
         ]),
       ], [
@@ -303,35 +300,35 @@ export const mmszPython: MmszCourse = {
             Tienes «producto = "Cuaderno"», «precio = 4.5» y «cantidad = 3».
             Calcula «total = precio * cantidad» y muestra con una f-string: «Cuaderno x3 = 13.5».
           `, {
-            inicio: 'producto = "Cuaderno"\nprecio = 4.5\ncantidad = 3\n',
-            pista: 'print(f"{producto} x{cantidad} = {total}")',
-            salida: 'Cuaderno x3 = 13.5',
-            requiere: ['total', 'f"'],
-            solucion: 'producto = "Cuaderno"\nprecio = 4.5\ncantidad = 3\ntotal = precio * cantidad\nprint(f"{producto} x{cantidad} = {total}")',
+            mmszInicio: 'producto = "Cuaderno"\nprecio = 4.5\ncantidad = 3\n',
+            mmszPista: 'print(f"{producto} x{cantidad} = {total}")',
+            mmszSalida: 'Cuaderno x3 = 13.5',
+            mmszRequiere: ['total', 'f"'],
+            mmszSolucion: 'producto = "Cuaderno"\nprecio = 4.5\ncantidad = 3\ntotal = precio * cantidad\nprint(f"{producto} x{cantidad} = {total}")',
           }),
           mmszPaso('Con IGV', `
             Agrega una línea que muestre el total con 18% de IGV y dos decimales: «Con IGV: 15.93».
           `, {
-            pista: 'print(f"Con IGV: {total * 1.18:.2f}")',
-            salida: 'Cuaderno x3 = 13.5\nCon IGV: 15.93',
-            solucion: 'producto = "Cuaderno"\nprecio = 4.5\ncantidad = 3\ntotal = precio * cantidad\nprint(f"{producto} x{cantidad} = {total}")\nprint(f"Con IGV: {total * 1.18:.2f}")',
+            mmszPista: 'print(f"Con IGV: {total * 1.18:.2f}")',
+            mmszSalida: 'Cuaderno x3 = 13.5\nCon IGV: 15.93',
+            mmszSolucion: 'producto = "Cuaderno"\nprecio = 4.5\ncantidad = 3\ntotal = precio * cantidad\nprint(f"{producto} x{cantidad} = {total}")\nprint(f"Con IGV: {total * 1.18:.2f}")',
           }),
         ]),
         mmszProyecto('conversor de temperatura', [
           mmszPaso('Celsius a Fahrenheit', `
             Con «celsius = 25», calcula «fahrenheit = celsius * 9 / 5 + 32» y muestra «25 °C = 77.0 °F».
           `, {
-            inicio: 'celsius = 25\n',
-            salida: '25 °C = 77.0 °F',
-            requiere: ['fahrenheit'],
-            solucion: 'celsius = 25\nfahrenheit = celsius * 9 / 5 + 32\nprint(f"{celsius} °C = {fahrenheit} °F")',
+            mmszInicio: 'celsius = 25\n',
+            mmszSalida: '25 °C = 77.0 °F',
+            mmszRequiere: ['fahrenheit'],
+            mmszSolucion: 'celsius = 25\nfahrenheit = celsius * 9 / 5 + 32\nprint(f"{celsius} °C = {fahrenheit} °F")',
           }),
           mmszPaso('Y a Kelvin', `
             Agrega «kelvin = celsius + 273.15» y muestra «25 °C = 298.15 K».
           `, {
-            salida: '25 °C = 77.0 °F\n25 °C = 298.15 K',
-            requiere: ['kelvin'],
-            solucion: 'celsius = 25\nfahrenheit = celsius * 9 / 5 + 32\nprint(f"{celsius} °C = {fahrenheit} °F")\nkelvin = celsius + 273.15\nprint(f"{celsius} °C = {kelvin} K")',
+            mmszSalida: '25 °C = 77.0 °F\n25 °C = 298.15 K',
+            mmszRequiere: ['kelvin'],
+            mmszSolucion: 'celsius = 25\nfahrenheit = celsius * 9 / 5 + 32\nprint(f"{celsius} °C = {fahrenheit} °F")\nkelvin = celsius + 273.15\nprint(f"{celsius} °C = {kelvin} K")',
           }),
         ]),
         mmszRepaso('operaciones y textos', `
@@ -384,18 +381,18 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Mayor de edad', `
             Con «edad = 17», muestra el resultado de comparar si la edad es mayor o igual a 18.
           `, {
-            inicio: 'edad = 17\n',
-            salida: 'False',
-            requiere: ['>='],
-            solucion: 'edad = 17\nprint(edad >= 18)',
+            mmszInicio: 'edad = 17\n',
+            mmszSalida: 'False',
+            mmszRequiere: ['>='],
+            mmszSolucion: 'edad = 17\nprint(edad >= 18)',
           }),
           mmszPaso('Rango de edad', `
             Agrega otra línea que muestre si la edad está **entre 13 y 19** (ambos incluidos) usando «and».
           `, {
-            pista: 'print(edad >= 13 and edad <= 19)',
-            salida: 'False\nTrue',
-            requiere: ['and'],
-            solucion: 'edad = 17\nprint(edad >= 18)\nprint(edad >= 13 and edad <= 19)',
+            mmszPista: 'print(edad >= 13 and edad <= 19)',
+            mmszSalida: 'False\nTrue',
+            mmszRequiere: ['and'],
+            mmszSolucion: 'edad = 17\nprint(edad >= 18)\nprint(edad >= 13 and edad <= 19)',
           }),
         ]),
       ], [
@@ -445,11 +442,11 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Revisa el número', `
             Con «numero = 7», usa «if» y «else» con el operador «%» para mostrar «7 es impar» (o «es par» si fuera par). Usa una f-string.
           `, {
-            inicio: 'numero = 7\n',
-            pista: 'if numero % 2 == 0:\n    print(f"{numero} es par")',
-            salida: '7 es impar',
-            requiere: ['if', 'else', '%'],
-            solucion: 'numero = 7\nif numero % 2 == 0:\n    print(f"{numero} es par")\nelse:\n    print(f"{numero} es impar")',
+            mmszInicio: 'numero = 7\n',
+            mmszPista: 'if numero % 2 == 0:\n    print(f"{numero} es par")',
+            mmszSalida: '7 es impar',
+            mmszRequiere: ['if', 'else', '%'],
+            mmszSolucion: 'numero = 7\nif numero % 2 == 0:\n    print(f"{numero} es par")\nelse:\n    print(f"{numero} es impar")',
           }),
         ]),
         mmszProyecto('sistema de calificaciones', [
@@ -461,16 +458,16 @@ export const mmszPython: MmszCourse = {
             - 11 a 13: «C»
             - menos de 11: «D»
           `, {
-            inicio: 'nota = 14\n',
-            salida: 'B',
-            requiere: ['if', 'elif', 'else'],
-            solucion: 'nota = 14\nif nota >= 18:\n    print("A")\nelif nota >= 14:\n    print("B")\nelif nota >= 11:\n    print("C")\nelse:\n    print("D")',
+            mmszInicio: 'nota = 14\n',
+            mmszSalida: 'B',
+            mmszRequiere: ['if', 'elif', 'else'],
+            mmszSolucion: 'nota = 14\nif nota >= 18:\n    print("A")\nelif nota >= 14:\n    print("B")\nelif nota >= 11:\n    print("C")\nelse:\n    print("D")',
           }),
           mmszPaso('Mensaje final', `
             Después del bloque anterior, agrega otro «if» que muestre «Aprobado» si la nota es 11 o más, y «Desaprobado» si no.
           `, {
-            salida: 'B\nAprobado',
-            solucion: 'nota = 14\nif nota >= 18:\n    print("A")\nelif nota >= 14:\n    print("B")\nelif nota >= 11:\n    print("C")\nelse:\n    print("D")\nif nota >= 11:\n    print("Aprobado")\nelse:\n    print("Desaprobado")',
+            mmszSalida: 'B\nAprobado',
+            mmszSolucion: 'nota = 14\nif nota >= 18:\n    print("A")\nelif nota >= 14:\n    print("B")\nelif nota >= 11:\n    print("C")\nelse:\n    print("D")\nif nota >= 11:\n    print("Aprobado")\nelse:\n    print("Desaprobado")',
           }),
         ]),
         mmszRepaso('decisiones', `
@@ -489,7 +486,6 @@ export const mmszPython: MmszCourse = {
       ]),
     ]),
 
-    /* ============================= INTERMEDIO ============================= */
     mmszUnidad('Intermedio', 'Bucles', 'Repetir instrucciones con for y while, y controlar los bucles con break y continue.', [
       mmszLeccion('py-4-1', 'Bucle for y range', 'Repetir un bloque un número de veces o recorrer una secuencia.', [
         mmszLectura('Repetir con for', `
@@ -530,18 +526,18 @@ export const mmszPython: MmszCourse = {
           mmszPaso('La tabla del 7', `
             Usa «for» y «range» para mostrar la tabla del 7 del 1 al 5, con el formato «7 x 1 = 7».
           `, {
-            inicio: 'numero = 7\n',
-            pista: 'for i in range(1, 6):\n    print(f"{numero} x {i} = {numero * i}")',
-            salida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35',
-            requiere: ['for', 'range'],
-            solucion: 'numero = 7\nfor i in range(1, 6):\n    print(f"{numero} x {i} = {numero * i}")',
+            mmszInicio: 'numero = 7\n',
+            mmszPista: 'for i in range(1, 6):\n    print(f"{numero} x {i} = {numero * i}")',
+            mmszSalida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35',
+            mmszRequiere: ['for', 'range'],
+            mmszSolucion: 'numero = 7\nfor i in range(1, 6):\n    print(f"{numero} x {i} = {numero * i}")',
           }),
           mmszPaso('Suma de resultados', `
             Agrega un acumulador «suma» que sume todos los resultados y muéstralo al final como «Suma: 105».
           `, {
-            salida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\nSuma: 105',
-            requiere: ['suma'],
-            solucion: 'numero = 7\nsuma = 0\nfor i in range(1, 6):\n    print(f"{numero} x {i} = {numero * i}")\n    suma = suma + numero * i\nprint(f"Suma: {suma}")',
+            mmszSalida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\nSuma: 105',
+            mmszRequiere: ['suma'],
+            mmszSolucion: 'numero = 7\nsuma = 0\nfor i in range(1, 6):\n    print(f"{numero} x {i} = {numero * i}")\n    suma = suma + numero * i\nprint(f"Suma: {suma}")',
           }),
         ]),
       ], [
@@ -593,36 +589,36 @@ export const mmszPython: MmszCourse = {
           mmszPaso('¿Cuántos meses?', `
             Ahorras 150 soles por mes y quieres llegar a 1000. Usa «while» para contar los meses necesarios y muestra «Meses: 7».
           `, {
-            inicio: 'ahorro = 0\nmeses = 0\n',
-            pista: 'while ahorro < 1000:\n    ahorro += 150\n    meses += 1',
-            salida: 'Meses: 7',
-            requiere: ['while'],
-            solucion: 'ahorro = 0\nmeses = 0\nwhile ahorro < 1000:\n    ahorro += 150\n    meses += 1\nprint(f"Meses: {meses}")',
+            mmszInicio: 'ahorro = 0\nmeses = 0\n',
+            mmszPista: 'while ahorro < 1000:\n    ahorro += 150\n    meses += 1',
+            mmszSalida: 'Meses: 7',
+            mmszRequiere: ['while'],
+            mmszSolucion: 'ahorro = 0\nmeses = 0\nwhile ahorro < 1000:\n    ahorro += 150\n    meses += 1\nprint(f"Meses: {meses}")',
           }),
           mmszPaso('Lo que sobra', `
             Muestra también cuánto ahorraste en total: «Ahorro: 1050».
           `, {
-            salida: 'Meses: 7\nAhorro: 1050',
-            solucion: 'ahorro = 0\nmeses = 0\nwhile ahorro < 1000:\n    ahorro += 150\n    meses += 1\nprint(f"Meses: {meses}")\nprint(f"Ahorro: {ahorro}")',
+            mmszSalida: 'Meses: 7\nAhorro: 1050',
+            mmszSolucion: 'ahorro = 0\nmeses = 0\nwhile ahorro < 1000:\n    ahorro += 150\n    meses += 1\nprint(f"Meses: {meses}")\nprint(f"Ahorro: {ahorro}")',
           }),
         ]),
         mmszProyecto('adivina el número', [
           mmszPaso('Búsqueda automática', `
             El número secreto es «secreto = 37». Simula intentos desde 1 hacia arriba con «while True» y sal con «break» cuando aciertes. Muestra «Adivinado en 37 intentos».
           `, {
-            inicio: 'secreto = 37\nintento = 0\n',
-            pista: 'while True:\n    intento += 1\n    if intento == secreto:\n        break',
-            salida: 'Adivinado en 37 intentos',
-            requiere: ['while', 'break'],
-            solucion: 'secreto = 37\nintento = 0\nwhile True:\n    intento += 1\n    if intento == secreto:\n        break\nprint(f"Adivinado en {intento} intentos")',
+            mmszInicio: 'secreto = 37\nintento = 0\n',
+            mmszPista: 'while True:\n    intento += 1\n    if intento == secreto:\n        break',
+            mmszSalida: 'Adivinado en 37 intentos',
+            mmszRequiere: ['while', 'break'],
+            mmszSolucion: 'secreto = 37\nintento = 0\nwhile True:\n    intento += 1\n    if intento == secreto:\n        break\nprint(f"Adivinado en {intento} intentos")',
           }),
           mmszPaso('Búsqueda binaria', `
             Ahora busca más inteligente: entre «bajo = 1» y «alto = 100», prueba siempre el punto medio «(bajo + alto) // 2». Si el medio es menor que el secreto, «bajo = medio + 1»; si es mayor, «alto = medio - 1». Cuenta los intentos y muestra «Binaria: 3 intentos». ¡Mucho mejor que 37!
           `, {
-            pista: 'medio = (bajo + alto) // 2',
-            salida: 'Adivinado en 37 intentos\nBinaria: 3 intentos',
-            requiere: ['bajo', 'alto', '//'],
-            solucion: 'secreto = 37\nintento = 0\nwhile True:\n    intento += 1\n    if intento == secreto:\n        break\nprint(f"Adivinado en {intento} intentos")\nbajo = 1\nalto = 100\nintentos = 0\nwhile bajo <= alto:\n    intentos += 1\n    medio = (bajo + alto) // 2\n    if medio == secreto:\n        break\n    elif medio < secreto:\n        bajo = medio + 1\n    else:\n        alto = medio - 1\nprint(f"Binaria: {intentos} intentos")',
+            mmszPista: 'medio = (bajo + alto) // 2',
+            mmszSalida: 'Adivinado en 37 intentos\nBinaria: 3 intentos',
+            mmszRequiere: ['bajo', 'alto', '//'],
+            mmszSolucion: 'secreto = 37\nintento = 0\nwhile True:\n    intento += 1\n    if intento == secreto:\n        break\nprint(f"Adivinado en {intento} intentos")\nbajo = 1\nalto = 100\nintentos = 0\nwhile bajo <= alto:\n    intentos += 1\n    medio = (bajo + alto) // 2\n    if medio == secreto:\n        break\n    elif medio < secreto:\n        bajo = medio + 1\n    else:\n        alto = medio - 1\nprint(f"Binaria: {intentos} intentos")',
           }),
         ]),
         mmszRepaso('bucles', `
@@ -675,17 +671,17 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Agrega productos', `
             Empieza con «compras = ["pan", "leche"]». Agrega «"huevos"» al final con «append» y muestra la lista.
           `, {
-            inicio: 'compras = ["pan", "leche"]\n',
-            salida: "['pan', 'leche', 'huevos']",
-            requiere: ['append'],
-            solucion: 'compras = ["pan", "leche"]\ncompras.append("huevos")\nprint(compras)',
+            mmszInicio: 'compras = ["pan", "leche"]\n',
+            mmszSalida: "['pan', 'leche', 'huevos']",
+            mmszRequiere: ['append'],
+            mmszSolucion: 'compras = ["pan", "leche"]\ncompras.append("huevos")\nprint(compras)',
           }),
           mmszPaso('Quita y cuenta', `
             Quita «"leche"» con «remove» y muestra la lista y luego «Total: 2» usando «len».
           `, {
-            salida: "['pan', 'leche', 'huevos']\n['pan', 'huevos']\nTotal: 2",
-            requiere: ['remove', 'len'],
-            solucion: 'compras = ["pan", "leche"]\ncompras.append("huevos")\nprint(compras)\ncompras.remove("leche")\nprint(compras)\nprint(f"Total: {len(compras)}")',
+            mmszSalida: "['pan', 'leche', 'huevos']\n['pan', 'huevos']\nTotal: 2",
+            mmszRequiere: ['remove', 'len'],
+            mmszSolucion: 'compras = ["pan", "leche"]\ncompras.append("huevos")\nprint(compras)\ncompras.remove("leche")\nprint(compras)\nprint(f"Total: {len(compras)}")',
           }),
         ]),
       ], [
@@ -736,27 +732,27 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Promedio y máximo', `
             Con «notas = [12, 17, 9, 15, 20]», muestra «Promedio: 14.6» y «Mayor: 20».
           `, {
-            inicio: 'notas = [12, 17, 9, 15, 20]\n',
-            salida: 'Promedio: 14.6\nMayor: 20',
-            requiere: ['sum', 'max'],
-            solucion: 'notas = [12, 17, 9, 15, 20]\nprint(f"Promedio: {sum(notas) / len(notas)}")\nprint(f"Mayor: {max(notas)}")',
+            mmszInicio: 'notas = [12, 17, 9, 15, 20]\n',
+            mmszSalida: 'Promedio: 14.6\nMayor: 20',
+            mmszRequiere: ['sum', 'max'],
+            mmszSolucion: 'notas = [12, 17, 9, 15, 20]\nprint(f"Promedio: {sum(notas) / len(notas)}")\nprint(f"Mayor: {max(notas)}")',
           }),
           mmszPaso('Aprobados', `
             Recorre la lista con «for» y cuenta cuántas notas son 11 o más. Muestra «Aprobados: 4».
           `, {
-            salida: 'Promedio: 14.6\nMayor: 20\nAprobados: 4',
-            requiere: ['for'],
-            solucion: 'notas = [12, 17, 9, 15, 20]\nprint(f"Promedio: {sum(notas) / len(notas)}")\nprint(f"Mayor: {max(notas)}")\naprobados = 0\nfor n in notas:\n    if n >= 11:\n        aprobados += 1\nprint(f"Aprobados: {aprobados}")',
+            mmszSalida: 'Promedio: 14.6\nMayor: 20\nAprobados: 4',
+            mmszRequiere: ['for'],
+            mmszSolucion: 'notas = [12, 17, 9, 15, 20]\nprint(f"Promedio: {sum(notas) / len(notas)}")\nprint(f"Mayor: {max(notas)}")\naprobados = 0\nfor n in notas:\n    if n >= 11:\n        aprobados += 1\nprint(f"Aprobados: {aprobados}")',
           }),
         ]),
         mmszProyecto('ranking de puntajes', [
           mmszPaso('Ordena', `
             Con «puntajes = [45, 90, 72, 88, 60]», crea una lista ordenada de mayor a menor con «sorted(puntajes, reverse=True)» y muéstrala.
           `, {
-            inicio: 'puntajes = [45, 90, 72, 88, 60]\n',
-            salida: '[90, 88, 72, 60, 45]',
-            requiere: ['sorted'],
-            solucion: 'puntajes = [45, 90, 72, 88, 60]\nranking = sorted(puntajes, reverse=True)\nprint(ranking)',
+            mmszInicio: 'puntajes = [45, 90, 72, 88, 60]\n',
+            mmszSalida: '[90, 88, 72, 60, 45]',
+            mmszRequiere: ['sorted'],
+            mmszSolucion: 'puntajes = [45, 90, 72, 88, 60]\nranking = sorted(puntajes, reverse=True)\nprint(ranking)',
           }),
           mmszPaso('Podio', `
             Usa slicing para tomar los 3 primeros y muéstralos con su puesto usando «enumerate(…, 1)»:
@@ -767,9 +763,9 @@ export const mmszPython: MmszCourse = {
             3. 72
             ~~~
           `, {
-            salida: '[90, 88, 72, 60, 45]\n1. 90\n2. 88\n3. 72',
-            requiere: ['[:3]', 'enumerate'],
-            solucion: 'puntajes = [45, 90, 72, 88, 60]\nranking = sorted(puntajes, reverse=True)\nprint(ranking)\nfor puesto, p in enumerate(ranking[:3], 1):\n    print(f"{puesto}. {p}")',
+            mmszSalida: '[90, 88, 72, 60, 45]\n1. 90\n2. 88\n3. 72',
+            mmszRequiere: ['[:3]', 'enumerate'],
+            mmszSolucion: 'puntajes = [45, 90, 72, 88, 60]\nranking = sorted(puntajes, reverse=True)\nprint(ranking)\nfor puesto, p in enumerate(ranking[:3], 1):\n    print(f"{puesto}. {p}")',
           }),
         ]),
         mmszRepaso('listas', `
@@ -827,18 +823,18 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Función de saludo', `
             Crea una función «presentar(nombre, carrera)» que muestre «Soy Ana y estudio Sistemas». Llámala con «"Ana"» y «"Sistemas"».
           `, {
-            inicio: '',
-            pista: 'def presentar(nombre, carrera):\n    print(f"Soy {nombre} y estudio {carrera}")',
-            salida: 'Soy Ana y estudio Sistemas',
-            requiere: ['def presentar'],
-            solucion: 'def presentar(nombre, carrera):\n    print(f"Soy {nombre} y estudio {carrera}")\n\npresentar("Ana", "Sistemas")',
+            mmszInicio: '',
+            mmszPista: 'def presentar(nombre, carrera):\n    print(f"Soy {nombre} y estudio {carrera}")',
+            mmszSalida: 'Soy Ana y estudio Sistemas',
+            mmszRequiere: ['def presentar'],
+            mmszSolucion: 'def presentar(nombre, carrera):\n    print(f"Soy {nombre} y estudio {carrera}")\n\npresentar("Ana", "Sistemas")',
           }),
           mmszPaso('Valor por defecto', `
             Haz que «carrera» tenga el valor por defecto «"Sistemas"» y agrega una llamada «presentar("Luis")».
           `, {
-            salida: 'Soy Ana y estudio Sistemas\nSoy Luis y estudio Sistemas',
-            requiere: ['carrera="Sistemas"'],
-            solucion: 'def presentar(nombre, carrera="Sistemas"):\n    print(f"Soy {nombre} y estudio {carrera}")\n\npresentar("Ana", "Sistemas")\npresentar("Luis")',
+            mmszSalida: 'Soy Ana y estudio Sistemas\nSoy Luis y estudio Sistemas',
+            mmszRequiere: ['carrera="Sistemas"'],
+            mmszSolucion: 'def presentar(nombre, carrera="Sistemas"):\n    print(f"Soy {nombre} y estudio {carrera}")\n\npresentar("Ana", "Sistemas")\npresentar("Luis")',
           }),
         ]),
       ], [
@@ -884,34 +880,34 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Cuatro operaciones', `
             Crea la función «calcular(a, b, op)» que devuelva la suma, resta, multiplicación o división según «op» sea «"+"», «"-"», «"*"» o «"/"». Muestra «calcular(8, 2, "+")» y «calcular(8, 2, "/")».
           `, {
-            inicio: '',
-            pista: 'if op == "+":\n    return a + b',
-            salida: '10\n4.0',
-            requiere: ['def calcular', 'return'],
-            solucion: 'def calcular(a, b, op):\n    if op == "+":\n        return a + b\n    elif op == "-":\n        return a - b\n    elif op == "*":\n        return a * b\n    elif op == "/":\n        return a / b\n\nprint(calcular(8, 2, "+"))\nprint(calcular(8, 2, "/"))',
+            mmszInicio: '',
+            mmszPista: 'if op == "+":\n    return a + b',
+            mmszSalida: '10\n4.0',
+            mmszRequiere: ['def calcular', 'return'],
+            mmszSolucion: 'def calcular(a, b, op):\n    if op == "+":\n        return a + b\n    elif op == "-":\n        return a - b\n    elif op == "*":\n        return a * b\n    elif op == "/":\n        return a / b\n\nprint(calcular(8, 2, "+"))\nprint(calcular(8, 2, "/"))',
           }),
           mmszPaso('División entre cero', `
             Si «op» es «"/"» y «b» es 0, la función debe devolver el texto «"Error"». Agrega «print(calcular(5, 0, "/"))».
           `, {
-            salida: '10\n4.0\nError',
-            solucion: 'def calcular(a, b, op):\n    if op == "+":\n        return a + b\n    elif op == "-":\n        return a - b\n    elif op == "*":\n        return a * b\n    elif op == "/":\n        if b == 0:\n            return "Error"\n        return a / b\n\nprint(calcular(8, 2, "+"))\nprint(calcular(8, 2, "/"))\nprint(calcular(5, 0, "/"))',
+            mmszSalida: '10\n4.0\nError',
+            mmszSolucion: 'def calcular(a, b, op):\n    if op == "+":\n        return a + b\n    elif op == "-":\n        return a - b\n    elif op == "*":\n        return a * b\n    elif op == "/":\n        if b == 0:\n            return "Error"\n        return a / b\n\nprint(calcular(8, 2, "+"))\nprint(calcular(8, 2, "/"))\nprint(calcular(5, 0, "/"))',
           }),
         ]),
         mmszProyecto('números primos', [
           mmszPaso('¿Es primo?', `
             Crea «es_primo(n)» que devuelva «True» si n es primo (solo divisible entre 1 y sí mismo) y «False» si no. Muestra «es_primo(7)» y «es_primo(10)».
           `, {
-            inicio: '',
-            pista: 'for d in range(2, n):\n    if n % d == 0:\n        return False',
-            salida: 'True\nFalse',
-            requiere: ['def es_primo', 'return'],
-            solucion: 'def es_primo(n):\n    if n < 2:\n        return False\n    for d in range(2, n):\n        if n % d == 0:\n            return False\n    return True\n\nprint(es_primo(7))\nprint(es_primo(10))',
+            mmszInicio: '',
+            mmszPista: 'for d in range(2, n):\n    if n % d == 0:\n        return False',
+            mmszSalida: 'True\nFalse',
+            mmszRequiere: ['def es_primo', 'return'],
+            mmszSolucion: 'def es_primo(n):\n    if n < 2:\n        return False\n    for d in range(2, n):\n        if n % d == 0:\n            return False\n    return True\n\nprint(es_primo(7))\nprint(es_primo(10))',
           }),
           mmszPaso('Primos hasta 30', `
             Usa tu función para crear una lista con los primos del 1 al 30 y muéstrala.
           `, {
-            salida: 'True\nFalse\n[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]',
-            solucion: 'def es_primo(n):\n    if n < 2:\n        return False\n    for d in range(2, n):\n        if n % d == 0:\n            return False\n    return True\n\nprint(es_primo(7))\nprint(es_primo(10))\nprimos = []\nfor n in range(1, 31):\n    if es_primo(n):\n        primos.append(n)\nprint(primos)',
+            mmszSalida: 'True\nFalse\n[2, 3, 5, 7, 11, 13, 17, 19, 23, 29]',
+            mmszSolucion: 'def es_primo(n):\n    if n < 2:\n        return False\n    for d in range(2, n):\n        if n % d == 0:\n            return False\n    return True\n\nprint(es_primo(7))\nprint(es_primo(10))\nprimos = []\nfor n in range(1, 31):\n    if es_primo(n):\n        primos.append(n)\nprint(primos)',
           }),
         ]),
         mmszRepaso('funciones', `
@@ -930,7 +926,6 @@ export const mmszPython: MmszCourse = {
       ]),
     ]),
 
-    /* ============================== AVANZADO ============================== */
     mmszUnidad('Avanzado', 'Diccionarios, tuplas y sets', 'Estructuras de datos para guardar pares clave-valor, datos fijos y elementos únicos.', [
       mmszLeccion('py-7-1', 'Diccionarios', 'Guardar datos con clave y valor, recorrerlos y modificarlos.', [
         mmszLectura('Diccionarios', `
@@ -962,18 +957,18 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Cuenta', `
             Con la lista «palabras = ["sol", "luna", "sol", "mar", "sol", "luna"]», crea un diccionario «conteo» que diga cuántas veces aparece cada palabra y muéstralo.
           `, {
-            inicio: 'palabras = ["sol", "luna", "sol", "mar", "sol", "luna"]\n',
-            pista: 'conteo[p] = conteo.get(p, 0) + 1',
-            salida: "{'sol': 3, 'luna': 2, 'mar': 1}",
-            requiere: ['conteo'],
-            solucion: 'palabras = ["sol", "luna", "sol", "mar", "sol", "luna"]\nconteo = {}\nfor p in palabras:\n    conteo[p] = conteo.get(p, 0) + 1\nprint(conteo)',
+            mmszInicio: 'palabras = ["sol", "luna", "sol", "mar", "sol", "luna"]\n',
+            mmszPista: 'conteo[p] = conteo.get(p, 0) + 1',
+            mmszSalida: "{'sol': 3, 'luna': 2, 'mar': 1}",
+            mmszRequiere: ['conteo'],
+            mmszSolucion: 'palabras = ["sol", "luna", "sol", "mar", "sol", "luna"]\nconteo = {}\nfor p in palabras:\n    conteo[p] = conteo.get(p, 0) + 1\nprint(conteo)',
           }),
           mmszPaso('La más repetida', `
             Recorre «conteo.items()» para encontrar la palabra que más se repite y muestra «Más usada: sol».
           `, {
-            salida: "{'sol': 3, 'luna': 2, 'mar': 1}\nMás usada: sol",
-            requiere: ['items'],
-            solucion: 'palabras = ["sol", "luna", "sol", "mar", "sol", "luna"]\nconteo = {}\nfor p in palabras:\n    conteo[p] = conteo.get(p, 0) + 1\nprint(conteo)\nmejor = ""\nveces = 0\nfor palabra, n in conteo.items():\n    if n > veces:\n        mejor = palabra\n        veces = n\nprint(f"Más usada: {mejor}")',
+            mmszSalida: "{'sol': 3, 'luna': 2, 'mar': 1}\nMás usada: sol",
+            mmszRequiere: ['items'],
+            mmszSolucion: 'palabras = ["sol", "luna", "sol", "mar", "sol", "luna"]\nconteo = {}\nfor p in palabras:\n    conteo[p] = conteo.get(p, 0) + 1\nprint(conteo)\nmejor = ""\nveces = 0\nfor palabra, n in conteo.items():\n    if n > veces:\n        mejor = palabra\n        veces = n\nprint(f"Más usada: {mejor}")',
           }),
         ]),
       ], [
@@ -1025,34 +1020,34 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Intersección', `
             Ana lleva «{"Cálculo", "Física", "Programación"}» y Luis «{"Programación", "Química", "Cálculo"}». Muestra, ordenados, los cursos que llevan ambos.
           `, {
-            inicio: 'ana = {"Cálculo", "Física", "Programación"}\nluis = {"Programación", "Química", "Cálculo"}\n',
-            salida: "['Cálculo', 'Programación']",
-            requiere: ['&'],
-            solucion: 'ana = {"Cálculo", "Física", "Programación"}\nluis = {"Programación", "Química", "Cálculo"}\nprint(sorted(ana & luis))',
+            mmszInicio: 'ana = {"Cálculo", "Física", "Programación"}\nluis = {"Programación", "Química", "Cálculo"}\n',
+            mmszSalida: "['Cálculo', 'Programación']",
+            mmszRequiere: ['&'],
+            mmszSolucion: 'ana = {"Cálculo", "Física", "Programación"}\nluis = {"Programación", "Química", "Cálculo"}\nprint(sorted(ana & luis))',
           }),
           mmszPaso('Total de cursos distintos', `
             Muestra cuántos cursos distintos hay entre los dos: «Distintos: 4».
           `, {
-            salida: "['Cálculo', 'Programación']\nDistintos: 4",
-            requiere: ['|'],
-            solucion: 'ana = {"Cálculo", "Física", "Programación"}\nluis = {"Programación", "Química", "Cálculo"}\nprint(sorted(ana & luis))\nprint(f"Distintos: {len(ana | luis)}")',
+            mmszSalida: "['Cálculo', 'Programación']\nDistintos: 4",
+            mmszRequiere: ['|'],
+            mmszSolucion: 'ana = {"Cálculo", "Física", "Programación"}\nluis = {"Programación", "Química", "Cálculo"}\nprint(sorted(ana & luis))\nprint(f"Distintos: {len(ana | luis)}")',
           }),
         ]),
         mmszProyecto('agenda de contactos', [
           mmszPaso('Guardar contactos', `
             Crea un diccionario «agenda» donde cada nombre tenga una tupla «(telefono, correo)». Agrega «"Ana": ("999111222", "ana@mail.com")» y «"Luis": ("988777666", "luis@mail.com")». Muestra el correo de Luis.
           `, {
-            inicio: '',
-            salida: 'luis@mail.com',
-            requiere: ['agenda'],
-            solucion: 'agenda = {\n    "Ana": ("999111222", "ana@mail.com"),\n    "Luis": ("988777666", "luis@mail.com"),\n}\nprint(agenda["Luis"][1])',
+            mmszInicio: '',
+            mmszSalida: 'luis@mail.com',
+            mmszRequiere: ['agenda'],
+            mmszSolucion: 'agenda = {\n    "Ana": ("999111222", "ana@mail.com"),\n    "Luis": ("988777666", "luis@mail.com"),\n}\nprint(agenda["Luis"][1])',
           }),
           mmszPaso('Listar', `
             Recorre la agenda ordenada por nombre y muestra «Ana - 999111222» y «Luis - 988777666».
           `, {
-            salida: 'luis@mail.com\nAna - 999111222\nLuis - 988777666',
-            requiere: ['sorted'],
-            solucion: 'agenda = {\n    "Ana": ("999111222", "ana@mail.com"),\n    "Luis": ("988777666", "luis@mail.com"),\n}\nprint(agenda["Luis"][1])\nfor nombre in sorted(agenda):\n    telefono, correo = agenda[nombre]\n    print(f"{nombre} - {telefono}")',
+            mmszSalida: 'luis@mail.com\nAna - 999111222\nLuis - 988777666',
+            mmszRequiere: ['sorted'],
+            mmszSolucion: 'agenda = {\n    "Ana": ("999111222", "ana@mail.com"),\n    "Luis": ("988777666", "luis@mail.com"),\n}\nprint(agenda["Luis"][1])\nfor nombre in sorted(agenda):\n    telefono, correo = agenda[nombre]\n    print(f"{nombre} - {telefono}")',
           }),
         ]),
         mmszRepaso('estructuras de datos', `
@@ -1109,11 +1104,11 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Convertir textos', `
             Tienes «datos = ["10", "abc", "7"]». Recorre la lista, convierte cada texto con «int()» y súmalos. Si alguno no se puede convertir, muestra «No válido: abc» y continúa. Al final muestra «Suma: 17».
           `, {
-            inicio: 'datos = ["10", "abc", "7"]\nsuma = 0\n',
-            pista: 'try:\n    suma += int(d)\nexcept ValueError:\n    print(f"No válido: {d}")',
-            salida: 'No válido: abc\nSuma: 17',
-            requiere: ['try', 'except'],
-            solucion: 'datos = ["10", "abc", "7"]\nsuma = 0\nfor d in datos:\n    try:\n        suma += int(d)\n    except ValueError:\n        print(f"No válido: {d}")\nprint(f"Suma: {suma}")',
+            mmszInicio: 'datos = ["10", "abc", "7"]\nsuma = 0\n',
+            mmszPista: 'try:\n    suma += int(d)\nexcept ValueError:\n    print(f"No válido: {d}")',
+            mmszSalida: 'No válido: abc\nSuma: 17',
+            mmszRequiere: ['try', 'except'],
+            mmszSolucion: 'datos = ["10", "abc", "7"]\nsuma = 0\nfor d in datos:\n    try:\n        suma += int(d)\n    except ValueError:\n        print(f"No válido: {d}")\nprint(f"Suma: {suma}")',
           }),
         ]),
       ], [
@@ -1164,35 +1159,35 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Fibonacci recursivo', `
             La sucesión de Fibonacci empieza 0, 1, 1, 2, 3, 5, 8… (cada número es la suma de los dos anteriores). Crea «fib(n)» recursiva con casos base «fib(0) = 0» y «fib(1) = 1». Muestra «fib(10)».
           `, {
-            inicio: '',
-            pista: 'return fib(n - 1) + fib(n - 2)',
-            salida: '55',
-            requiere: ['def fib', 'return'],
-            solucion: 'def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(10))',
+            mmszInicio: '',
+            mmszPista: 'return fib(n - 1) + fib(n - 2)',
+            mmszSalida: '55',
+            mmszRequiere: ['def fib', 'return'],
+            mmszSolucion: 'def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(10))',
           }),
           mmszPaso('Lista con comprensión', `
             Usa una comprensión de lista con tu función para mostrar los primeros 10 números: «[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]».
           `, {
-            salida: '55\n[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]',
-            requiere: ['for', '['],
-            solucion: 'def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(10))\nprint([fib(i) for i in range(10)])',
+            mmszSalida: '55\n[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]',
+            mmszRequiere: ['for', '['],
+            mmszSolucion: 'def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(10))\nprint([fib(i) for i in range(10)])',
           }),
         ]),
         mmszProyecto('procesador de notas', [
           mmszPaso('Limpia los datos', `
             «crudos = ["15", "x", "18", "", "9", "20"]». Con un bucle y «try/except», crea la lista «notas» solo con los valores numéricos. Muéstrala.
           `, {
-            inicio: 'crudos = ["15", "x", "18", "", "9", "20"]\n',
-            salida: '[15, 18, 9, 20]',
-            requiere: ['try'],
-            solucion: 'crudos = ["15", "x", "18", "", "9", "20"]\nnotas = []\nfor c in crudos:\n    try:\n        notas.append(int(c))\n    except ValueError:\n        pass\nprint(notas)',
+            mmszInicio: 'crudos = ["15", "x", "18", "", "9", "20"]\n',
+            mmszSalida: '[15, 18, 9, 20]',
+            mmszRequiere: ['try'],
+            mmszSolucion: 'crudos = ["15", "x", "18", "", "9", "20"]\nnotas = []\nfor c in crudos:\n    try:\n        notas.append(int(c))\n    except ValueError:\n        pass\nprint(notas)',
           }),
           mmszPaso('Aprobados con comprensión', `
             Con una comprensión crea «aprobados» (notas >= 11) y muestra «Aprobados: [15, 18, 20]».
           `, {
-            salida: '[15, 18, 9, 20]\nAprobados: [15, 18, 20]',
-            requiere: ['aprobados'],
-            solucion: 'crudos = ["15", "x", "18", "", "9", "20"]\nnotas = []\nfor c in crudos:\n    try:\n        notas.append(int(c))\n    except ValueError:\n        pass\nprint(notas)\naprobados = [n for n in notas if n >= 11]\nprint(f"Aprobados: {aprobados}")',
+            mmszSalida: '[15, 18, 9, 20]\nAprobados: [15, 18, 20]',
+            mmszRequiere: ['aprobados'],
+            mmszSolucion: 'crudos = ["15", "x", "18", "", "9", "20"]\nnotas = []\nfor c in crudos:\n    try:\n        notas.append(int(c))\n    except ValueError:\n        pass\nprint(notas)\naprobados = [n for n in notas if n >= 11]\nprint(f"Aprobados: {aprobados}")',
           }),
         ]),
         mmszRepaso('técnicas avanzadas', `
@@ -1253,11 +1248,11 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Retirar', `
             Completa la clase «Cuenta» con un método «retirar(monto)» que reste el monto **solo si hay saldo suficiente**; si no, que muestre «Saldo insuficiente». Prueba: deposita 100, retira 30, retira 200 y muestra el saldo.
           `, {
-            inicio: 'class Cuenta:\n    def __init__(self, titular):\n        self.titular = titular\n        self.saldo = 0\n\n    def depositar(self, monto):\n        self.saldo += monto\n',
-            pista: 'def retirar(self, monto):\n    if monto <= self.saldo:\n        self.saldo -= monto',
-            salida: 'Saldo insuficiente\n70',
-            requiere: ['def retirar'],
-            solucion: 'class Cuenta:\n    def __init__(self, titular):\n        self.titular = titular\n        self.saldo = 0\n\n    def depositar(self, monto):\n        self.saldo += monto\n\n    def retirar(self, monto):\n        if monto <= self.saldo:\n            self.saldo -= monto\n        else:\n            print("Saldo insuficiente")\n\nc = Cuenta("Ana")\nc.depositar(100)\nc.retirar(30)\nc.retirar(200)\nprint(c.saldo)',
+            mmszInicio: 'class Cuenta:\n    def __init__(self, titular):\n        self.titular = titular\n        self.saldo = 0\n\n    def depositar(self, monto):\n        self.saldo += monto\n',
+            mmszPista: 'def retirar(self, monto):\n    if monto <= self.saldo:\n        self.saldo -= monto',
+            mmszSalida: 'Saldo insuficiente\n70',
+            mmszRequiere: ['def retirar'],
+            mmszSolucion: 'class Cuenta:\n    def __init__(self, titular):\n        self.titular = titular\n        self.saldo = 0\n\n    def depositar(self, monto):\n        self.saldo += monto\n\n    def retirar(self, monto):\n        if monto <= self.saldo:\n            self.saldo -= monto\n        else:\n            print("Saldo insuficiente")\n\nc = Cuenta("Ana")\nc.depositar(100)\nc.retirar(30)\nc.retirar(200)\nprint(c.saldo)',
           }),
         ]),
       ], [
@@ -1315,10 +1310,10 @@ export const mmszPython: MmszCourse = {
           mmszPaso('Área polimórfica', `
             Crea las clases «Rectangulo(base, altura)» y «Circulo(radio)», ambas hijas de «Figura», cada una con su método «area()». Usa 3.14 para pi. Recorre «[Rectangulo(4, 5), Circulo(2)]» y muestra cada área.
           `, {
-            inicio: 'class Figura:\n    def area(self):\n        return 0\n',
-            salida: '20\n12.56',
-            requiere: ['class Rectangulo(Figura)', 'class Circulo(Figura)'],
-            solucion: 'class Figura:\n    def area(self):\n        return 0\n\nclass Rectangulo(Figura):\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n\n    def area(self):\n        return self.base * self.altura\n\nclass Circulo(Figura):\n    def __init__(self, radio):\n        self.radio = radio\n\n    def area(self):\n        return 3.14 * self.radio ** 2\n\nfor f in [Rectangulo(4, 5), Circulo(2)]:\n    print(f.area())',
+            mmszInicio: 'class Figura:\n    def area(self):\n        return 0\n',
+            mmszSalida: '20\n12.56',
+            mmszRequiere: ['class Rectangulo(Figura)', 'class Circulo(Figura)'],
+            mmszSolucion: 'class Figura:\n    def area(self):\n        return 0\n\nclass Rectangulo(Figura):\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n\n    def area(self):\n        return self.base * self.altura\n\nclass Circulo(Figura):\n    def __init__(self, radio):\n        self.radio = radio\n\n    def area(self):\n        return 3.14 * self.radio ** 2\n\nfor f in [Rectangulo(4, 5), Circulo(2)]:\n    print(f.area())',
           }),
         ]),
         mmszProyecto('sistema de biblioteca', [
@@ -1326,17 +1321,17 @@ export const mmszPython: MmszCourse = {
             Crea la clase «Libro(titulo, autor)» con un atributo «prestado = False» y los métodos «prestar()» y «devolver()». «prestar()» debe mostrar «No disponible» si ya estaba prestado.
             Crea un libro «Cien años de soledad», préstalo dos veces y muestra el estado de «prestado».
           `, {
-            inicio: '',
-            salida: 'No disponible\nTrue',
-            requiere: ['class Libro', 'def prestar'],
-            solucion: 'class Libro:\n    def __init__(self, titulo, autor):\n        self.titulo = titulo\n        self.autor = autor\n        self.prestado = False\n\n    def prestar(self):\n        if self.prestado:\n            print("No disponible")\n        else:\n            self.prestado = True\n\n    def devolver(self):\n        self.prestado = False\n\nlibro = Libro("Cien años de soledad", "García Márquez")\nlibro.prestar()\nlibro.prestar()\nprint(libro.prestado)',
+            mmszInicio: '',
+            mmszSalida: 'No disponible\nTrue',
+            mmszRequiere: ['class Libro', 'def prestar'],
+            mmszSolucion: 'class Libro:\n    def __init__(self, titulo, autor):\n        self.titulo = titulo\n        self.autor = autor\n        self.prestado = False\n\n    def prestar(self):\n        if self.prestado:\n            print("No disponible")\n        else:\n            self.prestado = True\n\n    def devolver(self):\n        self.prestado = False\n\nlibro = Libro("Cien años de soledad", "García Márquez")\nlibro.prestar()\nlibro.prestar()\nprint(libro.prestado)',
           }),
           mmszPaso('Biblioteca', `
             Crea la clase «Biblioteca» con una lista «libros», un método «agregar(libro)» y otro «disponibles()» que devuelva los títulos no prestados. Agrega tu libro y «Rayuela», y muestra «disponibles()».
           `, {
-            salida: "No disponible\nTrue\n['Rayuela']",
-            requiere: ['class Biblioteca', 'def disponibles'],
-            solucion: 'class Libro:\n    def __init__(self, titulo, autor):\n        self.titulo = titulo\n        self.autor = autor\n        self.prestado = False\n\n    def prestar(self):\n        if self.prestado:\n            print("No disponible")\n        else:\n            self.prestado = True\n\n    def devolver(self):\n        self.prestado = False\n\nlibro = Libro("Cien años de soledad", "García Márquez")\nlibro.prestar()\nlibro.prestar()\nprint(libro.prestado)\n\nclass Biblioteca:\n    def __init__(self):\n        self.libros = []\n\n    def agregar(self, libro):\n        self.libros.append(libro)\n\n    def disponibles(self):\n        return [l.titulo for l in self.libros if not l.prestado]\n\nb = Biblioteca()\nb.agregar(libro)\nb.agregar(Libro("Rayuela", "Cortázar"))\nprint(b.disponibles())',
+            mmszSalida: "No disponible\nTrue\n['Rayuela']",
+            mmszRequiere: ['class Biblioteca', 'def disponibles'],
+            mmszSolucion: 'class Libro:\n    def __init__(self, titulo, autor):\n        self.titulo = titulo\n        self.autor = autor\n        self.prestado = False\n\n    def prestar(self):\n        if self.prestado:\n            print("No disponible")\n        else:\n            self.prestado = True\n\n    def devolver(self):\n        self.prestado = False\n\nlibro = Libro("Cien años de soledad", "García Márquez")\nlibro.prestar()\nlibro.prestar()\nprint(libro.prestado)\n\nclass Biblioteca:\n    def __init__(self):\n        self.libros = []\n\n    def agregar(self, libro):\n        self.libros.append(libro)\n\n    def disponibles(self):\n        return [l.titulo for l in self.libros if not l.prestado]\n\nb = Biblioteca()\nb.agregar(libro)\nb.agregar(Libro("Rayuela", "Cortázar"))\nprint(b.disponibles())',
           }),
         ]),
         mmszRepaso('programación orientada a objetos', `

@@ -1,87 +1,79 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Exportar e importar el progreso como archivo .json (para pasarlo a otra computadora
-// o guardarlo como respaldo personal).
-import { mmszCompletarProgreso, mmszDayKey, type MmszProgress } from './progress';
+import { mmszCompletarProgreso, mmszDayKey, mmszMigrarClaves, type MmszProgress } from './progress';
 
 const MMSZ_VERSION_ARCHIVO = 1;
 
 interface MmszArchivoProgreso {
-  app: 'Novexa';
-  version: number;
-  exportado: string;
-  progreso: MmszProgress;
+  mmszApp: 'Novexa';
+  mmszVersion: number;
+  mmszExportado: string;
+  mmszProgreso: MmszProgress;
 }
 
-/** Resumen corto para mostrar antes de importar o restaurar. */
-export function mmszResumen(p: MmszProgress) {
+export function mmszResumen(mmszP: MmszProgress) {
   return {
-    nombre: p.nombre,
-    xp: p.xp,
-    racha: p.streak,
-    lecciones: Object.keys(p.completed).filter((id) => /^(py|js|cpp)-\d+-\d+$/.test(id)).length,
+    mmszNombre: mmszP.mmszNombre,
+    mmszXp: mmszP.mmszXp,
+    mmszRacha: mmszP.mmszStreak,
+    mmszLecciones: Object.keys(mmszP.mmszCompleted).filter((mmszId) => /^(py|js|cpp)-\d+-\d+$/.test(mmszId)).length,
   };
 }
 
-export function mmszCrearArchivo(p: MmszProgress): string {
+export function mmszCrearArchivo(mmszP: MmszProgress): string {
   const mmszArchivo: MmszArchivoProgreso = {
-    app: 'Novexa',
-    version: MMSZ_VERSION_ARCHIVO,
-    exportado: new Date().toISOString(),
-    progreso: p,
+    mmszApp: 'Novexa',
+    mmszVersion: MMSZ_VERSION_ARCHIVO,
+    mmszExportado: new Date().toISOString(),
+    mmszProgreso: mmszP,
   };
   return JSON.stringify(mmszArchivo, null, 2);
 }
 
-/** Lee y valida un archivo exportado. Lanza un error con un mensaje claro si no sirve. */
-export function mmszLeerArchivo(mmszTexto: string): { progreso: MmszProgress; exportado: string | null } {
+export function mmszLeerArchivo(mmszTexto: string): { mmszProgreso: MmszProgress; mmszExportado: string | null } {
   let mmszDatos: unknown;
   try {
     mmszDatos = JSON.parse(mmszTexto);
   } catch {
     throw new Error('El archivo no es válido: no tiene formato JSON.');
   }
-  const mmszObj = mmszDatos as Partial<MmszArchivoProgreso> & Partial<MmszProgress>;
-  // Acepta el formato de exportación y también un progress.json copiado directamente.
-  const mmszProgreso = (mmszObj.app === 'Novexa' ? mmszObj.progreso : mmszObj) as Partial<MmszProgress> | undefined;
-  if (!mmszProgreso || typeof mmszProgreso.xp !== 'number' || typeof mmszProgreso.completed !== 'object') {
+  const mmszObj = mmszMigrarClaves(mmszDatos) as Partial<MmszArchivoProgreso> & Partial<MmszProgress>;
+  const mmszProgreso = mmszMigrarClaves(mmszObj.mmszApp === 'Novexa' ? mmszObj.mmszProgreso : mmszObj) as Partial<MmszProgress> | undefined;
+  if (!mmszProgreso || typeof mmszProgreso.mmszXp !== 'number' || typeof mmszProgreso.mmszCompleted !== 'object') {
     throw new Error('Este archivo no es un progreso de Novexa.');
   }
-  if ((mmszObj.version ?? 1) > MMSZ_VERSION_ARCHIVO) {
+  if ((mmszObj.mmszVersion ?? 1) > MMSZ_VERSION_ARCHIVO) {
     throw new Error('El archivo es de una versión más nueva de Novexa. Actualiza la app para importarlo.');
   }
-  return { progreso: mmszCompletarProgreso(mmszProgreso), exportado: mmszObj.exportado ?? null };
+  return { mmszProgreso: mmszCompletarProgreso(mmszProgreso), mmszExportado: mmszObj.mmszExportado ?? null };
 }
 
-/** Guarda el archivo: en la app de escritorio con un cuadro "Guardar como"; en la web, como descarga. */
-export async function mmszExportar(p: MmszProgress): Promise<string | null> {
-  const mmszContenido = mmszCrearArchivo(p);
-  if (window.api) {
-    const r = await window.api.exportarProgreso(mmszContenido);
-    return r.ok ? (r.ruta ?? '') : null;
+export async function mmszExportar(mmszP: MmszProgress): Promise<string | null> {
+  const mmszContenido = mmszCrearArchivo(mmszP);
+  if (window.mmszApi) {
+    const mmszR = await window.mmszApi.mmszExportarProgreso(mmszContenido);
+    return mmszR.mmszOk ? (mmszR.mmszRuta ?? '') : null;
   }
   const mmszUrl = URL.createObjectURL(new Blob([mmszContenido], { type: 'application/json' }));
-  const a = document.createElement('a');
-  a.href = mmszUrl;
-  a.download = `novexa-progreso-${mmszDayKey()}.json`;
-  a.click();
+  const mmszA = document.createElement('a');
+  mmszA.href = mmszUrl;
+  mmszA.download = `novexa-progreso-${mmszDayKey()}.json`;
+  mmszA.click();
   URL.revokeObjectURL(mmszUrl);
-  return a.download;
+  return mmszA.download;
 }
 
-/** Abre un archivo elegido por el usuario y devuelve su texto (o null si canceló). */
 export async function mmszElegirArchivo(): Promise<string | null> {
-  if (window.api) {
-    const r = await window.api.importarProgreso();
-    if (r.error) throw new Error(r.error);
-    return r.ok ? (r.contenido ?? null) : null;
+  if (window.mmszApi) {
+    const mmszR = await window.mmszApi.mmszImportarProgreso();
+    if (mmszR.mmszError) throw new Error(mmszR.mmszError);
+    return mmszR.mmszOk ? (mmszR.mmszContenido ?? null) : null;
   }
   return new Promise((mmszResolver) => {
     const mmszInput = document.createElement('input');
     mmszInput.type = 'file';
     mmszInput.accept = '.json,application/json';
     mmszInput.onchange = async () => {
-      const f = mmszInput.files?.[0];
-      mmszResolver(f ? await f.text() : null);
+      const mmszF = mmszInput.files?.[0];
+      mmszResolver(mmszF ? await mmszF.text() : null);
     };
     mmszInput.click();
   });

@@ -1,10 +1,6 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Ejecuta el código del estudiante de forma aislada (en Web Workers), captura
-// lo que imprime y corta si tarda demasiado (por ejemplo, un bucle infinito).
-
 export interface MmszRunResult {
-  output: string;
-  error?: string;
+  mmszOutput: string;
+  mmszError?: string;
 }
 
 export type MmszRunnableLang = 'javascript' | 'python' | 'cpp';
@@ -19,42 +15,38 @@ export function mmszRunCode(mmszLang: MmszRunnableLang, mmszCode: string): Promi
   return mmszRunJS(mmszCode);
 }
 
-/* ---------------- C++ (intérprete JSCPP) ---------------- */
-
 export function mmszRunCpp(mmszCode: string, mmszTimeoutMs = 4000): Promise<MmszRunResult> {
   return new Promise((mmszResolve) => {
     const mmszWorker = new Worker(new URL('./mmszCppWorker.ts', import.meta.url), { type: 'module' });
-    const mmszFinish = (r: MmszRunResult) => {
+    const mmszFinish = (mmszR: MmszRunResult) => {
       clearTimeout(mmszTimer);
       mmszWorker.terminate();
-      mmszResolve(r);
+      mmszResolve(mmszR);
     };
     const mmszTimer = setTimeout(
-      () => mmszFinish({ output: '', error: 'El programa tardó demasiado (¿un bucle infinito?)' }),
+      () => mmszFinish({ mmszOutput: '', mmszError: 'El programa tardó demasiado (¿un bucle infinito?)' }),
       mmszTimeoutMs,
     );
-    mmszWorker.onmessage = (e) => mmszFinish(e.data as MmszRunResult);
-    mmszWorker.onerror = (e) => mmszFinish({ output: '', error: e.message || 'No se pudo ejecutar C++' });
+    mmszWorker.onmessage = (mmszE) => mmszFinish(mmszE.data as MmszRunResult);
+    mmszWorker.onerror = (mmszE) => mmszFinish({ mmszOutput: '', mmszError: mmszE.message || 'No se pudo ejecutar C++' });
     mmszWorker.postMessage(mmszCode);
   });
 }
 
-/* ---------------- JavaScript ---------------- */
-
 const mmszJsWorkerSource = `
-const fmt = (v) => {
-  if (typeof v === 'string') return v;
-  try { return JSON.stringify(v); } catch { return String(v); }
+const mmszFmt = (mmszV) => {
+  if (typeof mmszV === 'string') return mmszV;
+  try { return JSON.stringify(mmszV); } catch { return String(mmszV); }
 };
-self.onmessage = (e) => {
-  const logs = [];
-  const log = (...a) => logs.push(a.map(fmt).join(' '));
-  const fakeConsole = { log, info: log, warn: log, error: log };
+self.onmessage = (mmszE) => {
+  const mmszLogs = [];
+  const mmszLog = (...mmszA) => mmszLogs.push(mmszA.map(mmszFmt).join(' '));
+  const mmszConsola = { log: mmszLog, info: mmszLog, warn: mmszLog, error: mmszLog };
   try {
-    new Function('console', e.data)(fakeConsole);
-    self.postMessage({ output: logs.join('\\n') });
-  } catch (err) {
-    self.postMessage({ output: logs.join('\\n'), error: String(err) });
+    new Function('console', mmszE.data)(mmszConsola);
+    self.postMessage({ mmszOutput: mmszLogs.join('\\n') });
+  } catch (mmszErr) {
+    self.postMessage({ mmszOutput: mmszLogs.join('\\n'), mmszError: String(mmszErr) });
   }
 };
 `;
@@ -63,101 +55,95 @@ export function mmszRunJS(mmszCode: string, mmszTimeoutMs = 2000): Promise<MmszR
   return new Promise((mmszResolve) => {
     const mmszUrl = URL.createObjectURL(new Blob([mmszJsWorkerSource], { type: 'text/javascript' }));
     const mmszWorker = new Worker(mmszUrl);
-    const mmszFinish = (r: MmszRunResult) => {
+    const mmszFinish = (mmszR: MmszRunResult) => {
       clearTimeout(mmszTimer);
       mmszWorker.terminate();
       URL.revokeObjectURL(mmszUrl);
-      mmszResolve(r);
+      mmszResolve(mmszR);
     };
     const mmszTimer = setTimeout(
-      () => mmszFinish({ output: '', error: 'El programa tardó demasiado (¿un bucle infinito?)' }),
+      () => mmszFinish({ mmszOutput: '', mmszError: 'El programa tardó demasiado (¿un bucle infinito?)' }),
       mmszTimeoutMs,
     );
-    mmszWorker.onmessage = (e) => mmszFinish(e.data as MmszRunResult);
-    mmszWorker.onerror = (e) => mmszFinish({ output: '', error: e.message });
+    mmszWorker.onmessage = (mmszE) => mmszFinish(mmszE.data as MmszRunResult);
+    mmszWorker.onerror = (mmszE) => mmszFinish({ mmszOutput: '', mmszError: mmszE.message });
     mmszWorker.postMessage(mmszCode);
   });
 }
 
-/* ---------------- Python (Pyodide) ---------------- */
-// Python tarda unos segundos en cargar la primera vez, así que el worker se
-// mantiene vivo entre ejecuciones. Si un programa se cuelga, se reinicia.
-
 interface MmszPyWorker {
-  worker: Worker;
-  ready: Promise<void>;
+  mmszWorker: Worker;
+  mmszReady: Promise<void>;
 }
 
-let py: MmszPyWorker | null = null;
+let mmszPy: MmszPyWorker | null = null;
 let mmszNextId = 0;
 type MmszListener = (mmszLoading: boolean) => void;
 const mmszListeners = new Set<MmszListener>();
 let mmszPyLoading = false;
 
-function mmszSetLoading(v: boolean) {
-  mmszPyLoading = v;
-  mmszListeners.forEach((l) => l(v));
+function mmszSetLoading(mmszV: boolean) {
+  mmszPyLoading = mmszV;
+  mmszListeners.forEach((mmszL) => mmszL(mmszV));
 }
 
-/** Para mostrar “Preparando Python…” en la interfaz. */
-export function mmszOnPythonLoading(l: MmszListener): () => void {
-  mmszListeners.add(l);
-  l(mmszPyLoading);
-  return () => mmszListeners.delete(l);
+export function mmszOnPythonLoading(mmszL: MmszListener): () => void {
+  mmszListeners.add(mmszL);
+  mmszL(mmszPyLoading);
+  return () => mmszListeners.delete(mmszL);
 }
 
 function mmszStartPython(): MmszPyWorker {
-  if (py) return py;
+  if (mmszPy) return mmszPy;
   mmszSetLoading(true);
   const mmszWorker = new Worker(new URL('py-worker.mjs', document.baseURI), { type: 'module' });
   const mmszReady = new Promise<void>((mmszResolve, mmszReject) => {
-    const mmszOnMsg = (e: MessageEvent) => {
-      if (e.data?.type === 'ready') {
+    const mmszOnMsg = (mmszE: MessageEvent) => {
+      if (mmszE.data?.mmszType === 'ready') {
         mmszWorker.removeEventListener('message', mmszOnMsg);
         mmszSetLoading(false);
         mmszResolve();
       }
     };
     mmszWorker.addEventListener('message', mmszOnMsg);
-    mmszWorker.addEventListener('error', (e) => {
+    mmszWorker.addEventListener('error', (mmszE) => {
       mmszSetLoading(false);
-      py = null;
-      mmszReject(new Error(e.message || 'No se pudo cargar Python'));
+      mmszPy = null;
+      mmszReject(new Error(mmszE.message || 'No se pudo cargar Python'));
     });
   });
-  mmszReady.catch(() => {}); // el error se informa al ejecutar
-  py = { worker: mmszWorker, ready: mmszReady };
-  return py;
+  mmszReady.catch(() => {});
+  mmszPy = { mmszWorker, mmszReady };
+  return mmszPy;
 }
 
-/** Empieza a cargar Python en segundo plano (al abrir una lección de Python). */
 export function mmszPreloadPython() {
   mmszStartPython();
 }
 
 export async function mmszRunPython(mmszCode: string, mmszTimeoutMs = 4000): Promise<MmszRunResult> {
-  const p = mmszStartPython();
+  const mmszP = mmszStartPython();
   try {
-    await p.ready;
+    await mmszP.mmszReady;
   } catch (mmszErr) {
-    return { output: '', error: `No se pudo cargar Python: ${(mmszErr as Error).message}` };
+    return { mmszOutput: '', mmszError: `No se pudo cargar Python: ${(mmszErr as Error).message}` };
   }
-  const id = ++mmszNextId;
+  const mmszId = ++mmszNextId;
   return new Promise((mmszResolve) => {
-    const mmszOnMsg = (e: MessageEvent) => {
-      if (e.data?.type === 'result' && e.data.id === id) {
+    const mmszOnMsg = (mmszE: MessageEvent) => {
+      if (mmszE.data?.mmszType === 'result' && mmszE.data.mmszId === mmszId) {
         clearTimeout(mmszTimer);
-        p.worker.removeEventListener('message', mmszOnMsg);
-        mmszResolve({ output: e.data.output, error: e.data.error });
+        mmszP.mmszWorker.removeEventListener('message', mmszOnMsg);
+        mmszResolve({ mmszOutput: mmszE.data.mmszOutput, mmszError: mmszE.data.mmszError });
       }
     };
     const mmszTimer = setTimeout(() => {
-      p.worker.removeEventListener('message', mmszOnMsg);
-      p.worker.terminate();
-      py = null; // la próxima ejecución carga Python de nuevo
-      mmszResolve({ output: '', error: 'El programa tardó demasiado (¿un bucle infinito?)' });
+      mmszP.mmszWorker.removeEventListener('message', mmszOnMsg);
+      mmszP.mmszWorker.terminate();
+      mmszPy = null;
+      mmszResolve({ mmszOutput: '', mmszError: 'El programa tardó demasiado (¿un bucle infinito?)' });
     }, mmszTimeoutMs);
-    p.worker.addEventListener('message', mmszOnMsg);
-    p.worker.postMessage({ id, code: mmszCode });
+    mmszP.mmszWorker.addEventListener('message', mmszOnMsg);
+    mmszP.mmszWorker.postMessage({ mmszId, mmszCode });
   });
 }

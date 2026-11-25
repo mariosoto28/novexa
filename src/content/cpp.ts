@@ -1,7 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Curso de C++: de lo básico a lo avanzado (9 unidades).
-// Las unidades 1 a 7 se ejecutan con el simulador; strings, vectores, structs y clases
-// se revisan por el código que escribe el estudiante (el simulador aún no los soporta).
 import type { MmszCourse } from '../types';
 import {
   mmszCompleta,
@@ -20,11 +16,10 @@ import {
 
 const MMSZ_CABECERA = '#include <iostream>\nusing namespace std;\n';
 
-/** Arma un programa completo: cabecera + funciones (opcional) + main con el cuerpo dado. */
 function mmszPrograma(mmszCuerpo: string, mmszFunciones = '', mmszIncluir = ''): string {
   const mmszSangrado = mmszCuerpo
     .split('\n')
-    .map((l) => (l ? '    ' + l : l))
+    .map((mmszL) => (mmszL ? '    ' + mmszL : mmszL))
     .join('\n');
   return (
     (mmszIncluir ? mmszIncluir + '\n' : '') +
@@ -36,13 +31,12 @@ function mmszPrograma(mmszCuerpo: string, mmszFunciones = '', mmszIncluir = ''):
 }
 
 export const mmszCpp: MmszCourse = {
-  id: 'cpp',
-  name: 'C++',
-  tagline: 'El clásico de ingeniería de sistemas',
-  color: '#ef7a5a',
-  icon: '⚙️',
-  units: [
-    /* =============================== BÁSICO =============================== */
+  mmszId: 'cpp',
+  mmszName: 'C++',
+  mmszTagline: 'El clásico de ingeniería de sistemas',
+  mmszColor: '#ef7a5a',
+  mmszIcon: '⚙️',
+  mmszUnits: [
     mmszUnidad('Básico', 'Primeros pasos', 'La estructura de un programa en C++, cout y variables con tipo.', [
       mmszLeccion('cpp-1-1', 'Estructura de un programa', '#include, main, cout, endl y comentarios.', [
         mmszLectura('Tu primer programa en C++', `
@@ -90,18 +84,18 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Saluda', `
             Dentro de «main», muestra «Hola, soy estudiante».
           `, {
-            inicio: mmszPrograma('// Escribe tu código aquí'),
-            pista: 'cout << "..." << endl;',
-            salida: 'Hola, soy estudiante',
-            requiere: ['cout'],
-            solucion: mmszPrograma('cout << "Hola, soy estudiante" << endl;'),
+            mmszInicio: mmszPrograma('// Escribe tu código aquí'),
+            mmszPista: 'cout << "..." << endl;',
+            mmszSalida: 'Hola, soy estudiante',
+            mmszRequiere: ['cout'],
+            mmszSolucion: mmszPrograma('cout << "Hola, soy estudiante" << endl;'),
           }),
           mmszPaso('Más líneas', `
             Agrega «Estudio Ingeniería de Sistemas» y «Me gusta programar», cada una en su línea.
           `, {
-            salida: 'Hola, soy estudiante\nEstudio Ingeniería de Sistemas\nMe gusta programar',
-            requiere: ['endl'],
-            solucion: mmszPrograma('cout << "Hola, soy estudiante" << endl;\ncout << "Estudio Ingeniería de Sistemas" << endl;\ncout << "Me gusta programar" << endl;'),
+            mmszSalida: 'Hola, soy estudiante\nEstudio Ingeniería de Sistemas\nMe gusta programar',
+            mmszRequiere: ['endl'],
+            mmszSolucion: mmszPrograma('cout << "Hola, soy estudiante" << endl;\ncout << "Estudio Ingeniería de Sistemas" << endl;\ncout << "Me gusta programar" << endl;'),
           }),
         ]),
       ], [
@@ -156,32 +150,32 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Crea las variables', `
             Crea «int ciclo = 3», «double promedio = 15.5» y «char seccion = 'A'». Muéstralas en ese orden, cada una en su línea.
           `, {
-            inicio: mmszPrograma('// Crea tus variables aquí'),
-            salida: '3\n15.5\nA',
-            requiere: ['int ciclo', 'double promedio', 'char seccion'],
-            solucion: mmszPrograma("int ciclo = 3;\ndouble promedio = 15.5;\nchar seccion = 'A';\ncout << ciclo << endl;\ncout << promedio << endl;\ncout << seccion << endl;"),
+            mmszInicio: mmszPrograma('// Crea tus variables aquí'),
+            mmszSalida: '3\n15.5\nA',
+            mmszRequiere: ['int ciclo', 'double promedio', 'char seccion'],
+            mmszSolucion: mmszPrograma("int ciclo = 3;\ndouble promedio = 15.5;\nchar seccion = 'A';\ncout << ciclo << endl;\ncout << promedio << endl;\ncout << seccion << endl;"),
           }),
           mmszPaso('Siguiente ciclo', `
             Antes de mostrar, aumenta «ciclo» en 1.
           `, {
-            salida: '4\n15.5\nA',
-            solucion: mmszPrograma("int ciclo = 3;\ndouble promedio = 15.5;\nchar seccion = 'A';\nciclo = ciclo + 1;\ncout << ciclo << endl;\ncout << promedio << endl;\ncout << seccion << endl;"),
+            mmszSalida: '4\n15.5\nA',
+            mmszSolucion: mmszPrograma("int ciclo = 3;\ndouble promedio = 15.5;\nchar seccion = 'A';\nciclo = ciclo + 1;\ncout << ciclo << endl;\ncout << promedio << endl;\ncout << seccion << endl;"),
           }),
         ]),
         mmszProyecto('área de un círculo', [
           mmszPaso('Con constante', `
             Declara «const double PI = 3.14;» y «double radio = 5;». Calcula y muestra el área («PI * radio * radio»): «Area: 78.5».
           `, {
-            inicio: mmszPrograma(''),
-            salida: 'Area: 78.5',
-            requiere: ['const double PI'],
-            solucion: mmszPrograma('const double PI = 3.14;\ndouble radio = 5;\ndouble area = PI * radio * radio;\ncout << "Area: " << area << endl;'),
+            mmszInicio: mmszPrograma(''),
+            mmszSalida: 'Area: 78.5',
+            mmszRequiere: ['const double PI'],
+            mmszSolucion: mmszPrograma('const double PI = 3.14;\ndouble radio = 5;\ndouble area = PI * radio * radio;\ncout << "Area: " << area << endl;'),
           }),
           mmszPaso('Diámetro', `
             Muestra también el diámetro («2 * radio»): «Diametro: 10».
           `, {
-            salida: 'Area: 78.5\nDiametro: 10',
-            solucion: mmszPrograma('const double PI = 3.14;\ndouble radio = 5;\ndouble area = PI * radio * radio;\ncout << "Area: " << area << endl;\ncout << "Diametro: " << 2 * radio << endl;'),
+            mmszSalida: 'Area: 78.5\nDiametro: 10',
+            mmszSolucion: mmszPrograma('const double PI = 3.14;\ndouble radio = 5;\ndouble area = PI * radio * radio;\ncout << "Area: " << area << endl;\ncout << "Diametro: " << 2 * radio << endl;'),
           }),
         ]),
         mmszRepaso('primeros pasos', `
@@ -237,10 +231,10 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Promedio con decimales', `
             Con «int n1 = 14, n2 = 17, n3 = 12, n4 = 16;», calcula el promedio en un «double». Para que no sea división entera, divide entre «4.0». Muestra «Promedio: 14.75».
           `, {
-            inicio: mmszPrograma('int n1 = 14, n2 = 17, n3 = 12, n4 = 16;'),
-            salida: 'Promedio: 14.75',
-            requiere: ['4.0'],
-            solucion: mmszPrograma('int n1 = 14, n2 = 17, n3 = 12, n4 = 16;\ndouble promedio = (n1 + n2 + n3 + n4) / 4.0;\ncout << "Promedio: " << promedio << endl;'),
+            mmszInicio: mmszPrograma('int n1 = 14, n2 = 17, n3 = 12, n4 = 16;'),
+            mmszSalida: 'Promedio: 14.75',
+            mmszRequiere: ['4.0'],
+            mmszSolucion: mmszPrograma('int n1 = 14, n2 = 17, n3 = 12, n4 = 16;\ndouble promedio = (n1 + n2 + n3 + n4) / 4.0;\ncout << "Promedio: " << promedio << endl;'),
           }),
         ]),
       ], [
@@ -292,28 +286,28 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('División y residuo', `
             Hay «int caramelos = 47» y «int ninos = 5». Muestra cuántos le tocan a cada niño y cuántos sobran: «Cada uno: 9» y «Sobran: 2».
           `, {
-            inicio: mmszPrograma('int caramelos = 47;\nint ninos = 5;'),
-            salida: 'Cada uno: 9\nSobran: 2',
-            requiere: ['/', '%'],
-            solucion: mmszPrograma('int caramelos = 47;\nint ninos = 5;\ncout << "Cada uno: " << caramelos / ninos << endl;\ncout << "Sobran: " << caramelos % ninos << endl;'),
+            mmszInicio: mmszPrograma('int caramelos = 47;\nint ninos = 5;'),
+            mmszSalida: 'Cada uno: 9\nSobran: 2',
+            mmszRequiere: ['/', '%'],
+            mmszSolucion: mmszPrograma('int caramelos = 47;\nint ninos = 5;\ncout << "Cada uno: " << caramelos / ninos << endl;\ncout << "Sobran: " << caramelos % ninos << endl;'),
           }),
           mmszPaso('Promedio exacto', `
             Muestra también el reparto exacto con decimales usando casting: «Exacto: 9.4».
           `, {
-            salida: 'Cada uno: 9\nSobran: 2\nExacto: 9.4',
-            requiere: ['(double)'],
-            solucion: mmszPrograma('int caramelos = 47;\nint ninos = 5;\ncout << "Cada uno: " << caramelos / ninos << endl;\ncout << "Sobran: " << caramelos % ninos << endl;\ncout << "Exacto: " << (double)caramelos / ninos << endl;'),
+            mmszSalida: 'Cada uno: 9\nSobran: 2\nExacto: 9.4',
+            mmszRequiere: ['(double)'],
+            mmszSolucion: mmszPrograma('int caramelos = 47;\nint ninos = 5;\ncout << "Cada uno: " << caramelos / ninos << endl;\ncout << "Sobran: " << caramelos % ninos << endl;\ncout << "Exacto: " << (double)caramelos / ninos << endl;'),
           }),
         ]),
         mmszProyecto('conversor de segundos', [
           mmszPaso('Horas, minutos y segundos', `
             Convierte «int total = 3725;» segundos a horas, minutos y segundos usando «/» y «%». Muestra «1h 2m 5s».
           `, {
-            inicio: mmszPrograma('int total = 3725;'),
-            pista: 'int horas = total / 3600;\nint minutos = (total % 3600) / 60;',
-            salida: '1h 2m 5s',
-            requiere: ['%'],
-            solucion: mmszPrograma('int total = 3725;\nint horas = total / 3600;\nint minutos = (total % 3600) / 60;\nint segundos = total % 60;\ncout << horas << "h " << minutos << "m " << segundos << "s" << endl;'),
+            mmszInicio: mmszPrograma('int total = 3725;'),
+            mmszPista: 'int horas = total / 3600;\nint minutos = (total % 3600) / 60;',
+            mmszSalida: '1h 2m 5s',
+            mmszRequiere: ['%'],
+            mmszSolucion: mmszPrograma('int total = 3725;\nint horas = total / 3600;\nint minutos = (total % 3600) / 60;\nint segundos = total % 60;\ncout << horas << "h " << minutos << "m " << segundos << "s" << endl;'),
           }),
         ]),
         mmszRepaso('operadores', `
@@ -364,10 +358,10 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Revisa', `
             Con «int numero = 7;», muestra «7 es impar» o «7 es par» usando «if/else» y «%».
           `, {
-            inicio: mmszPrograma('int numero = 7;'),
-            salida: '7 es impar',
-            requiere: ['if', 'else', '%'],
-            solucion: mmszPrograma('int numero = 7;\nif (numero % 2 == 0) {\n    cout << numero << " es par" << endl;\n} else {\n    cout << numero << " es impar" << endl;\n}'),
+            mmszInicio: mmszPrograma('int numero = 7;'),
+            mmszSalida: '7 es impar',
+            mmszRequiere: ['if', 'else', '%'],
+            mmszSolucion: mmszPrograma('int numero = 7;\nif (numero % 2 == 0) {\n    cout << numero << " es par" << endl;\n} else {\n    cout << numero << " es impar" << endl;\n}'),
           }),
         ]),
       ], [
@@ -420,27 +414,27 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Precio por opción', `
             Con «int opcion = 3;», usa «switch» para mostrar: 1 → «Cafe: 5», 2 → «Te: 3», 3 → «Jugo: 7», otro → «No existe».
           `, {
-            inicio: mmszPrograma('int opcion = 3;'),
-            salida: 'Jugo: 7',
-            requiere: ['switch', 'case', 'break'],
-            solucion: mmszPrograma('int opcion = 3;\nswitch (opcion) {\n    case 1:\n        cout << "Cafe: 5" << endl;\n        break;\n    case 2:\n        cout << "Te: 3" << endl;\n        break;\n    case 3:\n        cout << "Jugo: 7" << endl;\n        break;\n    default:\n        cout << "No existe" << endl;\n}'),
+            mmszInicio: mmszPrograma('int opcion = 3;'),
+            mmszSalida: 'Jugo: 7',
+            mmszRequiere: ['switch', 'case', 'break'],
+            mmszSolucion: mmszPrograma('int opcion = 3;\nswitch (opcion) {\n    case 1:\n        cout << "Cafe: 5" << endl;\n        break;\n    case 2:\n        cout << "Te: 3" << endl;\n        break;\n    case 3:\n        cout << "Jugo: 7" << endl;\n        break;\n    default:\n        cout << "No existe" << endl;\n}'),
           }),
         ]),
         mmszProyecto('calculadora con menú', [
           mmszPaso('Operación', `
             Con «double a = 12, b = 4;» y «char op = '/';», usa «switch (op)» con los casos «'+'», «'-'», «'*'» y «'/'» para mostrar el resultado: «Resultado: 3».
           `, {
-            inicio: mmszPrograma("double a = 12, b = 4;\nchar op = '/';"),
-            salida: 'Resultado: 3',
-            requiere: ['switch', "case '/'"],
-            solucion: mmszPrograma("double a = 12, b = 4;\nchar op = '/';\nswitch (op) {\n    case '+':\n        cout << \"Resultado: \" << a + b << endl;\n        break;\n    case '-':\n        cout << \"Resultado: \" << a - b << endl;\n        break;\n    case '*':\n        cout << \"Resultado: \" << a * b << endl;\n        break;\n    case '/':\n        cout << \"Resultado: \" << a / b << endl;\n        break;\n    default:\n        cout << \"Operador inválido\" << endl;\n}"),
+            mmszInicio: mmszPrograma("double a = 12, b = 4;\nchar op = '/';"),
+            mmszSalida: 'Resultado: 3',
+            mmszRequiere: ['switch', "case '/'"],
+            mmszSolucion: mmszPrograma("double a = 12, b = 4;\nchar op = '/';\nswitch (op) {\n    case '+':\n        cout << \"Resultado: \" << a + b << endl;\n        break;\n    case '-':\n        cout << \"Resultado: \" << a - b << endl;\n        break;\n    case '*':\n        cout << \"Resultado: \" << a * b << endl;\n        break;\n    case '/':\n        cout << \"Resultado: \" << a / b << endl;\n        break;\n    default:\n        cout << \"Operador inválido\" << endl;\n}"),
           }),
           mmszPaso('Sin divisor', `
             Dentro del «case '/'», usa el ternario o un «if» para que, si «b == 0», se muestre «No se puede dividir». (Con b = 4 la salida no cambia.)
           `, {
-            salida: 'Resultado: 3',
-            requiere: ['b == 0'],
-            solucion: mmszPrograma("double a = 12, b = 4;\nchar op = '/';\nswitch (op) {\n    case '+':\n        cout << \"Resultado: \" << a + b << endl;\n        break;\n    case '-':\n        cout << \"Resultado: \" << a - b << endl;\n        break;\n    case '*':\n        cout << \"Resultado: \" << a * b << endl;\n        break;\n    case '/':\n        if (b == 0) {\n            cout << \"No se puede dividir\" << endl;\n        } else {\n            cout << \"Resultado: \" << a / b << endl;\n        }\n        break;\n    default:\n        cout << \"Operador inválido\" << endl;\n}"),
+            mmszSalida: 'Resultado: 3',
+            mmszRequiere: ['b == 0'],
+            mmszSolucion: mmszPrograma("double a = 12, b = 4;\nchar op = '/';\nswitch (op) {\n    case '+':\n        cout << \"Resultado: \" << a + b << endl;\n        break;\n    case '-':\n        cout << \"Resultado: \" << a - b << endl;\n        break;\n    case '*':\n        cout << \"Resultado: \" << a * b << endl;\n        break;\n    case '/':\n        if (b == 0) {\n            cout << \"No se puede dividir\" << endl;\n        } else {\n            cout << \"Resultado: \" << a / b << endl;\n        }\n        break;\n    default:\n        cout << \"Operador inválido\" << endl;\n}"),
           }),
         ]),
         mmszRepaso('decisiones', `
@@ -458,7 +452,6 @@ export const mmszCpp: MmszCourse = {
       ]),
     ]),
 
-    /* ============================= INTERMEDIO ============================= */
     mmszUnidad('Intermedio', 'Bucles', 'Repetir instrucciones con for, while y do-while.', [
       mmszLeccion('cpp-4-1', 'Bucle for', 'Inicio; condición; paso. Acumuladores y bucles anidados.', [
         mmszLectura('El bucle for', `
@@ -502,16 +495,16 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Tabla del 7', `
             Muestra la tabla del 7 del 1 al 5: «7 x 1 = 7» … «7 x 5 = 35».
           `, {
-            inicio: mmszPrograma('int numero = 7;'),
-            salida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35',
-            requiere: ['for'],
-            solucion: mmszPrograma('int numero = 7;\nfor (int i = 1; i <= 5; i++) {\n    cout << numero << " x " << i << " = " << numero * i << endl;\n}'),
+            mmszInicio: mmszPrograma('int numero = 7;'),
+            mmszSalida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35',
+            mmszRequiere: ['for'],
+            mmszSolucion: mmszPrograma('int numero = 7;\nfor (int i = 1; i <= 5; i++) {\n    cout << numero << " x " << i << " = " << numero * i << endl;\n}'),
           }),
           mmszPaso('Suma', `
             Acumula los resultados y muestra al final «Suma: 105».
           `, {
-            salida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\nSuma: 105',
-            solucion: mmszPrograma('int numero = 7;\nint suma = 0;\nfor (int i = 1; i <= 5; i++) {\n    cout << numero << " x " << i << " = " << numero * i << endl;\n    suma += numero * i;\n}\ncout << "Suma: " << suma << endl;'),
+            mmszSalida: '7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\nSuma: 105',
+            mmszSolucion: mmszPrograma('int numero = 7;\nint suma = 0;\nfor (int i = 1; i <= 5; i++) {\n    cout << numero << " x " << i << " = " << numero * i << endl;\n    suma += numero * i;\n}\ncout << "Suma: " << suma << endl;'),
           }),
         ]),
       ], [
@@ -552,26 +545,26 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Separa los dígitos', `
             Con «int n = 4728;», usa «while (n > 0)»: en cada vuelta suma «n % 10» y luego haz «n /= 10». Muestra «Suma: 21».
           `, {
-            inicio: mmszPrograma('int n = 4728;\nint suma = 0;'),
-            salida: 'Suma: 21',
-            requiere: ['while', '% 10'],
-            solucion: mmszPrograma('int n = 4728;\nint suma = 0;\nwhile (n > 0) {\n    suma += n % 10;\n    n /= 10;\n}\ncout << "Suma: " << suma << endl;'),
+            mmszInicio: mmszPrograma('int n = 4728;\nint suma = 0;'),
+            mmszSalida: 'Suma: 21',
+            mmszRequiere: ['while', '% 10'],
+            mmszSolucion: mmszPrograma('int n = 4728;\nint suma = 0;\nwhile (n > 0) {\n    suma += n % 10;\n    n /= 10;\n}\ncout << "Suma: " << suma << endl;'),
           }),
         ]),
         mmszProyecto('números primos', [
           mmszPaso('¿Es primo?', `
             Con «int n = 29;», prueba divisores de 2 a n-1; si alguno divide exacto, marca «esPrimo = false» y usa «break». Muestra «29 es primo».
           `, {
-            inicio: mmszPrograma('int n = 29;\nbool esPrimo = true;'),
-            salida: '29 es primo',
-            requiere: ['break'],
-            solucion: mmszPrograma('int n = 29;\nbool esPrimo = true;\nfor (int d = 2; d < n; d++) {\n    if (n % d == 0) {\n        esPrimo = false;\n        break;\n    }\n}\nif (esPrimo) {\n    cout << n << " es primo" << endl;\n} else {\n    cout << n << " no es primo" << endl;\n}'),
+            mmszInicio: mmszPrograma('int n = 29;\nbool esPrimo = true;'),
+            mmszSalida: '29 es primo',
+            mmszRequiere: ['break'],
+            mmszSolucion: mmszPrograma('int n = 29;\nbool esPrimo = true;\nfor (int d = 2; d < n; d++) {\n    if (n % d == 0) {\n        esPrimo = false;\n        break;\n    }\n}\nif (esPrimo) {\n    cout << n << " es primo" << endl;\n} else {\n    cout << n << " no es primo" << endl;\n}'),
           }),
           mmszPaso('Primos hasta 20', `
             Agrega un bucle anidado que muestre en una línea los primos del 2 al 20: «2 3 5 7 11 13 17 19 ».
           `, {
-            salida: '29 es primo\n2 3 5 7 11 13 17 19',
-            solucion: mmszPrograma('int n = 29;\nbool esPrimo = true;\nfor (int d = 2; d < n; d++) {\n    if (n % d == 0) {\n        esPrimo = false;\n        break;\n    }\n}\nif (esPrimo) {\n    cout << n << " es primo" << endl;\n} else {\n    cout << n << " no es primo" << endl;\n}\nfor (int k = 2; k <= 20; k++) {\n    bool primo = true;\n    for (int d = 2; d < k; d++) {\n        if (k % d == 0) {\n            primo = false;\n            break;\n        }\n    }\n    if (primo) cout << k << " ";\n}\ncout << endl;'),
+            mmszSalida: '29 es primo\n2 3 5 7 11 13 17 19',
+            mmszSolucion: mmszPrograma('int n = 29;\nbool esPrimo = true;\nfor (int d = 2; d < n; d++) {\n    if (n % d == 0) {\n        esPrimo = false;\n        break;\n    }\n}\nif (esPrimo) {\n    cout << n << " es primo" << endl;\n} else {\n    cout << n << " no es primo" << endl;\n}\nfor (int k = 2; k <= 20; k++) {\n    bool primo = true;\n    for (int d = 2; d < k; d++) {\n        if (k % d == 0) {\n            primo = false;\n            break;\n        }\n    }\n    if (primo) cout << k << " ";\n}\ncout << endl;'),
           }),
         ]),
         mmszRepaso('bucles', `
@@ -634,10 +627,10 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Función void', `
             Crea «void linea(int n)» que muestre «n» guiones seguidos y un salto de línea. Llámala con 5 y luego con 3.
           `, {
-            inicio: mmszPrograma('// llama a tu función aquí'),
-            salida: '-----\n---',
-            requiere: ['void linea'],
-            solucion: mmszPrograma('linea(5);\nlinea(3);', 'void linea(int n) {\n    for (int i = 0; i < n; i++) {\n        cout << "-";\n    }\n    cout << endl;\n}'),
+            mmszInicio: mmszPrograma('// llama a tu función aquí'),
+            mmszSalida: '-----\n---',
+            mmszRequiere: ['void linea'],
+            mmszSolucion: mmszPrograma('linea(5);\nlinea(3);', 'void linea(int n) {\n    for (int i = 0; i < n; i++) {\n        cout << "-";\n    }\n    cout << endl;\n}'),
           }),
         ]),
       ], [
@@ -688,33 +681,33 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Recursivo', `
             Crea «int fib(int n)» recursiva (fib(0)=0, fib(1)=1) y muestra «fib(10)».
           `, {
-            inicio: mmszPrograma('cout << fib(10) << endl;'),
-            salida: '55',
-            requiere: ['int fib', 'return'],
-            solucion: mmszPrograma('cout << fib(10) << endl;', 'int fib(int n) {\n    if (n < 2) return n;\n    return fib(n - 1) + fib(n - 2);\n}'),
+            mmszInicio: mmszPrograma('cout << fib(10) << endl;'),
+            mmszSalida: '55',
+            mmszRequiere: ['int fib', 'return'],
+            mmszSolucion: mmszPrograma('cout << fib(10) << endl;', 'int fib(int n) {\n    if (n < 2) return n;\n    return fib(n - 1) + fib(n - 2);\n}'),
           }),
           mmszPaso('Serie', `
             Muestra los primeros 10 valores en una línea: «0 1 1 2 3 5 8 13 21 34».
           `, {
-            salida: '55\n0 1 1 2 3 5 8 13 21 34',
-            solucion: mmszPrograma('cout << fib(10) << endl;\nfor (int i = 0; i < 10; i++) {\n    cout << fib(i) << " ";\n}\ncout << endl;', 'int fib(int n) {\n    if (n < 2) return n;\n    return fib(n - 1) + fib(n - 2);\n}'),
+            mmszSalida: '55\n0 1 1 2 3 5 8 13 21 34',
+            mmszSolucion: mmszPrograma('cout << fib(10) << endl;\nfor (int i = 0; i < 10; i++) {\n    cout << fib(i) << " ";\n}\ncout << endl;', 'int fib(int n) {\n    if (n < 2) return n;\n    return fib(n - 1) + fib(n - 2);\n}'),
           }),
         ]),
         mmszProyecto('máximo común divisor', [
           mmszPaso('Algoritmo de Euclides', `
             El MCD de a y b es: si «b == 0», es «a»; si no, es «mcd(b, a % b)». Implementa «int mcd(int a, int b)» recursiva y muestra «mcd(48, 18)».
           `, {
-            inicio: mmszPrograma(''),
-            salida: '6',
-            requiere: ['int mcd'],
-            solucion: mmszPrograma('cout << mcd(48, 18) << endl;', 'int mcd(int a, int b) {\n    if (b == 0) return a;\n    return mcd(b, a % b);\n}'),
+            mmszInicio: mmszPrograma(''),
+            mmszSalida: '6',
+            mmszRequiere: ['int mcd'],
+            mmszSolucion: mmszPrograma('cout << mcd(48, 18) << endl;', 'int mcd(int a, int b) {\n    if (b == 0) return a;\n    return mcd(b, a % b);\n}'),
           }),
           mmszPaso('Mínimo común múltiplo', `
             Usa tu MCD para crear «mcm(a, b) = a / mcd(a, b) * b» y muestra «mcm(4, 6)».
           `, {
-            salida: '6\n12',
-            requiere: ['int mcm'],
-            solucion: mmszPrograma('cout << mcd(48, 18) << endl;\ncout << mcm(4, 6) << endl;', 'int mcd(int a, int b) {\n    if (b == 0) return a;\n    return mcd(b, a % b);\n}\n\nint mcm(int a, int b) {\n    return a / mcd(a, b) * b;\n}'),
+            mmszSalida: '6\n12',
+            mmszRequiere: ['int mcm'],
+            mmszSolucion: mmszPrograma('cout << mcd(48, 18) << endl;\ncout << mcm(4, 6) << endl;', 'int mcd(int a, int b) {\n    if (b == 0) return a;\n    return mcd(b, a % b);\n}\n\nint mcm(int a, int b) {\n    return a / mcd(a, b) * b;\n}'),
           }),
         ]),
         mmszRepaso('funciones', `
@@ -761,16 +754,16 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Mayor y menor', `
             Con «int notas[6] = {12, 17, 9, 15, 20, 11};», recorre el arreglo para encontrar la mayor y la menor. Muestra «Mayor: 20» y «Menor: 9».
           `, {
-            inicio: mmszPrograma('int notas[6] = {12, 17, 9, 15, 20, 11};'),
-            salida: 'Mayor: 20\nMenor: 9',
-            requiere: ['for'],
-            solucion: mmszPrograma('int notas[6] = {12, 17, 9, 15, 20, 11};\nint mayor = notas[0], menor = notas[0];\nfor (int i = 1; i < 6; i++) {\n    if (notas[i] > mayor) mayor = notas[i];\n    if (notas[i] < menor) menor = notas[i];\n}\ncout << "Mayor: " << mayor << endl;\ncout << "Menor: " << menor << endl;'),
+            mmszInicio: mmszPrograma('int notas[6] = {12, 17, 9, 15, 20, 11};'),
+            mmszSalida: 'Mayor: 20\nMenor: 9',
+            mmszRequiere: ['for'],
+            mmszSolucion: mmszPrograma('int notas[6] = {12, 17, 9, 15, 20, 11};\nint mayor = notas[0], menor = notas[0];\nfor (int i = 1; i < 6; i++) {\n    if (notas[i] > mayor) mayor = notas[i];\n    if (notas[i] < menor) menor = notas[i];\n}\ncout << "Mayor: " << mayor << endl;\ncout << "Menor: " << menor << endl;'),
           }),
           mmszPaso('Aprobados', `
             Cuenta las notas >= 11 y muestra «Aprobados: 5».
           `, {
-            salida: 'Mayor: 20\nMenor: 9\nAprobados: 5',
-            solucion: mmszPrograma('int notas[6] = {12, 17, 9, 15, 20, 11};\nint mayor = notas[0], menor = notas[0];\nfor (int i = 1; i < 6; i++) {\n    if (notas[i] > mayor) mayor = notas[i];\n    if (notas[i] < menor) menor = notas[i];\n}\ncout << "Mayor: " << mayor << endl;\ncout << "Menor: " << menor << endl;\nint aprobados = 0;\nfor (int i = 0; i < 6; i++) {\n    if (notas[i] >= 11) aprobados++;\n}\ncout << "Aprobados: " << aprobados << endl;'),
+            mmszSalida: 'Mayor: 20\nMenor: 9\nAprobados: 5',
+            mmszSolucion: mmszPrograma('int notas[6] = {12, 17, 9, 15, 20, 11};\nint mayor = notas[0], menor = notas[0];\nfor (int i = 1; i < 6; i++) {\n    if (notas[i] > mayor) mayor = notas[i];\n    if (notas[i] < menor) menor = notas[i];\n}\ncout << "Mayor: " << mayor << endl;\ncout << "Menor: " << menor << endl;\nint aprobados = 0;\nfor (int i = 0; i < 6; i++) {\n    if (notas[i] >= 11) aprobados++;\n}\ncout << "Aprobados: " << aprobados << endl;'),
           }),
         ]),
       ], [
@@ -827,28 +820,28 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Total por fila', `
             Con la matriz «ventas[3][4]» (3 vendedores, 4 semanas), muestra el total de cada vendedor: «Vendedor 1: 100», etc.
           `, {
-            inicio: mmszPrograma('int ventas[3][4] = {{10, 20, 30, 40}, {5, 5, 5, 5}, {50, 0, 25, 25}};'),
-            salida: 'Vendedor 1: 100\nVendedor 2: 20\nVendedor 3: 100',
-            requiere: ['for'],
-            solucion: mmszPrograma('int ventas[3][4] = {{10, 20, 30, 40}, {5, 5, 5, 5}, {50, 0, 25, 25}};\nfor (int f = 0; f < 3; f++) {\n    int total = 0;\n    for (int c = 0; c < 4; c++) {\n        total += ventas[f][c];\n    }\n    cout << "Vendedor " << f + 1 << ": " << total << endl;\n}'),
+            mmszInicio: mmszPrograma('int ventas[3][4] = {{10, 20, 30, 40}, {5, 5, 5, 5}, {50, 0, 25, 25}};'),
+            mmszSalida: 'Vendedor 1: 100\nVendedor 2: 20\nVendedor 3: 100',
+            mmszRequiere: ['for'],
+            mmszSolucion: mmszPrograma('int ventas[3][4] = {{10, 20, 30, 40}, {5, 5, 5, 5}, {50, 0, 25, 25}};\nfor (int f = 0; f < 3; f++) {\n    int total = 0;\n    for (int c = 0; c < 4; c++) {\n        total += ventas[f][c];\n    }\n    cout << "Vendedor " << f + 1 << ": " << total << endl;\n}'),
           }),
         ]),
         mmszProyecto('ordenamiento burbuja', [
           mmszPaso('Ordena', `
             Implementa «void ordenar(int a[], int n)» con el método burbuja: recorre el arreglo varias veces e intercambia elementos vecinos si están desordenados. Ordena «{5, 2, 9, 1, 7}» y muéstralo: «1 2 5 7 9».
           `, {
-            inicio: mmszPrograma('int a[5] = {5, 2, 9, 1, 7};'),
-            pista: 'if (a[j] > a[j + 1]) {\n    int tmp = a[j];\n    a[j] = a[j + 1];\n    a[j + 1] = tmp;\n}',
-            salida: '1 2 5 7 9',
-            requiere: ['void ordenar'],
-            solucion: mmszPrograma('int a[5] = {5, 2, 9, 1, 7};\nordenar(a, 5);\nfor (int i = 0; i < 5; i++) cout << a[i] << " ";\ncout << endl;', 'void ordenar(int a[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = 0; j < n - 1 - i; j++) {\n            if (a[j] > a[j + 1]) {\n                int tmp = a[j];\n                a[j] = a[j + 1];\n                a[j + 1] = tmp;\n            }\n        }\n    }\n}'),
+            mmszInicio: mmszPrograma('int a[5] = {5, 2, 9, 1, 7};'),
+            mmszPista: 'if (a[j] > a[j + 1]) {\n    int tmp = a[j];\n    a[j] = a[j + 1];\n    a[j + 1] = tmp;\n}',
+            mmszSalida: '1 2 5 7 9',
+            mmszRequiere: ['void ordenar'],
+            mmszSolucion: mmszPrograma('int a[5] = {5, 2, 9, 1, 7};\nordenar(a, 5);\nfor (int i = 0; i < 5; i++) cout << a[i] << " ";\ncout << endl;', 'void ordenar(int a[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = 0; j < n - 1 - i; j++) {\n            if (a[j] > a[j + 1]) {\n                int tmp = a[j];\n                a[j] = a[j + 1];\n                a[j + 1] = tmp;\n            }\n        }\n    }\n}'),
           }),
           mmszPaso('Búsqueda binaria', `
             Con el arreglo ya ordenado, implementa «int buscar(int a[], int n, int x)» con búsqueda binaria que devuelva la posición o -1. Muestra «buscar(a, 5, 7)» y «buscar(a, 5, 4)».
           `, {
-            salida: '1 2 5 7 9\n3\n-1',
-            requiere: ['int buscar'],
-            solucion: mmszPrograma('int a[5] = {5, 2, 9, 1, 7};\nordenar(a, 5);\nfor (int i = 0; i < 5; i++) cout << a[i] << " ";\ncout << endl;\ncout << buscar(a, 5, 7) << endl;\ncout << buscar(a, 5, 4) << endl;', 'void ordenar(int a[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = 0; j < n - 1 - i; j++) {\n            if (a[j] > a[j + 1]) {\n                int tmp = a[j];\n                a[j] = a[j + 1];\n                a[j + 1] = tmp;\n            }\n        }\n    }\n}\n\nint buscar(int a[], int n, int x) {\n    int bajo = 0, alto = n - 1;\n    while (bajo <= alto) {\n        int medio = (bajo + alto) / 2;\n        if (a[medio] == x) return medio;\n        if (a[medio] < x) bajo = medio + 1;\n        else alto = medio - 1;\n    }\n    return -1;\n}'),
+            mmszSalida: '1 2 5 7 9\n3\n-1',
+            mmszRequiere: ['int buscar'],
+            mmszSolucion: mmszPrograma('int a[5] = {5, 2, 9, 1, 7};\nordenar(a, 5);\nfor (int i = 0; i < 5; i++) cout << a[i] << " ";\ncout << endl;\ncout << buscar(a, 5, 7) << endl;\ncout << buscar(a, 5, 4) << endl;', 'void ordenar(int a[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = 0; j < n - 1 - i; j++) {\n            if (a[j] > a[j + 1]) {\n                int tmp = a[j];\n                a[j] = a[j + 1];\n                a[j + 1] = tmp;\n            }\n        }\n    }\n}\n\nint buscar(int a[], int n, int x) {\n    int bajo = 0, alto = n - 1;\n    while (bajo <= alto) {\n        int medio = (bajo + alto) / 2;\n        if (a[medio] == x) return medio;\n        if (a[medio] < x) bajo = medio + 1;\n        else alto = medio - 1;\n    }\n    return -1;\n}'),
           }),
         ]),
         mmszRepaso('arreglos', `
@@ -867,7 +860,6 @@ export const mmszCpp: MmszCourse = {
       ]),
     ]),
 
-    /* ============================== AVANZADO ============================== */
     mmszUnidad('Avanzado', 'Punteros y referencias', 'Direcciones de memoria, punteros, referencias y paso de parámetros.', [
       mmszLeccion('cpp-7-1', 'Punteros', 'El operador &, el operador * y punteros como parámetros.', [
         mmszLectura('¿Qué es un puntero?', `
@@ -915,11 +907,11 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('swap con punteros', `
             Crea «void intercambiar(int *a, int *b)» que intercambie los valores. Con «x = 3» e «y = 8», llámala y muestra «8 3».
           `, {
-            inicio: mmszPrograma('int x = 3, y = 8;'),
-            pista: 'int tmp = *a;\n*a = *b;\n*b = tmp;',
-            salida: '8 3',
-            requiere: ['int *a', '&x'],
-            solucion: mmszPrograma('int x = 3, y = 8;\nintercambiar(&x, &y);\ncout << x << " " << y << endl;', 'void intercambiar(int *a, int *b) {\n    int tmp = *a;\n    *a = *b;\n    *b = tmp;\n}'),
+            mmszInicio: mmszPrograma('int x = 3, y = 8;'),
+            mmszPista: 'int tmp = *a;\n*a = *b;\n*b = tmp;',
+            mmszSalida: '8 3',
+            mmszRequiere: ['int *a', '&x'],
+            mmszSolucion: mmszPrograma('int x = 3, y = 8;\nintercambiar(&x, &y);\ncout << x << " " << y << endl;', 'void intercambiar(int *a, int *b) {\n    int tmp = *a;\n    *a = *b;\n    *b = tmp;\n}'),
           }),
         ]),
       ], [
@@ -966,18 +958,18 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Intercambiar con referencias', `
             Reescribe «intercambiar» usando referencias: «void intercambiar(int &a, int &b)». Llámala como «intercambiar(x, y);» (sin «&» en la llamada).
           `, {
-            inicio: mmszPrograma('int x = 3, y = 8;\n// llama a intercambiar y muestra x e y'),
-            requiere: ['int &a', 'int &b', 'intercambiar(x, y)'],
-            solucion: mmszPrograma('int x = 3, y = 8;\nintercambiar(x, y);\ncout << x << " " << y << endl;', 'void intercambiar(int &a, int &b) {\n    int tmp = a;\n    a = b;\n    b = tmp;\n}'),
+            mmszInicio: mmszPrograma('int x = 3, y = 8;\n// llama a intercambiar y muestra x e y'),
+            mmszRequiere: ['int &a', 'int &b', 'intercambiar(x, y)'],
+            mmszSolucion: mmszPrograma('int x = 3, y = 8;\nintercambiar(x, y);\ncout << x << " " << y << endl;', 'void intercambiar(int &a, int &b) {\n    int tmp = a;\n    a = b;\n    b = tmp;\n}'),
           }),
         ]),
         mmszProyecto('estadísticas por referencia', [
           mmszPaso('Varios resultados', `
             Crea «void estadisticas(int a[], int n, int &mayor, int &menor, double &promedio)» que calcule los tres valores a la vez. En «main», declara las variables, llama a la función y muéstralas.
           `, {
-            inicio: mmszPrograma('int notas[5] = {12, 18, 9, 15, 20};'),
-            requiere: ['int &mayor', 'int &menor', 'double &promedio', 'estadisticas(notas'],
-            solucion: mmszPrograma('int notas[5] = {12, 18, 9, 15, 20};\nint mayor, menor;\ndouble promedio;\nestadisticas(notas, 5, mayor, menor, promedio);\ncout << mayor << " " << menor << " " << promedio << endl;', 'void estadisticas(int a[], int n, int &mayor, int &menor, double &promedio) {\n    mayor = a[0];\n    menor = a[0];\n    int suma = 0;\n    for (int i = 0; i < n; i++) {\n        if (a[i] > mayor) mayor = a[i];\n        if (a[i] < menor) menor = a[i];\n        suma += a[i];\n    }\n    promedio = (double)suma / n;\n}'),
+            mmszInicio: mmszPrograma('int notas[5] = {12, 18, 9, 15, 20};'),
+            mmszRequiere: ['int &mayor', 'int &menor', 'double &promedio', 'estadisticas(notas'],
+            mmszSolucion: mmszPrograma('int notas[5] = {12, 18, 9, 15, 20};\nint mayor, menor;\ndouble promedio;\nestadisticas(notas, 5, mayor, menor, promedio);\ncout << mayor << " " << menor << " " << promedio << endl;', 'void estadisticas(int a[], int n, int &mayor, int &menor, double &promedio) {\n    mayor = a[0];\n    menor = a[0];\n    int suma = 0;\n    for (int i = 0; i < n; i++) {\n        if (a[i] > mayor) mayor = a[i];\n        if (a[i] < menor) menor = a[i];\n        suma += a[i];\n    }\n    promedio = (double)suma / n;\n}'),
           }),
         ]),
         mmszRepaso('punteros y referencias', `
@@ -1034,9 +1026,9 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('¿Se lee igual al revés?', `
             Escribe «bool esPalindromo(string s)» que compare los caracteres desde los extremos hacia el centro. Prueba con «"reconocer"».
           `, {
-            inicio: '#include <iostream>\n#include <string>\nusing namespace std;\n\n// tu función aquí\n\nint main() {\n    cout << esPalindromo("reconocer") << endl;\n    return 0;\n}',
-            requiere: ['#include <string>', 'bool esPalindromo(string', '.length()'],
-            solucion: '#include <iostream>\n#include <string>\nusing namespace std;\n\nbool esPalindromo(string s) {\n    int i = 0, j = s.length() - 1;\n    while (i < j) {\n        if (s[i] != s[j]) return false;\n        i++;\n        j--;\n    }\n    return true;\n}\n\nint main() {\n    cout << esPalindromo("reconocer") << endl;\n    return 0;\n}',
+            mmszInicio: '#include <iostream>\n#include <string>\nusing namespace std;\n\n// tu función aquí\n\nint main() {\n    cout << esPalindromo("reconocer") << endl;\n    return 0;\n}',
+            mmszRequiere: ['#include <string>', 'bool esPalindromo(string', '.length()'],
+            mmszSolucion: '#include <iostream>\n#include <string>\nusing namespace std;\n\nbool esPalindromo(string s) {\n    int i = 0, j = s.length() - 1;\n    while (i < j) {\n        if (s[i] != s[j]) return false;\n        i++;\n        j--;\n    }\n    return true;\n}\n\nint main() {\n    cout << esPalindromo("reconocer") << endl;\n    return 0;\n}',
           }),
         ]),
       ], [
@@ -1080,18 +1072,18 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Agrega y promedia', `
             Crea un «vector<int> notas», agrega 15, 18 y 12 con «push_back» y calcula el promedio recorriéndolo con «for (int n : notas)».
           `, {
-            inicio: '#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    // tu código aquí\n    return 0;\n}',
-            requiere: ['#include <vector>', 'vector<int> notas', 'push_back', 'for (int n : notas)'],
-            solucion: '#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> notas;\n    notas.push_back(15);\n    notas.push_back(18);\n    notas.push_back(12);\n    int suma = 0;\n    for (int n : notas) suma += n;\n    cout << (double)suma / notas.size() << endl;\n    return 0;\n}',
+            mmszInicio: '#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    // tu código aquí\n    return 0;\n}',
+            mmszRequiere: ['#include <vector>', 'vector<int> notas', 'push_back', 'for (int n : notas)'],
+            mmszSolucion: '#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> notas;\n    notas.push_back(15);\n    notas.push_back(18);\n    notas.push_back(12);\n    int suma = 0;\n    for (int n : notas) suma += n;\n    cout << (double)suma / notas.size() << endl;\n    return 0;\n}',
           }),
         ]),
         mmszProyecto('agenda de contactos', [
           mmszPaso('Nombres', `
             Usa «vector<string> contactos», agrega 3 nombres, ordénalos con «sort(contactos.begin(), contactos.end())» y muéstralos numerados.
           `, {
-            inicio: '#include <iostream>\n#include <string>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    // tu código aquí\n    return 0;\n}',
-            requiere: ['vector<string> contactos', 'push_back', 'sort(contactos.begin(), contactos.end())'],
-            solucion: '#include <iostream>\n#include <string>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    vector<string> contactos;\n    contactos.push_back("Luis");\n    contactos.push_back("Ana");\n    contactos.push_back("Rosa");\n    sort(contactos.begin(), contactos.end());\n    for (int i = 0; i < contactos.size(); i++) {\n        cout << i + 1 << ". " << contactos[i] << endl;\n    }\n    return 0;\n}',
+            mmszInicio: '#include <iostream>\n#include <string>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    // tu código aquí\n    return 0;\n}',
+            mmszRequiere: ['vector<string> contactos', 'push_back', 'sort(contactos.begin(), contactos.end())'],
+            mmszSolucion: '#include <iostream>\n#include <string>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    vector<string> contactos;\n    contactos.push_back("Luis");\n    contactos.push_back("Ana");\n    contactos.push_back("Rosa");\n    sort(contactos.begin(), contactos.end());\n    for (int i = 0; i < contactos.size(); i++) {\n        cout << i + 1 << ". " << contactos[i] << endl;\n    }\n    return 0;\n}',
           }),
         ]),
         mmszRepaso('strings y vectores', `
@@ -1144,9 +1136,9 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Define el struct', `
             Crea «struct Producto» con «string nombre», «double precio» e «int stock». En «main», crea un producto y muestra su valor total en inventario (precio × stock).
           `, {
-            inicio: '#include <iostream>\n#include <string>\nusing namespace std;\n\n// tu struct aquí\n\nint main() {\n    return 0;\n}',
-            requiere: ['struct Producto', 'double precio', 'int stock', '.precio * '],
-            solucion: '#include <iostream>\n#include <string>\nusing namespace std;\n\nstruct Producto {\n    string nombre;\n    double precio;\n    int stock;\n};\n\nint main() {\n    Producto p;\n    p.nombre = "Cuaderno";\n    p.precio = 4.5;\n    p.stock = 10;\n    cout << p.precio * p.stock << endl;\n    return 0;\n}',
+            mmszInicio: '#include <iostream>\n#include <string>\nusing namespace std;\n\n// tu struct aquí\n\nint main() {\n    return 0;\n}',
+            mmszRequiere: ['struct Producto', 'double precio', 'int stock', '.precio * '],
+            mmszSolucion: '#include <iostream>\n#include <string>\nusing namespace std;\n\nstruct Producto {\n    string nombre;\n    double precio;\n    int stock;\n};\n\nint main() {\n    Producto p;\n    p.nombre = "Cuaderno";\n    p.precio = 4.5;\n    p.stock = 10;\n    cout << p.precio * p.stock << endl;\n    return 0;\n}',
           }),
         ]),
       ], [
@@ -1217,18 +1209,18 @@ export const mmszCpp: MmszCourse = {
           mmszPaso('Atributos privados', `
             Crea «class Rectangulo» con «base» y «altura» privados, un constructor «Rectangulo(double b, double h)» y los métodos públicos «area()» y «perimetro()».
           `, {
-            inicio: '#include <iostream>\nusing namespace std;\n\n// tu clase aquí\n\nint main() {\n    Rectangulo r(4, 5);\n    cout << r.area() << " " << r.perimetro() << endl;\n    return 0;\n}',
-            requiere: ['class Rectangulo', 'private:', 'public:', 'Rectangulo(double b, double h)', 'double area()', 'double perimetro()'],
-            solucion: '#include <iostream>\nusing namespace std;\n\nclass Rectangulo {\nprivate:\n    double base;\n    double altura;\npublic:\n    Rectangulo(double b, double h) {\n        base = b;\n        altura = h;\n    }\n    double area() { return base * altura; }\n    double perimetro() { return 2 * (base + altura); }\n};\n\nint main() {\n    Rectangulo r(4, 5);\n    cout << r.area() << " " << r.perimetro() << endl;\n    return 0;\n}',
+            mmszInicio: '#include <iostream>\nusing namespace std;\n\n// tu clase aquí\n\nint main() {\n    Rectangulo r(4, 5);\n    cout << r.area() << " " << r.perimetro() << endl;\n    return 0;\n}',
+            mmszRequiere: ['class Rectangulo', 'private:', 'public:', 'Rectangulo(double b, double h)', 'double area()', 'double perimetro()'],
+            mmszSolucion: '#include <iostream>\nusing namespace std;\n\nclass Rectangulo {\nprivate:\n    double base;\n    double altura;\npublic:\n    Rectangulo(double b, double h) {\n        base = b;\n        altura = h;\n    }\n    double area() { return base * altura; }\n    double perimetro() { return 2 * (base + altura); }\n};\n\nint main() {\n    Rectangulo r(4, 5);\n    cout << r.area() << " " << r.perimetro() << endl;\n    return 0;\n}',
           }),
         ]),
         mmszProyecto('figuras con herencia', [
           mmszPaso('Clase base y derivadas', `
             Crea «class Figura» con un método «virtual double area()», y las clases «Circulo» y «Cuadrado» que hereden públicamente de «Figura» y sobrescriban «area()» con «override».
           `, {
-            inicio: '#include <iostream>\nusing namespace std;\n\n// tus clases aquí\n\nint main() {\n    return 0;\n}',
-            requiere: ['class Figura', 'virtual double area()', 'class Circulo : public Figura', 'class Cuadrado : public Figura', 'override'],
-            solucion: '#include <iostream>\nusing namespace std;\n\nclass Figura {\npublic:\n    virtual double area() { return 0; }\n};\n\nclass Circulo : public Figura {\n    double r;\npublic:\n    Circulo(double radio) { r = radio; }\n    double area() override { return 3.14 * r * r; }\n};\n\nclass Cuadrado : public Figura {\n    double l;\npublic:\n    Cuadrado(double lado) { l = lado; }\n    double area() override { return l * l; }\n};\n\nint main() {\n    Circulo c(2);\n    Cuadrado q(3);\n    Figura *figuras[2] = {&c, &q};\n    for (int i = 0; i < 2; i++) cout << figuras[i]->area() << endl;\n    return 0;\n}',
+            mmszInicio: '#include <iostream>\nusing namespace std;\n\n// tus clases aquí\n\nint main() {\n    return 0;\n}',
+            mmszRequiere: ['class Figura', 'virtual double area()', 'class Circulo : public Figura', 'class Cuadrado : public Figura', 'override'],
+            mmszSolucion: '#include <iostream>\nusing namespace std;\n\nclass Figura {\npublic:\n    virtual double area() { return 0; }\n};\n\nclass Circulo : public Figura {\n    double r;\npublic:\n    Circulo(double radio) { r = radio; }\n    double area() override { return 3.14 * r * r; }\n};\n\nclass Cuadrado : public Figura {\n    double l;\npublic:\n    Cuadrado(double lado) { l = lado; }\n    double area() override { return l * l; }\n};\n\nint main() {\n    Circulo c(2);\n    Cuadrado q(3);\n    Figura *figuras[2] = {&c, &q};\n    for (int i = 0; i < 2; i++) cout << figuras[i]->area() << endl;\n    return 0;\n}',
           }),
         ]),
         mmszRepaso('structs y clases', `

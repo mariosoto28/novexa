@@ -1,5 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Pantalla que aparece después de "Finalizar sesión".
 import { useState } from 'react';
 import { mmszIniciales } from '../mmszUtilidades';
 
@@ -9,14 +7,14 @@ interface MmszProps {
 }
 
 export default function MmszBienvenida({ mmszNombre, mmszEntrar }: MmszProps) {
-  const [mmszOtro, setMmszOtro] = useState(false);
-  const [mmszNuevo, setMmszNuevo] = useState('');
+  const [mmszOtro, mmszSetOtro] = useState(false);
+  const [mmszNuevo, mmszSetNuevo] = useState('');
 
   return (
     <div className="mmsz-bienvenida">
       <div className="mmsz-bienvenida-caja">
-        <div className="mmsz-logo grande">
-          <span className="logo">{'</>'}</span> Novexa
+        <div className="mmsz-marca grande">
+          Novexa
         </div>
         <p className="muted">Cerraste tu sesión.</p>
 
@@ -27,25 +25,25 @@ export default function MmszBienvenida({ mmszNombre, mmszEntrar }: MmszProps) {
             <button className="mmsz-btn mmsz-btn-ancho" onClick={() => mmszEntrar(mmszNombre)}>
               Entrar
             </button>
-            <button className="mmsz-enlace" onClick={() => setMmszOtro(true)}>
+            <button className="mmsz-enlace" onClick={() => mmszSetOtro(true)}>
               ¿No eres {mmszNombre}?
             </button>
           </>
         ) : (
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
+            onSubmit={(mmszE) => {
+              mmszE.preventDefault();
               if (mmszNuevo.trim()) mmszEntrar(mmszNuevo);
             }}
           >
             <label className="mmsz-campo">
               Escribe tu nombre
-              <input autoFocus value={mmszNuevo} maxLength={40} onChange={(e) => setMmszNuevo(e.target.value)} />
+              <input autoFocus value={mmszNuevo} maxLength={40} onChange={(mmszE) => mmszSetNuevo(mmszE.target.value)} />
             </label>
             <button className="mmsz-btn mmsz-btn-ancho" disabled={!mmszNuevo.trim()}>
               Entrar
             </button>
-            <button type="button" className="mmsz-enlace" onClick={() => setMmszOtro(false)}>
+            <button type="button" className="mmsz-enlace" onClick={() => mmszSetOtro(false)}>
               Volver
             </button>
           </form>

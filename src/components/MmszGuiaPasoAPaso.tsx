@@ -1,8 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Guía paso a paso (PRUEBA): un "video" interactivo hecho en la app (funciona sin internet).
-// Recuerda la lección anterior, explica los conceptos y escribe el programa línea por línea
-// mientras la voz lo explica. Se puede pausar, adelantar y retroceder; en pausa el código
-// se puede editar y ejecutar, y al final el estudiante hace su propia versión (derivado).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MmszGuia } from '../types';
 import { mmszPreloadPython, mmszRunCode, type MmszRunnableLang, type MmszRunResult } from '../runner';
@@ -22,44 +17,43 @@ interface MmszProps {
 type MmszTipoSegmento = 'intro' | 'recuerdo' | 'conceptos' | 'linea' | 'ejecutar' | 'cierre';
 
 interface MmszSegmento {
-  tipo: MmszTipoSegmento;
-  inicio: number; // ms
-  dur: number; // ms
-  capitulo: string;
-  subtitulo: string; // lo que se muestra abajo (con «código»)
-  voz: string[]; // frases que se dicen
-  linea?: number; // índice de la línea que se escribe
+  mmszTipo: MmszTipoSegmento;
+  mmszInicio: number;
+  mmszDur: number;
+  mmszCapitulo: string;
+  mmszSubtitulo: string;
+  mmszVoz: string[];
+  mmszLinea?: number;
 }
 
 const MMSZ_VELOCIDADES = [0.75, 1, 1.25, 1.5, 2];
-const MMSZ_PORCION_ESCRITURA = 0.55; // parte del segmento en la que se escribe la línea
+const MMSZ_PORCION_ESCRITURA = 0.55;
 
-/** Tiempo que tarda la voz en decir un texto (aprox. 13 letras por segundo). */
 const mmszDuracion = (mmszTexto: string, mmszMinimo = 2200) => Math.max(mmszMinimo, (mmszTexto.length / 13) * 1000 + 900);
 
-const mmszReloj = (ms: number) => {
-  const s = Math.max(0, Math.floor(ms / 1000));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+const mmszReloj = (mmszMs: number) => {
+  const mmszS = Math.max(0, Math.floor(mmszMs / 1000));
+  return `${Math.floor(mmszS / 60)}:${String(mmszS % 60).padStart(2, '0')}`;
 };
 
-function mmszCrearGuion(g: MmszGuia, mmszLang: MmszRunnableLang, mmszLineas: string[]): MmszSegmento[] {
-  const mmszLista: Omit<MmszSegmento, 'inicio'>[] = [];
-  const mmszAgregar = (tipo: MmszTipoSegmento, capitulo: string, subtitulo: string, mmszVozTexto = subtitulo, linea?: number) => {
-    const voz = mmszTextoHablado(mmszVozTexto);
-    mmszLista.push({ tipo, capitulo, subtitulo, voz, linea, dur: mmszDuracion(voz.join(' ')) });
+function mmszCrearGuion(mmszG: MmszGuia, mmszLang: MmszRunnableLang, mmszLineas: string[]): MmszSegmento[] {
+  const mmszLista: Omit<MmszSegmento, 'mmszInicio'>[] = [];
+  const mmszAgregar = (mmszTipo: MmszTipoSegmento, mmszCapitulo: string, mmszSubtitulo: string, mmszVozTexto = mmszSubtitulo, mmszLinea?: number) => {
+    const mmszVoz = mmszTextoHablado(mmszVozTexto);
+    mmszLista.push({ mmszTipo, mmszCapitulo, mmszSubtitulo, mmszVoz, mmszLinea, mmszDur: mmszDuracion(mmszVoz.join(' ')) });
   };
 
-  const mmszNombre = g.titulo.replace(/^Guía paso a paso: /, '');
+  const mmszNombre = mmszG.mmszTitulo.replace(/^Guía paso a paso: /, '');
   mmszAgregar('intro', 'Introducción', `Hoy vamos a programar: ${mmszNombre}. Te voy a enseñar a hacerlo paso a paso.`);
-  if (g.recuerdo) {
+  if (mmszG.mmszRecuerdo) {
     mmszAgregar(
       'recuerdo',
       '¿Recuerdas?',
-      `¿Recuerdas lo que hiciste en la lección **${g.recuerdo.leccion}**? ${g.recuerdo.resumen} Hoy lo vamos a usar.`,
-      `¿Recuerdas lo que hiciste en la lección ${g.recuerdo.leccion}? ${g.recuerdo.resumen} Hoy lo vamos a usar.`,
+      `¿Recuerdas lo que hiciste en la lección **${mmszG.mmszRecuerdo.mmszLeccion}**? ${mmszG.mmszRecuerdo.mmszResumen} Hoy lo vamos a usar.`,
+      `¿Recuerdas lo que hiciste en la lección ${mmszG.mmszRecuerdo.mmszLeccion}? ${mmszG.mmszRecuerdo.mmszResumen} Hoy lo vamos a usar.`,
     );
   }
-  const mmszLosConceptos = mmszConceptos(g.codigo, mmszLang);
+  const mmszLosConceptos = mmszConceptos(mmszG.mmszCodigo, mmszLang);
   if (mmszLosConceptos.length) {
     mmszAgregar(
       'conceptos',
@@ -68,13 +62,13 @@ function mmszCrearGuion(g: MmszGuia, mmszLang: MmszRunnableLang, mmszLineas: str
     );
   }
   let mmszNumero = 0;
-  mmszLineas.forEach((l, i) => {
-    if (!l.trim()) return;
+  mmszLineas.forEach((mmszL, mmszI) => {
+    if (!mmszL.trim()) return;
     mmszNumero++;
-    const mmszExplicacion = mmszExplicarLinea(l, mmszLang) ?? 'Escribimos esta línea.';
-    mmszAgregar('linea', `Línea ${mmszNumero}`, mmszExplicacion, mmszExplicacion, i);
+    const mmszExplicacion = mmszExplicarLinea(mmszL, mmszLang) ?? 'Escribimos esta línea.';
+    mmszAgregar('linea', `Línea ${mmszNumero}`, mmszExplicacion, mmszExplicacion, mmszI);
   });
-  if (g.salida !== undefined) {
+  if (mmszG.mmszSalida !== undefined) {
     mmszAgregar('ejecutar', 'Ejecutar', 'Ahora ejecutamos el programa. Mira la salida: es lo que el programa muestra en pantalla.');
   }
   mmszAgregar(
@@ -83,70 +77,65 @@ function mmszCrearGuion(g: MmszGuia, mmszLang: MmszRunnableLang, mmszLineas: str
     '¡Listo! Ya sabes cómo se hace. Pausa cuando quieras para cambiar el código y ejecutarlo, o haz tu propia versión abajo.',
   );
 
-  let t = 0;
-  return mmszLista.map((s) => {
-    const r = { ...s, inicio: t };
-    t += s.dur;
-    return r;
+  let mmszT = 0;
+  return mmszLista.map((mmszS) => {
+    const mmszR = { ...mmszS, mmszInicio: mmszT };
+    mmszT += mmszS.mmszDur;
+    return mmszR;
   });
 }
 
 export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, mmszIrAlGuiado }: MmszProps) {
-  const mmszLineas = useMemo(() => mmszGuia.codigo.split('\n'), [mmszGuia.codigo]);
+  const mmszLineas = useMemo(() => mmszGuia.mmszCodigo.split('\n'), [mmszGuia.mmszCodigo]);
   const mmszGuion = useMemo(() => mmszCrearGuion(mmszGuia, mmszLang, mmszLineas), [mmszGuia, mmszLang, mmszLineas]);
-  const mmszTotal = mmszGuion[mmszGuion.length - 1].inicio + mmszGuion[mmszGuion.length - 1].dur;
+  const mmszTotal = mmszGuion[mmszGuion.length - 1].mmszInicio + mmszGuion[mmszGuion.length - 1].mmszDur;
   const mmszHayVoz = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
-  const [mmszT, setMmszT] = useState(0);
-  const [mmszReproduciendo, setMmszReproduciendo] = useState(false);
-  const [mmszVelocidad, setMmszVelocidad] = useState(1);
-  const [mmszConVoz, setMmszConVoz] = useState(mmszHayVoz);
-  const [mmszSubtitulos, setMmszSubtitulos] = useState(true);
-  const [mmszSalida, setMmszSalida] = useState<MmszRunResult | null>(null);
-  // Edición en pausa
-  const [mmszEditando, setMmszEditando] = useState(false);
-  const [mmszCodigoPausa, setMmszCodigoPausa] = useState('');
-  const [mmszSalidaPausa, setMmszSalidaPausa] = useState<MmszRunResult | null>(null);
-  // Mi versión (derivado)
-  const [mmszMiVersion, setMmszMiVersion] = useState<string | null>(null);
-  const [mmszSalidaMia, setMmszSalidaMia] = useState<MmszRunResult | null>(null);
-  const [mmszCorriendo, setMmszCorriendo] = useState(false);
+  const [mmszT, mmszSetT] = useState(0);
+  const [mmszReproduciendo, mmszSetReproduciendo] = useState(false);
+  const [mmszVelocidad, mmszSetVelocidad] = useState(1);
+  const [mmszConVoz, mmszSetConVoz] = useState(mmszHayVoz);
+  const [mmszSubtitulos, mmszSetSubtitulos] = useState(true);
+  const [mmszSalida, mmszSetSalida] = useState<MmszRunResult | null>(null);
+  const [mmszEditando, mmszSetEditando] = useState(false);
+  const [mmszCodigoPausa, mmszSetCodigoPausa] = useState('');
+  const [mmszSalidaPausa, mmszSetSalidaPausa] = useState<MmszRunResult | null>(null);
+  const [mmszMiVersion, mmszSetMiVersion] = useState<string | null>(null);
+  const [mmszSalidaMia, mmszSetSalidaMia] = useState<MmszRunResult | null>(null);
+  const [mmszCorriendo, mmszSetCorriendo] = useState(false);
 
   const mmszHablando = useRef(false);
-  const mmszTurno = useRef(0); // para ignorar el fin de frases canceladas
+  const mmszTurno = useRef(0);
   const mmszTerminado = useRef(false);
   const mmszRaiz = useRef<HTMLDivElement>(null);
 
-  const mmszIndice = Math.max(0, mmszGuion.findIndex((s) => mmszT < s.inicio + s.dur));
+  const mmszIndice = Math.max(0, mmszGuion.findIndex((mmszS) => mmszT < mmszS.mmszInicio + mmszS.mmszDur));
   const mmszSeg = mmszT >= mmszTotal ? mmszGuion[mmszGuion.length - 1] : mmszGuion[mmszIndice];
 
-  // Salida real del programa (se calcula una vez).
   useEffect(() => {
-    if (mmszGuia.salida === undefined) return;
+    if (mmszGuia.mmszSalida === undefined) return;
     if (mmszLang === 'python') mmszPreloadPython();
     let mmszVivo = true;
-    mmszRunCode(mmszLang, mmszGuia.codigo).then((r) => mmszVivo && setMmszSalida(r));
+    mmszRunCode(mmszLang, mmszGuia.mmszCodigo).then((mmszR) => mmszVivo && mmszSetSalida(mmszR));
     return () => {
       mmszVivo = false;
     };
   }, [mmszGuia, mmszLang]);
 
-  // Reloj del "video".
   useEffect(() => {
     if (!mmszReproduciendo) return;
     let mmszAntes = performance.now();
     let mmszId = 0;
-    const mmszPaso = (ahora: number) => {
-      const dt = (ahora - mmszAntes) * mmszVelocidad;
-      mmszAntes = ahora;
-      setMmszT((t) => {
-        const s = mmszGuion.find((x) => t < x.inicio + x.dur);
-        let n = t + dt;
-        // Si la voz todavía está hablando, se espera un poco antes de pasar al siguiente paso.
-        if (s && mmszConVoz && mmszHablando.current && n >= s.inicio + s.dur - 1) {
-          n = s.inicio + s.dur - 1;
+    const mmszPaso = (mmszAhora: number) => {
+      const mmszDt = (mmszAhora - mmszAntes) * mmszVelocidad;
+      mmszAntes = mmszAhora;
+      mmszSetT((mmszT) => {
+        const mmszS = mmszGuion.find((mmszX) => mmszT < mmszX.mmszInicio + mmszX.mmszDur);
+        let mmszN = mmszT + mmszDt;
+        if (mmszS && mmszConVoz && mmszHablando.current && mmszN >= mmszS.mmszInicio + mmszS.mmszDur - 1) {
+          mmszN = mmszS.mmszInicio + mmszS.mmszDur - 1;
         }
-        return Math.min(n, mmszTotal);
+        return Math.min(mmszN, mmszTotal);
       });
       mmszId = requestAnimationFrame(mmszPaso);
     };
@@ -154,10 +143,9 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
     return () => cancelAnimationFrame(mmszId);
   }, [mmszReproduciendo, mmszVelocidad, mmszConVoz, mmszGuion, mmszTotal]);
 
-  // Al llegar al final.
   useEffect(() => {
     if (mmszT >= mmszTotal && mmszReproduciendo) {
-      setMmszReproduciendo(false);
+      mmszSetReproduciendo(false);
       if (!mmszTerminado.current) {
         mmszTerminado.current = true;
         mmszAlTerminar();
@@ -165,7 +153,6 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
     }
   }, [mmszT, mmszTotal, mmszReproduciendo, mmszAlTerminar]);
 
-  // Voz: dice el paso actual cuando cambia (y se calla al pausar).
   useEffect(() => {
     if (!mmszHayVoz) return;
     speechSynthesis.cancel();
@@ -173,130 +160,124 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
     const mmszMiTurno = ++mmszTurno.current;
     if (!mmszReproduciendo || !mmszConVoz || mmszT >= mmszTotal) return;
     const mmszVoz = mmszVozEspanol();
-    const mmszFrases = mmszSeg.voz;
+    const mmszFrases = mmszSeg.mmszVoz;
     if (!mmszFrases.length) return;
     mmszHablando.current = true;
-    mmszFrases.forEach((f, i) => {
-      const u = new SpeechSynthesisUtterance(f);
-      u.lang = mmszVoz?.lang ?? 'es-ES';
-      if (mmszVoz) u.voice = mmszVoz;
-      u.rate = mmszVelocidad;
-      if (i === mmszFrases.length - 1) {
+    mmszFrases.forEach((mmszF, mmszI) => {
+      const mmszU = new SpeechSynthesisUtterance(mmszF);
+      mmszU.lang = mmszVoz?.lang ?? 'es-ES';
+      if (mmszVoz) mmszU.voice = mmszVoz;
+      mmszU.rate = mmszVelocidad;
+      if (mmszI === mmszFrases.length - 1) {
         const mmszFin = () => {
           if (mmszTurno.current === mmszMiTurno) mmszHablando.current = false;
         };
-        u.onend = mmszFin;
-        u.onerror = mmszFin;
+        mmszU.onend = mmszFin;
+        mmszU.onerror = mmszFin;
       }
-      speechSynthesis.speak(u);
+      speechSynthesis.speak(mmszU);
     });
-    // Por si la voz nunca avisa que terminó.
     const mmszSeguro = setTimeout(() => {
       if (mmszTurno.current === mmszMiTurno) mmszHablando.current = false;
-    }, (mmszSeg.dur / mmszVelocidad) + 5000);
+    }, (mmszSeg.mmszDur / mmszVelocidad) + 5000);
     return () => clearTimeout(mmszSeguro);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mmszIndice, mmszReproduciendo, mmszConVoz, mmszVelocidad]);
 
   useEffect(() => () => {
     if (mmszHayVoz) speechSynthesis.cancel();
   }, [mmszHayVoz]);
 
-  /* ---------- Código visible en el momento t ---------- */
   const mmszVisible = useMemo(() => {
-    const mmszFilas: { texto: string; i: number }[] = [];
+    const mmszFilas: { mmszTexto: string; mmszI: number }[] = [];
     let mmszCursor = -1;
-    for (let i = 0; i < mmszLineas.length; i++) {
-      const s = mmszGuion.find((x) => x.linea === i);
-      if (!s) {
-        // Línea vacía: aparece junto con la siguiente línea escrita.
-        const mmszSig = mmszGuion.find((x) => x.linea !== undefined && x.linea > i);
-        if (!mmszSig || mmszT >= mmszSig.inicio) mmszFilas.push({ texto: '', i });
+    for (let mmszI = 0; mmszI < mmszLineas.length; mmszI++) {
+      const mmszS = mmszGuion.find((mmszX) => mmszX.mmszLinea === mmszI);
+      if (!mmszS) {
+        const mmszSig = mmszGuion.find((mmszX) => mmszX.mmszLinea !== undefined && mmszX.mmszLinea > mmszI);
+        if (!mmszSig || mmszT >= mmszSig.mmszInicio) mmszFilas.push({ mmszTexto: '', mmszI });
         continue;
       }
-      if (mmszT < s.inicio) break;
-      const p = Math.min(1, (mmszT - s.inicio) / (s.dur * MMSZ_PORCION_ESCRITURA));
-      const l = mmszLineas[i];
-      mmszFilas.push({ texto: p >= 1 ? l : l.slice(0, Math.ceil(l.length * p)), i });
-      if (mmszT < s.inicio + s.dur) mmszCursor = i;
+      if (mmszT < mmszS.mmszInicio) break;
+      const mmszP = Math.min(1, (mmszT - mmszS.mmszInicio) / (mmszS.mmszDur * MMSZ_PORCION_ESCRITURA));
+      const mmszL = mmszLineas[mmszI];
+      mmszFilas.push({ mmszTexto: mmszP >= 1 ? mmszL : mmszL.slice(0, Math.ceil(mmszL.length * mmszP)), mmszI });
+      if (mmszT < mmszS.mmszInicio + mmszS.mmszDur) mmszCursor = mmszI;
     }
     return { mmszFilas, mmszCursor };
   }, [mmszT, mmszGuion, mmszLineas]);
 
-  const mmszCodigoVisible = mmszVisible.mmszFilas.map((f) => f.texto).join('\n');
-  const mmszEjecutarSeg = mmszGuion.find((s) => s.tipo === 'ejecutar');
-  const mmszMostrarSalida = mmszEjecutarSeg && mmszT >= mmszEjecutarSeg.inicio;
+  const mmszCodigoVisible = mmszVisible.mmszFilas.map((mmszF) => mmszF.mmszTexto).join('\n');
+  const mmszEjecutarSeg = mmszGuion.find((mmszS) => mmszS.mmszTipo === 'ejecutar');
+  const mmszMostrarSalida = mmszEjecutarSeg && mmszT >= mmszEjecutarSeg.mmszInicio;
 
-  /* ---------- Controles ---------- */
-  function mmszIr(ms: number) {
-    setMmszEditando(false); // al moverse en el video, vuelve el código de la guía
-    setMmszT(Math.max(0, Math.min(mmszTotal, ms)));
+  function mmszIr(mmszMs: number) {
+    mmszSetEditando(false);
+    mmszSetT(Math.max(0, Math.min(mmszTotal, mmszMs)));
   }
   function mmszAlternar() {
     if (mmszReproduciendo) {
-      setMmszReproduciendo(false);
+      mmszSetReproduciendo(false);
       return;
     }
-    setMmszEditando(false); // al seguir, vuelve el código de la guía
-    setMmszSalidaPausa(null);
-    if (mmszT >= mmszTotal) setMmszT(0);
-    setMmszReproduciendo(true);
+    mmszSetEditando(false);
+    mmszSetSalidaPausa(null);
+    if (mmszT >= mmszTotal) mmszSetT(0);
+    mmszSetReproduciendo(true);
   }
   function mmszEditarAqui() {
-    setMmszReproduciendo(false);
-    setMmszCodigoPausa(mmszCodigoVisible);
-    setMmszSalidaPausa(null);
-    setMmszEditando(true);
+    mmszSetReproduciendo(false);
+    mmszSetCodigoPausa(mmszCodigoVisible);
+    mmszSetSalidaPausa(null);
+    mmszSetEditando(true);
   }
   async function mmszEjecutarPausa() {
-    setMmszCorriendo(true);
-    setMmszSalidaPausa(await mmszRunCode(mmszLang, mmszCodigoPausa));
-    setMmszCorriendo(false);
+    mmszSetCorriendo(true);
+    mmszSetSalidaPausa(await mmszRunCode(mmszLang, mmszCodigoPausa));
+    mmszSetCorriendo(false);
   }
   async function mmszEjecutarMia() {
     if (mmszMiVersion === null) return;
-    setMmszCorriendo(true);
-    setMmszSalidaMia(await mmszRunCode(mmszLang, mmszMiVersion));
-    setMmszCorriendo(false);
+    mmszSetCorriendo(true);
+    mmszSetSalidaMia(await mmszRunCode(mmszLang, mmszMiVersion));
+    mmszSetCorriendo(false);
   }
 
-  function mmszTeclas(e: React.KeyboardEvent<HTMLDivElement>) {
-    if ((e.target as HTMLElement).closest('textarea, input, select')) return;
-    if (e.key === ' ' || e.key === 'k') {
-      e.preventDefault();
+  function mmszTeclas(mmszE: React.KeyboardEvent<HTMLDivElement>) {
+    if ((mmszE.target as HTMLElement).closest('textarea, input, select')) return;
+    if (mmszE.key === ' ' || mmszE.key === 'k') {
+      mmszE.preventDefault();
       mmszAlternar();
-    } else if (e.key === 'ArrowRight') {
-      e.preventDefault();
+    } else if (mmszE.key === 'ArrowRight') {
+      mmszE.preventDefault();
       mmszIr(mmszT + 5000);
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
+    } else if (mmszE.key === 'ArrowLeft') {
+      mmszE.preventDefault();
       mmszIr(mmszT - 5000);
     }
   }
 
   const mmszTarjeta =
-    mmszSeg.tipo === 'intro' || mmszSeg.tipo === 'recuerdo' || mmszSeg.tipo === 'conceptos' ? mmszSeg.tipo : null;
+    mmszSeg.mmszTipo === 'intro' || mmszSeg.mmszTipo === 'recuerdo' || mmszSeg.mmszTipo === 'conceptos' ? mmszSeg.mmszTipo : null;
   const mmszEnPausaConAvance = !mmszReproduciendo && mmszT > 0 && mmszT < mmszTotal;
 
   return (
     <div className="mmsz-guia" ref={mmszRaiz} tabIndex={0} onKeyDown={mmszTeclas}>
-      {/* ---------- Pantalla ---------- */}
       <div className="mmsz-guia-pantalla">
         {mmszEditando ? (
           <div className="mmsz-guia-editar">
             <div className="mmsz-guia-aviso">
               ✏️ <b>Tu versión:</b> cambia el código y ejecútalo. Al darle ▶ la guía sigue con su código.
             </div>
-            <MmszEditor mmszValor={mmszCodigoPausa} mmszCambiar={setMmszCodigoPausa} mmszLang={mmszLang} mmszEjecutar={mmszEjecutarPausa} />
+            <MmszEditor mmszValor={mmszCodigoPausa} mmszCambiar={mmszSetCodigoPausa} mmszLang={mmszLang} mmszEjecutar={mmszEjecutarPausa} />
             <div className="mmsz-guia-fila">
               <button className="mmsz-btn mmsz-btn-principal" onClick={mmszEjecutarPausa} disabled={mmszCorriendo}>
                 {mmszCorriendo ? 'Ejecutando…' : '▶ Ejecutar'}
               </button>
-              <button className="mmsz-btn" onClick={() => setMmszCodigoPausa(mmszCodigoVisible)}>
+              <button className="mmsz-btn" onClick={() => mmszSetCodigoPausa(mmszCodigoVisible)}>
                 ↺ Volver al código de la guía
               </button>
             </div>
-            {mmszSalidaPausa && <MmszConsola r={mmszSalidaPausa} />}
+            {mmszSalidaPausa && <MmszConsola mmszR={mmszSalidaPausa} />}
           </div>
         ) : (
           <>
@@ -308,12 +289,12 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
                 {mmszVisible.mmszFilas.length === 0 ? (
                   <span className="mmsz-guia-vacio">El código aparecerá aquí…</span>
                 ) : (
-                  mmszVisible.mmszFilas.map((f) => (
-                    <div key={f.i} className={`mmsz-guia-linea ${f.i === mmszVisible.mmszCursor ? 'actual' : ''}`}>
-                      <span className="mmsz-guia-num">{f.i + 1}</span>
+                  mmszVisible.mmszFilas.map((mmszF) => (
+                    <div key={mmszF.mmszI} className={`mmsz-guia-linea ${mmszF.mmszI === mmszVisible.mmszCursor ? 'actual' : ''}`}>
+                      <span className="mmsz-guia-num">{mmszF.mmszI + 1}</span>
                       <code>
-                        {f.texto}
-                        {f.i === mmszVisible.mmszCursor && mmszReproduciendo && <span className="mmsz-guia-cursor">▍</span>}
+                        {mmszF.mmszTexto}
+                        {mmszF.mmszI === mmszVisible.mmszCursor && mmszReproduciendo && <span className="mmsz-guia-cursor">▍</span>}
                       </code>
                     </div>
                   ))
@@ -322,27 +303,27 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
               {mmszMostrarSalida && (
                 <div className="mmsz-guia-salida">
                   <small>Salida</small>
-                  <pre>{mmszSalida ? mmszSalida.error ?? mmszSalida.output : mmszGuia.salida}</pre>
+                  <pre>{mmszSalida ? mmszSalida.mmszError ?? mmszSalida.mmszOutput : mmszGuia.mmszSalida}</pre>
                 </div>
               )}
             </div>
 
             {mmszTarjeta && (
-              <div className={`mmsz-guia-tarjeta ${mmszTarjeta}`} key={mmszSeg.tipo}>
+              <div className={`mmsz-guia-tarjeta ${mmszTarjeta}`} key={mmszSeg.mmszTipo}>
                 {mmszTarjeta === 'intro' && (
                   <>
                     <span className="mmsz-guia-etiqueta">⏯ Guía paso a paso</span>
-                    <h2>{mmszGuia.titulo.replace(/^Guía paso a paso: /, '')}</h2>
+                    <h2>{mmszGuia.mmszTitulo.replace(/^Guía paso a paso: /, '')}</h2>
                     <div className="mmsz-guia-objetivo">
-                      <MmszMarkdown texto={mmszGuia.objetivo} lang={mmszLang} />
+                      <MmszMarkdown mmszTexto={mmszGuia.mmszObjetivo} mmszLang={mmszLang} />
                     </div>
                   </>
                 )}
-                {mmszTarjeta === 'recuerdo' && mmszGuia.recuerdo && (
+                {mmszTarjeta === 'recuerdo' && mmszGuia.mmszRecuerdo && (
                   <>
                     <span className="mmsz-guia-etiqueta">🧠 ¿Recuerdas?</span>
-                    <h2>Lección: {mmszGuia.recuerdo.leccion}</h2>
-                    <p>{mmszGuia.recuerdo.resumen}</p>
+                    <h2>Lección: {mmszGuia.mmszRecuerdo.mmszLeccion}</h2>
+                    <p>{mmszGuia.mmszRecuerdo.mmszResumen}</p>
                     <p className="muted">Hoy lo vamos a usar.</p>
                   </>
                 )}
@@ -350,8 +331,8 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
                   <>
                     <span className="mmsz-guia-etiqueta">📚 Conceptos básicos</span>
                     <ul>
-                      {mmszConceptos(mmszGuia.codigo, mmszLang).map((c) => (
-                        <li key={c}>{c}</li>
+                      {mmszConceptos(mmszGuia.mmszCodigo, mmszLang).map((mmszC) => (
+                        <li key={mmszC}>{mmszC}</li>
                       ))}
                     </ul>
                   </>
@@ -369,17 +350,15 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
 
         {mmszSubtitulos && !mmszEditando && (mmszReproduciendo || mmszT > 0) && (
           <div className="mmsz-guia-subtitulo">
-            <MmszEnLinea texto={mmszSeg.subtitulo} />
+            <MmszEnLinea mmszTexto={mmszSeg.mmszSubtitulo} />
           </div>
         )}
       </div>
 
-      {/* ---------- Barra de control ---------- */}
       <div className="mmsz-guia-controles">
         <button
           onClick={() =>
-            // Si recién empezó el paso, va al anterior; si no, al inicio del paso actual.
-            mmszIr(mmszT - mmszSeg.inicio < 800 ? mmszGuion[Math.max(0, mmszIndice - 1)].inicio : mmszSeg.inicio)
+            mmszIr(mmszT - mmszSeg.mmszInicio < 800 ? mmszGuion[Math.max(0, mmszIndice - 1)].mmszInicio : mmszSeg.mmszInicio)
           }
           title="Paso anterior"
         >
@@ -389,7 +368,7 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
           {mmszReproduciendo ? '⏸' : '▶'}
         </button>
         <button
-          onClick={() => mmszIr(mmszGuion[mmszIndice + 1]?.inicio ?? mmszTotal)}
+          onClick={() => mmszIr(mmszGuion[mmszIndice + 1]?.mmszInicio ?? mmszTotal)}
           title="Paso siguiente"
         >
           ⏭
@@ -404,29 +383,29 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
             max={mmszTotal}
             step={100}
             value={mmszT}
-            onChange={(e) => mmszIr(Number(e.target.value))}
+            onChange={(mmszE) => mmszIr(Number(mmszE.target.value))}
             aria-label="Adelantar o retroceder"
             style={{ ['--mmsz-pct' as string]: `${(mmszT / mmszTotal) * 100}%` }}
           />
           <div className="mmsz-guia-marcas">
-            {mmszGuion.map((s, i) => (
-              <span key={i} style={{ left: `${(s.inicio / mmszTotal) * 100}%` }} className={s.tipo} />
+            {mmszGuion.map((mmszS, mmszI) => (
+              <span key={mmszI} style={{ left: `${(mmszS.mmszInicio / mmszTotal) * 100}%` }} className={mmszS.mmszTipo} />
             ))}
           </div>
         </div>
-        <select value={mmszVelocidad} onChange={(e) => setMmszVelocidad(Number(e.target.value))} title="Velocidad">
-          {MMSZ_VELOCIDADES.map((v) => (
-            <option key={v} value={v}>
-              {v}x
+        <select value={mmszVelocidad} onChange={(mmszE) => mmszSetVelocidad(Number(mmszE.target.value))} title="Velocidad">
+          {MMSZ_VELOCIDADES.map((mmszV) => (
+            <option key={mmszV} value={mmszV}>
+              {mmszV}x
             </option>
           ))}
         </select>
         {mmszHayVoz && (
-          <button onClick={() => setMmszConVoz((v) => !v)} title={mmszConVoz ? 'Silenciar voz' : 'Activar voz'}>
+          <button onClick={() => mmszSetConVoz((mmszV) => !mmszV)} title={mmszConVoz ? 'Silenciar voz' : 'Activar voz'}>
             {mmszConVoz ? '🔊' : '🔇'}
           </button>
         )}
-        <button className={mmszSubtitulos ? 'activo' : ''} onClick={() => setMmszSubtitulos((v) => !v)} title="Subtítulos">
+        <button className={mmszSubtitulos ? 'activo' : ''} onClick={() => mmszSetSubtitulos((mmszV) => !mmszV)} title="Subtítulos">
           CC
         </button>
       </div>
@@ -437,42 +416,40 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
         </div>
       )}
 
-      {/* ---------- Capítulos ---------- */}
       <div className="mmsz-guia-capitulos">
-        {mmszGuion.map((s, i) => (
+        {mmszGuion.map((mmszS, mmszI) => (
           <button
-            key={i}
-            className={`${s === mmszSeg ? 'activo' : ''} ${mmszT >= s.inicio + s.dur ? 'visto' : ''} ${s.tipo}`}
-            onClick={() => mmszIr(s.inicio)}
-            title={s.subtitulo.replace(/[«»]/g, '')}
+            key={mmszI}
+            className={`${mmszS === mmszSeg ? 'activo' : ''} ${mmszT >= mmszS.mmszInicio + mmszS.mmszDur ? 'visto' : ''} ${mmszS.mmszTipo}`}
+            onClick={() => mmszIr(mmszS.mmszInicio)}
+            title={mmszS.mmszSubtitulo.replace(/[«»]/g, '')}
           >
-            <small>{mmszReloj(s.inicio)}</small> {s.capitulo}
+            <small>{mmszReloj(mmszS.mmszInicio)}</small> {mmszS.mmszCapitulo}
           </button>
         ))}
       </div>
 
-      {/* ---------- Mi versión (derivado) ---------- */}
       <section className="mmsz-guia-derivado">
         <h3>📋 Hazlo a tu manera</h3>
         <p className="muted">
           Copia el programa de la guía y cámbialo: otros números, otros textos, otra condición. Así aprendes de verdad.
         </p>
         {mmszMiVersion === null ? (
-          <button className="mmsz-btn mmsz-btn-principal" onClick={() => setMmszMiVersion(mmszGuia.codigo)}>
+          <button className="mmsz-btn mmsz-btn-principal" onClick={() => mmszSetMiVersion(mmszGuia.mmszCodigo)}>
             Hacer mi versión
           </button>
         ) : (
           <>
-            <MmszEditor mmszValor={mmszMiVersion} mmszCambiar={setMmszMiVersion} mmszLang={mmszLang} mmszEjecutar={mmszEjecutarMia} />
+            <MmszEditor mmszValor={mmszMiVersion} mmszCambiar={mmszSetMiVersion} mmszLang={mmszLang} mmszEjecutar={mmszEjecutarMia} />
             <div className="mmsz-guia-fila">
               <button className="mmsz-btn mmsz-btn-principal" onClick={mmszEjecutarMia} disabled={mmszCorriendo}>
                 {mmszCorriendo ? 'Ejecutando…' : '▶ Ejecutar mi versión'}
               </button>
-              <button className="mmsz-btn" onClick={() => setMmszMiVersion(mmszGuia.codigo)}>
+              <button className="mmsz-btn" onClick={() => mmszSetMiVersion(mmszGuia.mmszCodigo)}>
                 ↺ Empezar de nuevo
               </button>
             </div>
-            {mmszSalidaMia && <MmszConsola r={mmszSalidaMia} />}
+            {mmszSalidaMia && <MmszConsola mmszR={mmszSalidaMia} />}
           </>
         )}
         {mmszIrAlGuiado && mmszT >= mmszTotal && (
@@ -487,11 +464,11 @@ export default function MmszGuiaPasoAPaso({ mmszGuia, mmszLang, mmszAlTerminar, 
   );
 }
 
-function MmszConsola({ r }: { r: MmszRunResult }) {
+function MmszConsola({ mmszR }: { mmszR: MmszRunResult }) {
   return (
-    <div className={`mmsz-guia-consola ${r.error ? 'error' : ''}`}>
-      <small>{r.error ? 'Error' : 'Salida'}</small>
-      <pre>{r.error ? `${r.output ? r.output + '\n' : ''}${r.error}` : r.output || '(el programa no mostró nada)'}</pre>
+    <div className={`mmsz-guia-consola ${mmszR.mmszError ? 'error' : ''}`}>
+      <small>{mmszR.mmszError ? 'Error' : 'Salida'}</small>
+      <pre>{mmszR.mmszError ? `${mmszR.mmszOutput ? mmszR.mmszOutput + '\n' : ''}${mmszR.mmszError}` : mmszR.mmszOutput || '(el programa no mostró nada)'}</pre>
     </div>
   );
 }

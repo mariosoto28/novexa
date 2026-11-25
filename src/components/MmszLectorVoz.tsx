@@ -1,9 +1,5 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Lee en voz alta el texto de una lectura usando las voces del sistema (Windows trae voces en español).
-// No necesita internet ni archivos de audio.
 import { useEffect, useRef, useState } from 'react';
 
-/** Convierte el texto con formato en frases para leer en voz alta. */
 export function mmszTextoHablado(mmszMarkdown: string): string[] {
   const mmszSinCodigo = mmszMarkdown.replace(/(```|~~~)[\s\S]*?\1/g, '\nA continuación hay un ejemplo de código.\n');
   const mmszLimpio = mmszSinCodigo
@@ -15,18 +11,17 @@ export function mmszTextoHablado(mmszMarkdown: string): string[] {
     .replace(/!=/g, ' distinto de ')
     .replace(/>=/g, ' mayor o igual que ')
     .replace(/<=/g, ' menor o igual que ');
-  // Frases cortas: algunas voces se cortan con textos muy largos.
   return mmszLimpio
     .split(/\n+|(?<=[.!?:])\s+/)
-    .map((f) => f.trim())
+    .map((mmszF) => mmszF.trim())
     .filter(Boolean);
 }
 
 export function mmszVozEspanol(): SpeechSynthesisVoice | undefined {
-  const mmszVoces = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('es'));
+  const mmszVoces = speechSynthesis.getVoices().filter((mmszV) => mmszV.lang.toLowerCase().startsWith('es'));
   return (
-    mmszVoces.find((v) => /es-(MX|US|PE|419)/i.test(v.lang)) ??
-    mmszVoces.find((v) => /es-ES/i.test(v.lang)) ??
+    mmszVoces.find((mmszV) => /es-(MX|US|PE|419)/i.test(mmszV.lang)) ??
+    mmszVoces.find((mmszV) => /es-ES/i.test(mmszV.lang)) ??
     mmszVoces[0]
   );
 }
@@ -35,12 +30,11 @@ const MMSZ_VELOCIDADES = [0.8, 1, 1.25, 1.5];
 
 export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
   const mmszDisponible = typeof window !== 'undefined' && 'speechSynthesis' in window;
-  const [mmszEstado, setMmszEstado] = useState<'parado' | 'hablando' | 'pausado'>('parado');
-  const [mmszVelocidad, setMmszVelocidad] = useState(1);
-  const [mmszSinVoz, setMmszSinVoz] = useState(false);
+  const [mmszEstado, mmszSetEstado] = useState<'parado' | 'hablando' | 'pausado'>('parado');
+  const [mmszVelocidad, mmszSetVelocidad] = useState(1);
+  const [mmszSinVoz, mmszSetSinVoz] = useState(false);
   const mmszCancelado = useRef(false);
 
-  // Detiene la lectura al salir de la página o cambiar de texto.
   useEffect(() => {
     return () => {
       mmszCancelado.current = true;
@@ -54,23 +48,23 @@ export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
     speechSynthesis.cancel();
     mmszCancelado.current = false;
     const mmszVoz = mmszVozEspanol();
-    if (!mmszVoz && speechSynthesis.getVoices().length > 0) setMmszSinVoz(true);
+    if (!mmszVoz && speechSynthesis.getVoices().length > 0) mmszSetSinVoz(true);
     const mmszFrases = mmszTextoHablado(mmszTexto);
-    mmszFrases.forEach((f, i) => {
-      const u = new SpeechSynthesisUtterance(f);
-      u.lang = mmszVoz?.lang ?? 'es-ES';
-      if (mmszVoz) u.voice = mmszVoz;
-      u.rate = mmszVelocidad;
-      if (i === mmszFrases.length - 1) u.onend = () => !mmszCancelado.current && setMmszEstado('parado');
-      speechSynthesis.speak(u);
+    mmszFrases.forEach((mmszF, mmszI) => {
+      const mmszU = new SpeechSynthesisUtterance(mmszF);
+      mmszU.lang = mmszVoz?.lang ?? 'es-ES';
+      if (mmszVoz) mmszU.voice = mmszVoz;
+      mmszU.rate = mmszVelocidad;
+      if (mmszI === mmszFrases.length - 1) mmszU.onend = () => !mmszCancelado.current && mmszSetEstado('parado');
+      speechSynthesis.speak(mmszU);
     });
-    setMmszEstado('hablando');
+    mmszSetEstado('hablando');
   }
 
   function mmszDetener() {
     mmszCancelado.current = true;
     speechSynthesis.cancel();
-    setMmszEstado('parado');
+    mmszSetEstado('parado');
   }
 
   return (
@@ -85,7 +79,7 @@ export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
           className="mmsz-btn"
           onClick={() => {
             speechSynthesis.pause();
-            setMmszEstado('pausado');
+            mmszSetEstado('pausado');
           }}
         >
           ⏸ Pausar
@@ -96,7 +90,7 @@ export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
           className="mmsz-btn"
           onClick={() => {
             speechSynthesis.resume();
-            setMmszEstado('hablando');
+            mmszSetEstado('hablando');
           }}
         >
           ▶ Continuar
@@ -111,14 +105,14 @@ export default function MmszLectorVoz({ mmszTexto }: { mmszTexto: string }) {
         Velocidad
         <select
           value={mmszVelocidad}
-          onChange={(e) => {
-            setMmszVelocidad(Number(e.target.value));
+          onChange={(mmszE) => {
+            mmszSetVelocidad(Number(mmszE.target.value));
             if (mmszEstado !== 'parado') mmszDetener();
           }}
         >
-          {MMSZ_VELOCIDADES.map((v) => (
-            <option key={v} value={v}>
-              {v}x
+          {MMSZ_VELOCIDADES.map((mmszV) => (
+            <option key={mmszV} value={mmszV}>
+              {mmszV}x
             </option>
           ))}
         </select>

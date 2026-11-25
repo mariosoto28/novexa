@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // necesario para que Electron cargue los archivos con file://
+  base: './',
   server: { port: 5173, strictPort: true },
 });

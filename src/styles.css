@@ -1,7 +1,6 @@
-/* Autor: MMSZ (Mario Soto Zea) — tema blanco, sin azul */
 :root {
   --bg: #ffffff;
-  --soft: #f5f4f8;        /* franjas y fondos suaves */
+  --soft: #f5f4f8;
   --panel: #ffffff;
   --panel-2: #f1f0f5;
   --border: #e2e0ea;
@@ -15,16 +14,15 @@
   --bad-bg: #fdecee;
   --code-bg: #1f1d2b;
   --code-text: #f1f0f7;
-  --track: #ebe9f1;      /* fondo de las barras de progreso */
-  --text-2: #4a4760;     /* texto secundario */
-  --nota-bg: #fff8e6;    /* fondo de las notas */
+  --track: #ebe9f1;
+  --text-2: #4a4760;
+  --nota-bg: #fff8e6;
   --accent: var(--brand);
   --mono: 'Cascadia Code', Consolas, 'Courier New', monospace;
   --shadow: 0 8px 28px rgba(31, 29, 43, .12);
   color-scheme: light;
 }
 
-/* ================= Temas de colores (Configuración) ================= */
 [data-tema="menta"] {
   --soft: #eef8f4; --panel-2: #e5f3ed; --border: #d6ebe2; --border-strong: #b5d6c8;
   --brand: #1f9d74; --track: #dcefe6; --text: #17302a; --muted: #5d7a70; --text-2: #3c5a50;
@@ -61,9 +59,7 @@
 [data-tema="terminal"] .nivel-Intermedio.mmsz-nivel-chip { background: transparent; }
 [data-tema="nocturno"] .nivel-Avanzado.mmsz-nivel-chip,
 [data-tema="terminal"] .nivel-Avanzado.mmsz-nivel-chip { background: transparent; }
-[data-tema="terminal"] .logo { color: #0f1512; }
 
-/* Video de YouTube */
 .mmsz-video { max-width: 1000px; }
 .mmsz-video-marco { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; }
 .mmsz-video-marco iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
@@ -80,14 +76,12 @@
 .mmsz-video-info p { margin: 6px 0; line-height: 1.5; }
 .mmsz-video-info a { text-decoration: none; }
 
-/* Lectura en voz alta */
 .mmsz-lector { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px dashed var(--border); }
 .mmsz-velocidad { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
 .mmsz-velocidad select {
   font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--border-strong); border-radius: 6px; padding: 4px 6px;
 }
 
-/* Modo En línea / Sin conexión (menú del nombre) */
 .mmsz-modo-chip {
   font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; border: 1px solid; white-space: nowrap;
 }
@@ -102,11 +96,9 @@
 }
 .mmsz-modo-opciones button.activo { background: var(--panel); color: var(--text); box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
 
-/* Selector de diseño de cursos */
 .mmsz-diseno-opciones { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-top: 12px; }
 .mmsz-diseno-icono { font-size: 30px; }
 
-/* ================= Bienvenida del primer inicio ================= */
 .mmsz-inicio { min-height: 100%; display: flex; flex-direction: column; background: var(--bg); }
 .mmsz-inicio-cabecera {
   display: flex; justify-content: center; align-items: center; gap: 10px; padding: 16px;
@@ -127,10 +119,6 @@
 .mmsz-arte-tarjeta pre { margin: 14px 0 18px; font-size: 16px; line-height: 1.7; white-space: pre; }
 .mmsz-arte-tarjeta b { color: #c792ea; font-weight: 600; }
 .mmsz-arte-tarjeta em { color: #c3e88d; font-style: normal; }
-.mmsz-arte-puntos { display: flex; gap: 6px; }
-.mmsz-arte-puntos i { width: 11px; height: 11px; border-radius: 50%; background: #ff6b6b; }
-.mmsz-arte-puntos i:nth-child(2) { background: #f9c74f; }
-.mmsz-arte-puntos i:nth-child(3) { background: #3ccf8e; }
 .mmsz-arte-iconos { display: flex; gap: 10px; }
 .mmsz-arte-iconos span {
   width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 22px;
@@ -138,7 +126,11 @@
 }
 .mmsz-arte-rombo { position: absolute; left: 0; top: 18px; width: 22px; height: 22px; border: 4px solid #ef7a5a; transform: rotate(35deg); }
 .mmsz-arte-chispa { position: absolute; right: -22px; top: 22%; font-size: 40px; color: #e8b83a; z-index: 1; }
-.mmsz-arte-rulo { position: absolute; right: -10px; bottom: 6px; width: 62%; color: var(--text); }
+.mmsz-arte-onda {
+  position: absolute; right: -10px; bottom: 4px; width: 62%; height: 26px;
+  background: radial-gradient(circle at 10px -4px, transparent 11px, var(--text) 12px 14px, transparent 15px) 0 0 / 22px 26px repeat-x;
+  opacity: .8;
+}
 .mmsz-inicio-formulario { display: flex; flex-direction: column; gap: 14px; }
 .mmsz-inicio-formulario h1 { font-size: 36px; margin: 0; line-height: 1.2; }
 .mmsz-inicio-formulario > p { font-size: 17px; line-height: 1.55; margin: 0 0 6px; }
@@ -197,11 +189,9 @@
   .mmsz-dialogo-pie { flex-wrap: wrap; }
 }
 
-/* Aviso de "solo fallan las mayúsculas" en la práctica */
 .mmsz-casi { color: #b86e00; font-weight: 600; }
 [data-tema="nocturno"] .mmsz-casi, [data-tema="terminal"] .mmsz-casi { color: #f0b450; }
 
-/* Copias de seguridad */
 .mmsz-confirmar {
   margin-top: 16px; padding: 16px; border: 2px solid var(--brand); border-radius: 10px; background: var(--soft);
   display: flex; flex-direction: column; gap: 10px;
@@ -221,7 +211,6 @@
 }
 .mmsz-aviso-flotante button { background: none; border: none; color: inherit; font-size: 16px; }
 
-/* Botón Atrás */
 .mmsz-atras {
   background: none; border: 1px solid var(--border-strong); border-radius: 6px; padding: 6px 12px;
   font-weight: 600; margin-right: 14px; white-space: nowrap;
@@ -229,7 +218,6 @@
 .mmsz-atras:not(:disabled):hover { background: var(--soft); border-color: var(--text); }
 .mmsz-atras:disabled { opacity: .35; }
 
-/* Selector de temas */
 .mmsz-temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-top: 12px; }
 .mmsz-tema {
   display: flex; flex-direction: column; gap: 8px; text-align: left; background: var(--panel);
@@ -266,10 +254,6 @@ code, pre, textarea, .blank { font-family: var(--mono); }
 .page { display: flex; flex-direction: column; min-height: 100%; }
 
 .brand { font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 10px; }
-.logo {
-  background: var(--brand); color: #fff; border-radius: 8px;
-  padding: 2px 8px; font-family: var(--mono); font-size: 15px;
-}
 .stats { margin-left: auto; display: flex; gap: 18px; }
 .stat { display: inline-flex; gap: 6px; align-items: center; font-size: 15px; white-space: nowrap; }
 
@@ -277,7 +261,6 @@ code, pre, textarea, .blank { font-family: var(--mono); }
 .bar.big { flex: 1; height: 16px; margin: 0; }
 .bar-fill { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s; }
 
-/* ================= Barra superior (MMSZ) ================= */
 .mmsz-barra {
   display: grid; grid-template-columns: auto minmax(160px, 260px) 1fr auto; align-items: center; gap: 24px;
   padding: 0 28px; height: 68px; background: var(--panel); border-bottom: 1px solid var(--border);
@@ -300,11 +283,11 @@ code, pre, textarea, .blank { font-family: var(--mono); }
 .mmsz-buscar input:focus { border-color: var(--text); }
 .mmsz-lupa { position: absolute; left: 12px; font-size: 20px; color: var(--muted); pointer-events: none; }
 
-.mmsz-logo {
+.mmsz-marca {
   justify-self: center; background: none; border: none; font-weight: 800; font-size: 22px;
   display: flex; align-items: center; gap: 10px;
 }
-.mmsz-logo.grande { font-size: 30px; justify-content: center; }
+.mmsz-marca.grande { font-size: 30px; justify-content: center; }
 
 .mmsz-menu {
   position: absolute; top: calc(100% + 6px); background: var(--panel); border: 1px solid var(--border);
@@ -354,7 +337,6 @@ code, pre, textarea, .blank { font-family: var(--mono); }
 .mmsz-aviso:not(:disabled):hover { background: var(--panel-2); }
 .mmsz-aviso:disabled { cursor: default; }
 
-/* ================= Botones y enlaces blancos (sin azul) ================= */
 .mmsz-btn {
   background: var(--panel); color: var(--text); border: 1px solid var(--border-strong); border-radius: 6px;
   padding: 9px 20px; font-weight: 600; white-space: nowrap;
@@ -366,7 +348,6 @@ code, pre, textarea, .blank { font-family: var(--mono); }
 .mmsz-enlace { background: none; border: none; padding: 0; color: var(--text); text-decoration: underline; text-underline-offset: 3px; text-align: left; }
 .mmsz-enlace:hover { color: var(--brand); }
 
-/* ================= Panel del estudiante ================= */
 .mmsz-franja {
   display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
   padding: 18px 28px; border-bottom: 1px solid var(--border);
@@ -466,7 +447,6 @@ code, pre, textarea, .blank { font-family: var(--mono); }
 .mmsz-atajos { margin: 0; padding-left: 18px; line-height: 2.1; }
 kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; font-family: var(--mono); font-size: 13px; background: var(--panel); }
 
-/* Pantalla de bienvenida (sesión cerrada) */
 .mmsz-bienvenida { min-height: 100%; display: grid; place-items: center; background: var(--soft); padding: 24px; }
 .mmsz-bienvenida-caja {
   background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 36px;
@@ -475,12 +455,11 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
 .mmsz-bienvenida-caja form { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .mmsz-bienvenida-caja .mmsz-campo { width: 100%; max-width: none; text-align: left; }
 
-/* Barra bajo la superior en el mapa del curso */
 .mmsz-subbarra { display: flex; align-items: center; gap: 18px; padding: 14px 28px; border-bottom: 1px solid var(--border); background: var(--soft); }
 
 @media (max-width: 900px) {
   .mmsz-barra { grid-template-columns: auto 1fr auto; gap: 14px; padding: 0 16px; }
-  .mmsz-logo { display: none; }
+  .mmsz-marca { display: none; }
   .mmsz-cuerpo { grid-template-columns: 1fr; padding: 0 16px 40px; }
   .mmsz-lateral { border-right: none; border-bottom: 1px solid var(--border); padding-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
   .mmsz-lateral > div { display: contents; }
@@ -492,7 +471,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
   .mmsz-subcursos .mmsz-pista { margin-top: 12px; }
 }
 
-/* ================= Página del curso (MMSZ) ================= */
 .mmsz-curso-layout {
   display: grid; grid-template-columns: 320px 1fr; flex: 1; min-height: 0;
   height: calc(100vh - 68px);
@@ -575,7 +553,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
   .mmsz-unidad-titulo { font-size: 28px; }
 }
 
-/* Niveles: básico / intermedio / avanzado */
 .mmsz-nivel-titulo { margin: 18px 0 0; padding: 6px 18px; font-size: 12px; font-weight: 800; letter-spacing: .08em; color: var(--muted); }
 .mmsz-nivel-chip { font-size: 13px; font-weight: 700; border-radius: 99px; padding: 3px 12px; border: 1px solid; }
 .nivel-Básico.mmsz-nivel-chip { color: #1d9a64; border-color: #1d9a64; background: #e6f6ee; }
@@ -584,7 +561,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
 .mmsz-leccion-num { font-weight: 500; }
 .mmsz-recurso-icono.hecho { background: var(--ok); border-color: var(--ok); color: #fff; }
 
-/* ================= Visor de lección ================= */
 .mmsz-visor { display: grid; grid-template-columns: 380px 1fr; height: calc(100vh - 68px); }
 .mmsz-visor-lateral {
   margin: 16px; border: 1px solid var(--border); border-radius: 12px; overflow-y: auto; background: var(--panel);
@@ -620,7 +596,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
 .mmsz-visor-pie { display: flex; justify-content: flex-end; padding: 14px 28px; border-top: 1px solid var(--border); background: var(--panel); }
 .mmsz-visor-pie .mmsz-btn { padding: 12px 24px; font-size: 16px; }
 
-/* Texto de las lecturas */
 .mmsz-markdown { font-size: 17px; line-height: 1.7; }
 .mmsz-markdown p { margin: 0 0 16px; }
 .mmsz-markdown h3 { font-size: 21px; margin: 28px 0 10px; }
@@ -633,7 +608,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
 .mmsz-ejemplo-acciones { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 8px; }
 .mmsz-ejemplo-acciones .out { width: 100%; }
 
-/* Editor con números de línea */
 .mmsz-editor { display: flex; background: var(--code-bg); border-radius: 10px; overflow: auto; max-height: 460px; border: 2px solid var(--code-bg); }
 .mmsz-editor:focus-within { border-color: var(--accent); }
 .mmsz-editor-numeros {
@@ -645,7 +619,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
   padding: 14px 16px; font-family: var(--mono); font-size: 15px; line-height: 1.6; white-space: pre; overflow: hidden;
 }
 
-/* Desafío por pasos */
 .mmsz-pasos-barra { display: flex; align-items: center; gap: 6px; margin-bottom: 18px; }
 .mmsz-pasos-barra span { width: 34px; height: 6px; border-radius: 99px; background: var(--track); }
 .mmsz-pasos-barra span.actual { background: var(--accent); }
@@ -675,7 +648,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
   .mmsz-visor-main { overflow: visible; }
 }
 
-/* ================= Mapa del curso (estilos anteriores) ================= */
 .map { max-width: 640px; width: 100%; margin: 0 auto; padding: 28px 20px 60px; }
 .notice {
   background: var(--bad-bg); border: 1px solid var(--bad); border-radius: 12px;
@@ -700,7 +672,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
 .node:disabled { opacity: .55; }
 .node-label { font-size: 14px; font-weight: 600; }
 
-/* ================= Lección ================= */
 .lesson { height: 100%; }
 .lesson-top { display: flex; align-items: center; gap: 18px; padding: 20px 28px; max-width: 900px; width: 100%; margin: 0 auto; }
 .close { background: none; border: none; font-size: 22px; color: var(--muted); }
@@ -772,7 +743,6 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
 .out.err { border-left-color: var(--bad); color: #ff9aa7; }
 @media (max-width: 640px) { .console { grid-template-columns: 1fr; } }
 
-/* Pie de la lección */
 .lesson-foot {
   display: flex; align-items: center; gap: 20px; padding: 20px max(28px, calc((100% - 760px) / 2));
   border-top: 1px solid var(--border); background: var(--panel); min-height: 96px;
@@ -790,3 +760,7 @@ kbd { border: 1px solid var(--border-strong); border-bottom-width: 2px; border-r
 .lesson-foot.correct .primary { background: var(--ok); }
 .lesson-foot.wrong .primary { background: var(--bad); }
 .primary:disabled { background: var(--panel-2); color: var(--muted); border-bottom-color: var(--border); }
+.mmsz-ventana-puntos { display: flex; gap: 6px; }
+.mmsz-ventana-puntos i { width: 11px; height: 11px; border-radius: 50%; background: #ff6b6b; }
+.mmsz-ventana-puntos i:nth-child(2) { background: #f9c74f; }
+.mmsz-ventana-puntos i:nth-child(3) { background: #3ccf8e; }

@@ -1,5 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Barra superior: menú Explorar, buscador, logo y menú del usuario.
 import { useEffect, useRef, useState } from 'react';
 import { mmszCourses } from '../content';
 import type { MmszProgress } from '../progress';
@@ -18,29 +16,28 @@ const MMSZ_PROXIMAMENTE = [
 ];
 
 export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) {
-  const [mmszMenu, setMmszMenu] = useState<'explorar' | 'usuario' | null>(null);
-  const [mmszCategoria, setMmszCategoria] = useState<string | null>(null);
-  const [mmszVerNotificaciones, setMmszVerNotificaciones] = useState(false);
-  const [mmszBusqueda, setMmszBusqueda] = useState('');
-  const [mmszBuscando, setMmszBuscando] = useState(false);
+  const [mmszMenu, mmszSetMenu] = useState<'explorar' | 'usuario' | null>(null);
+  const [mmszCategoria, mmszSetCategoria] = useState<string | null>(null);
+  const [mmszVerNotificaciones, mmszSetVerNotificaciones] = useState(false);
+  const [mmszBusqueda, mmszSetBusqueda] = useState('');
+  const [mmszBuscando, mmszSetBuscando] = useState(false);
   const mmszRef = useRef<HTMLElement>(null);
 
   const mmszAvisos = mmszNotificaciones(mmszProgreso);
   const mmszResultados = mmszBuscar(mmszBusqueda);
 
   function mmszCerrarTodo() {
-    setMmszMenu(null);
-    setMmszCategoria(null);
-    setMmszVerNotificaciones(false);
-    setMmszBuscando(false);
+    mmszSetMenu(null);
+    mmszSetCategoria(null);
+    mmszSetVerNotificaciones(false);
+    mmszSetBuscando(false);
   }
 
-  // Cierra los menús al hacer clic fuera o al presionar Esc.
   useEffect(() => {
-    const mmszClicFuera = (e: MouseEvent) => {
-      if (mmszRef.current && !mmszRef.current.contains(e.target as Node)) mmszCerrarTodo();
+    const mmszClicFuera = (mmszE: MouseEvent) => {
+      if (mmszRef.current && !mmszRef.current.contains(mmszE.target as Node)) mmszCerrarTodo();
     };
-    const mmszTecla = (e: KeyboardEvent) => e.key === 'Escape' && mmszCerrarTodo();
+    const mmszTecla = (mmszE: KeyboardEvent) => mmszE.key === 'Escape' && mmszCerrarTodo();
     document.addEventListener('mousedown', mmszClicFuera);
     document.addEventListener('keydown', mmszTecla);
     return () => {
@@ -51,27 +48,26 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
 
   function mmszIr(mmszAccion: () => void) {
     mmszCerrarTodo();
-    setMmszBusqueda('');
+    mmszSetBusqueda('');
     mmszAccion();
   }
 
-  const mmszCursoElegido = mmszCourses.find((c) => c.id === mmszCategoria);
+  const mmszCursoElegido = mmszCourses.find((mmszC) => mmszC.mmszId === mmszCategoria);
 
   return (
     <header className="mmsz-barra" ref={mmszRef}>
-      {/* ---------- Explorar ---------- */}
       <div className="mmsz-explorar">
         <button
           className="mmsz-atras"
-          disabled={!mmszNav.puedeAtras}
-          onClick={() => mmszIr(mmszNav.atras)}
+          disabled={!mmszNav.mmszPuedeAtras}
+          onClick={() => mmszIr(mmszNav.mmszAtras)}
           title="Volver a la pantalla anterior (Alt + ←)"
         >
           ← Atrás
         </button>
         <button
           className={`mmsz-explorar-btn ${mmszMenu === 'explorar' ? 'activo' : ''}`}
-          onClick={() => setMmszMenu(mmszMenu === 'explorar' ? null : 'explorar')}
+          onClick={() => mmszSetMenu(mmszMenu === 'explorar' ? null : 'explorar')}
         >
           Explorar <span className="mmsz-flecha">{mmszMenu === 'explorar' ? '▴' : '▾'}</span>
         </button>
@@ -79,15 +75,15 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
         {mmszMenu === 'explorar' && (
           <div className="mmsz-menu mmsz-menu-explorar">
             <ul className="mmsz-categorias">
-              {mmszCourses.map((c) => (
-                <li key={c.id}>
+              {mmszCourses.map((mmszC) => (
+                <li key={mmszC.mmszId}>
                   <button
-                    className={mmszCategoria === c.id ? 'activo' : ''}
-                    onMouseEnter={() => setMmszCategoria(c.id)}
-                    onClick={() => setMmszCategoria(c.id)}
+                    className={mmszCategoria === mmszC.mmszId ? 'activo' : ''}
+                    onMouseEnter={() => mmszSetCategoria(mmszC.mmszId)}
+                    onClick={() => mmszSetCategoria(mmszC.mmszId)}
                   >
                     <span>
-                      {c.icon} {c.name}
+                      {mmszC.mmszIcon} {mmszC.mmszName}
                     </span>
                     <span>›</span>
                   </button>
@@ -96,8 +92,8 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
               <li>
                 <button
                   className={mmszCategoria === 'pronto' ? 'activo' : ''}
-                  onMouseEnter={() => setMmszCategoria('pronto')}
-                  onClick={() => setMmszCategoria('pronto')}
+                  onMouseEnter={() => mmszSetCategoria('pronto')}
+                  onClick={() => mmszSetCategoria('pronto')}
                 >
                   <span>🚧 Próximamente</span>
                   <span>›</span>
@@ -110,17 +106,17 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
 
               {mmszCursoElegido && (
                 <>
-                  <button className="mmsz-subtitulo" onClick={() => mmszIr(() => mmszNav.abrirCurso(mmszCursoElegido.id))}>
-                    Ir a {mmszCursoElegido.name} →
+                  <button className="mmsz-subtitulo" onClick={() => mmszIr(() => mmszNav.mmszAbrirCurso(mmszCursoElegido.mmszId))}>
+                    Ir a {mmszCursoElegido.mmszName} →
                   </button>
-                  {mmszCursoElegido.units.map((u, mmszUi) => (
-                    <div key={u.title} className="mmsz-unidad-lista">
+                  {mmszCursoElegido.mmszUnits.map((mmszU, mmszUi) => (
+                    <div key={mmszU.mmszTitle} className="mmsz-unidad-lista">
                       <b>
-                        Unidad {mmszUi + 1} · {u.title}
+                        Unidad {mmszUi + 1} · {mmszU.mmszTitle}
                       </b>
-                      {u.lessons.map((l) => (
-                        <button key={l.id} onClick={() => mmszIr(() => mmszNav.abrirCurso(mmszCursoElegido.id, mmszUi))}>
-                          {l.title}
+                      {mmszU.mmszLessons.map((mmszL) => (
+                        <button key={mmszL.mmszId} onClick={() => mmszIr(() => mmszNav.mmszAbrirCurso(mmszCursoElegido.mmszId, mmszUi))}>
+                          {mmszL.mmszTitle}
                         </button>
                       ))}
                     </div>
@@ -131,9 +127,9 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
               {mmszCategoria === 'pronto' && (
                 <div className="mmsz-unidad-lista">
                   <b>Cursos en preparación</b>
-                  {MMSZ_PROXIMAMENTE.map((t) => (
-                    <span key={t} className="mmsz-pronto">
-                      {t} <em>Pronto</em>
+                  {MMSZ_PROXIMAMENTE.map((mmszT) => (
+                    <span key={mmszT} className="mmsz-pronto">
+                      {mmszT} <em>Pronto</em>
                     </span>
                   ))}
                 </div>
@@ -143,7 +139,6 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
         )}
       </div>
 
-      {/* ---------- Buscar ---------- */}
       <div className="mmsz-buscar">
         <span className="mmsz-lupa" aria-hidden>
           ⌕
@@ -151,22 +146,22 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
         <input
           placeholder="Buscar"
           value={mmszBusqueda}
-          onChange={(e) => {
-            setMmszBusqueda(e.target.value);
-            setMmszBuscando(true);
-            setMmszMenu(null);
+          onChange={(mmszE) => {
+            mmszSetBusqueda(mmszE.target.value);
+            mmszSetBuscando(true);
+            mmszSetMenu(null);
           }}
-          onFocus={() => setMmszBuscando(true)}
+          onFocus={() => mmszSetBuscando(true)}
         />
         {mmszBuscando && mmszBusqueda.trim() && (
           <div className="mmsz-menu mmsz-resultados">
             {mmszResultados.length === 0 && <p className="mmsz-pista">No encontré lecciones con “{mmszBusqueda}”.</p>}
-            {mmszResultados.map((r, i) => (
-              <button key={i} onClick={() => mmszIr(() => mmszNav.abrirCurso(r.cursoId, r.unidad))}>
-                <span className="mmsz-res-icono">{r.icono}</span>
+            {mmszResultados.map((mmszR, mmszI) => (
+              <button key={mmszI} onClick={() => mmszIr(() => mmszNav.mmszAbrirCurso(mmszR.mmszCursoId, mmszR.mmszUnidad))}>
+                <span className="mmsz-res-icono">{mmszR.mmszIcono}</span>
                 <span>
-                  <b>{r.titulo}</b>
-                  <small>{r.detalle}</small>
+                  <b>{mmszR.mmszTitulo}</b>
+                  <small>{mmszR.mmszDetalle}</small>
                 </span>
               </button>
             ))}
@@ -174,27 +169,25 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
         )}
       </div>
 
-      {/* ---------- Logo ---------- */}
-      <button className="mmsz-logo" onClick={() => mmszIr(() => mmszNav.irInicio('cursos'))}>
-        <span className="logo">{'</>'}</span> Novexa
+      <button className="mmsz-marca" onClick={() => mmszIr(() => mmszNav.mmszIrInicio('cursos'))}>
+        Novexa
       </button>
 
-      {/* ---------- Usuario ---------- */}
       <div className="mmsz-usuario">
         <button
           className={`mmsz-usuario-btn ${mmszMenu === 'usuario' ? 'activo' : ''}`}
           onClick={() => {
-            setMmszMenu(mmszMenu === 'usuario' ? null : 'usuario');
-            setMmszVerNotificaciones(false);
+            mmszSetMenu(mmszMenu === 'usuario' ? null : 'usuario');
+            mmszSetVerNotificaciones(false);
           }}
         >
           <span
-            className={`mmsz-modo-chip ${mmszProgreso.modoOffline ? 'offline' : 'online'}`}
-            title={mmszProgreso.modoOffline ? 'Modo sin conexión: videos de YouTube ocultos' : 'Modo en línea: con videos de YouTube'}
+            className={`mmsz-modo-chip ${mmszProgreso.mmszModoOffline ? 'offline' : 'online'}`}
+            title={mmszProgreso.mmszModoOffline ? 'Modo sin conexión: videos de YouTube ocultos' : 'Modo en línea: con videos de YouTube'}
           >
-            {mmszProgreso.modoOffline ? '📴 Offline' : '🌐 Online'}
+            {mmszProgreso.mmszModoOffline ? '📴 Offline' : '🌐 Online'}
           </span>
-          {mmszProgreso.nombre}
+          {mmszProgreso.mmszNombre}
           {mmszAvisos.length > 0 && <span className="mmsz-punto" title={`${mmszAvisos.length} notificaciones`} />}
           <span className="mmsz-flecha">{mmszMenu === 'usuario' ? '▴' : '▾'}</span>
         </button>
@@ -208,64 +201,64 @@ export default function MmszBarraSuperior({ mmszProgreso, mmszNav }: MmszProps) 
                   <div className="mmsz-modo-opciones" role="radiogroup" aria-label="Modo de conexión">
                     <button
                       role="radio"
-                      aria-checked={!mmszProgreso.modoOffline}
-                      className={!mmszProgreso.modoOffline ? 'activo' : ''}
-                      onClick={() => mmszNav.cambiarModo(false)}
+                      aria-checked={!mmszProgreso.mmszModoOffline}
+                      className={!mmszProgreso.mmszModoOffline ? 'activo' : ''}
+                      onClick={() => mmszNav.mmszCambiarModo(false)}
                     >
                       🌐 En línea
                     </button>
                     <button
                       role="radio"
-                      aria-checked={mmszProgreso.modoOffline}
-                      className={mmszProgreso.modoOffline ? 'activo' : ''}
-                      onClick={() => mmszNav.cambiarModo(true)}
+                      aria-checked={mmszProgreso.mmszModoOffline}
+                      className={mmszProgreso.mmszModoOffline ? 'activo' : ''}
+                      onClick={() => mmszNav.mmszCambiarModo(true)}
                     >
                       📴 Sin conexión
                     </button>
                   </div>
                   <small className="muted">
-                    {mmszProgreso.modoOffline
+                    {mmszProgreso.mmszModoOffline
                       ? 'Los videos de YouTube están ocultos. Todo lo demás funciona sin internet.'
                       : `Se muestran los videos de YouTube (necesitan internet${navigator.onLine ? '' : '; ahora no hay conexión'}).`}
                   </small>
                 </div>
                 <hr />
-                <button className="mmsz-item fuerte" onClick={() => setMmszVerNotificaciones(true)}>
+                <button className="mmsz-item fuerte" onClick={() => mmszSetVerNotificaciones(true)}>
                   <span>
                     Notificaciones {mmszAvisos.length > 0 && <span className="mmsz-contador">{mmszAvisos.length}</span>}
                   </span>
                   <span>›</span>
                 </button>
                 <hr />
-                <button className="mmsz-item" onClick={() => mmszIr(() => mmszNav.irInicio('cursos'))}>
+                <button className="mmsz-item" onClick={() => mmszIr(() => mmszNav.mmszIrInicio('cursos'))}>
                   Página de inicio del estudiante
                 </button>
-                <button className="mmsz-item" onClick={() => mmszIr(() => mmszNav.irInicio('configuracion'))}>
+                <button className="mmsz-item" onClick={() => mmszIr(() => mmszNav.mmszIrInicio('configuracion'))}>
                   Configuración
                 </button>
-                <button className="mmsz-item" onClick={() => mmszIr(() => mmszNav.irInicio('ayuda'))}>
+                <button className="mmsz-item" onClick={() => mmszIr(() => mmszNav.mmszIrInicio('ayuda'))}>
                   Ayuda
                 </button>
-                <button className="mmsz-item" onClick={() => mmszIr(mmszNav.cerrarSesion)}>
+                <button className="mmsz-item" onClick={() => mmszIr(mmszNav.mmszCerrarSesion)}>
                   Finalizar sesión
                 </button>
               </>
             ) : (
               <>
-                <button className="mmsz-item fuerte" onClick={() => setMmszVerNotificaciones(false)}>
+                <button className="mmsz-item fuerte" onClick={() => mmszSetVerNotificaciones(false)}>
                   <span>‹ Notificaciones</span>
                 </button>
                 <hr />
                 {mmszAvisos.length === 0 && <p className="mmsz-pista">No tienes notificaciones nuevas.</p>}
-                {mmszAvisos.map((n) => (
+                {mmszAvisos.map((mmszN) => (
                   <button
-                    key={n.id}
+                    key={mmszN.mmszId}
                     className="mmsz-aviso"
-                    disabled={!n.cursoId}
-                    onClick={() => n.cursoId && mmszIr(() => mmszNav.abrirCurso(n.cursoId!, n.unidad))}
+                    disabled={!mmszN.mmszCursoId}
+                    onClick={() => mmszN.mmszCursoId && mmszIr(() => mmszNav.mmszAbrirCurso(mmszN.mmszCursoId!, mmszN.mmszUnidad))}
                   >
-                    <span>{n.icono}</span>
-                    <span>{n.texto}</span>
+                    <span>{mmszN.mmszIcono}</span>
+                    <span>{mmszN.mmszTexto}</span>
                   </button>
                 ))}
               </>

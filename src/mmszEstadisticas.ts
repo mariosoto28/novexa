@@ -1,83 +1,76 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Cálculos de avance para el diseño dinámico: cuánto llevas de cada curso, unidad y lección,
-// y cuál es el siguiente paso recomendado.
 import type { MmszCourse, MmszItem, MmszLesson, MmszNivel, MmszUnit } from './types';
 import type { MmszProgress } from './progress';
 
 export interface MmszAvance {
-  hechos: number;
-  total: number;
-  pct: number; // 0 a 100
+  mmszHechos: number;
+  mmszTotal: number;
+  mmszPct: number;
 }
 
-const mmszAvance = (hechos: number, total: number): MmszAvance => ({
-  hechos,
-  total,
-  pct: total ? Math.round((hechos / total) * 100) : 0,
+const mmszAvance = (mmszHechos: number, mmszTotal: number): MmszAvance => ({
+  mmszHechos,
+  mmszTotal,
+  mmszPct: mmszTotal ? Math.round((mmszHechos / mmszTotal) * 100) : 0,
 });
 
-/** Avance de una lección: sus recursos de "Aprende" más la práctica. */
-export function mmszAvanceLeccion(l: MmszLesson, p: MmszProgress): MmszAvance {
-  const mmszHechos = l.items.filter((it) => p.completed[it.id]).length + (p.completed[l.id] ? 1 : 0);
-  return mmszAvance(mmszHechos, l.items.length + 1);
+export function mmszAvanceLeccion(mmszL: MmszLesson, mmszP: MmszProgress): MmszAvance {
+  const mmszHechos = mmszL.mmszItems.filter((mmszIt) => mmszP.mmszCompleted[mmszIt.mmszId]).length + (mmszP.mmszCompleted[mmszL.mmszId] ? 1 : 0);
+  return mmszAvance(mmszHechos, mmszL.mmszItems.length + 1);
 }
 
-export function mmszAvanceUnidad(u: MmszUnit, p: MmszProgress): MmszAvance {
-  const a = u.lessons.map((l) => mmszAvanceLeccion(l, p));
+export function mmszAvanceUnidad(mmszU: MmszUnit, mmszP: MmszProgress): MmszAvance {
+  const mmszA = mmszU.mmszLessons.map((mmszL) => mmszAvanceLeccion(mmszL, mmszP));
   return mmszAvance(
-    a.reduce((s, x) => s + x.hechos, 0),
-    a.reduce((s, x) => s + x.total, 0),
+    mmszA.reduce((mmszS, mmszX) => mmszS + mmszX.mmszHechos, 0),
+    mmszA.reduce((mmszS, mmszX) => mmszS + mmszX.mmszTotal, 0),
   );
 }
 
-export function mmszAvanceCurso(c: MmszCourse, p: MmszProgress): MmszAvance {
-  const a = c.units.map((u) => mmszAvanceUnidad(u, p));
+export function mmszAvanceCurso(mmszC: MmszCourse, mmszP: MmszProgress): MmszAvance {
+  const mmszA = mmszC.mmszUnits.map((mmszU) => mmszAvanceUnidad(mmszU, mmszP));
   return mmszAvance(
-    a.reduce((s, x) => s + x.hechos, 0),
-    a.reduce((s, x) => s + x.total, 0),
+    mmszA.reduce((mmszS, mmszX) => mmszS + mmszX.mmszHechos, 0),
+    mmszA.reduce((mmszS, mmszX) => mmszS + mmszX.mmszTotal, 0),
   );
 }
 
 export interface MmszSiguiente {
-  unidad: number;
-  leccion: MmszLesson;
-  item: MmszItem | null; // null = toca la práctica
+  mmszUnidad: number;
+  mmszLeccion: MmszLesson;
+  mmszItem: MmszItem | null;
 }
 
-/** Primer recurso sin completar, en orden. Si todo está hecho, null. */
-export function mmszSiguientePaso(c: MmszCourse, p: MmszProgress, mmszDesdeUnidad = 0): MmszSiguiente | null {
-  for (let ui = mmszDesdeUnidad; ui < c.units.length; ui++) {
-    for (const l of c.units[ui].lessons) {
-      const mmszItem = l.items.find((it) => !p.completed[it.id]);
-      if (mmszItem) return { unidad: ui, leccion: l, item: mmszItem };
-      if (!p.completed[l.id]) return { unidad: ui, leccion: l, item: null };
+export function mmszSiguientePaso(mmszC: MmszCourse, mmszP: MmszProgress, mmszDesdeUnidad = 0): MmszSiguiente | null {
+  for (let mmszUi = mmszDesdeUnidad; mmszUi < mmszC.mmszUnits.length; mmszUi++) {
+    for (const mmszL of mmszC.mmszUnits[mmszUi].mmszLessons) {
+      const mmszItem = mmszL.mmszItems.find((mmszIt) => !mmszP.mmszCompleted[mmszIt.mmszId]);
+      if (mmszItem) return { mmszUnidad: mmszUi, mmszLeccion: mmszL, mmszItem };
+      if (!mmszP.mmszCompleted[mmszL.mmszId]) return { mmszUnidad: mmszUi, mmszLeccion: mmszL, mmszItem: null };
     }
   }
   return null;
 }
 
-/** Nivel en el que va el estudiante dentro del curso. */
-export function mmszNivelActual(c: MmszCourse, p: MmszProgress): MmszNivel {
-  const s = mmszSiguientePaso(c, p);
-  return s ? c.units[s.unidad].nivel : 'Avanzado';
+export function mmszNivelActual(mmszC: MmszCourse, mmszP: MmszProgress): MmszNivel {
+  const mmszS = mmszSiguientePaso(mmszC, mmszP);
+  return mmszS ? mmszC.mmszUnits[mmszS.mmszUnidad].mmszNivel : 'Avanzado';
 }
 
-/** Avance agrupado por nivel (Básico / Intermedio / Avanzado). */
-export function mmszAvancePorNivel(c: MmszCourse, p: MmszProgress): { nivel: MmszNivel; avance: MmszAvance }[] {
+export function mmszAvancePorNivel(mmszC: MmszCourse, mmszP: MmszProgress): { mmszNivel: MmszNivel; mmszAvance: MmszAvance }[] {
   const mmszNiveles: MmszNivel[] = ['Básico', 'Intermedio', 'Avanzado'];
-  return mmszNiveles.map((nivel) => {
-    const a = c.units.filter((u) => u.nivel === nivel).map((u) => mmszAvanceUnidad(u, p));
+  return mmszNiveles.map((mmszNivel) => {
+    const mmszA = mmszC.mmszUnits.filter((mmszU) => mmszU.mmszNivel === mmszNivel).map((mmszU) => mmszAvanceUnidad(mmszU, mmszP));
     return {
-      nivel,
-      avance: mmszAvance(
-        a.reduce((s, x) => s + x.hechos, 0),
-        a.reduce((s, x) => s + x.total, 0),
+      mmszNivel,
+      mmszAvance: mmszAvance(
+        mmszA.reduce((mmszS, mmszX) => mmszS + mmszX.mmszHechos, 0),
+        mmszA.reduce((mmszS, mmszX) => mmszS + mmszX.mmszTotal, 0),
       ),
     };
   });
 }
 
-export const MMSZ_COLOR_TIPO: Record<MmszItem['tipo'] | 'practica', string> = {
+export const MMSZ_COLOR_TIPO: Record<MmszItem['mmszTipo'] | 'practica', string> = {
   video: '#e5484d',
   lectura: '#7a5af8',
   consejo: '#e8b83a',

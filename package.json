@@ -13,16 +13,14 @@
     "start": "npm run build && electron .",
     "typecheck": "tsc --noEmit",
     "verificar": "node scripts/verificar-contenido.cjs",
-    "icon": "node scripts/make-icon.cjs",
-    "dist": "npm run icon && npm run build && electron-builder --win nsis"
+    "dist": "npm run build && electron-builder --win nsis"
   },
   "author": "Novexa",
   "build": {
     "appId": "com.novexa.app",
     "productName": "Novexa",
     "directories": {
-      "output": "release",
-      "buildResources": "build"
+      "output": "release"
     },
     "files": [
       "dist/**/*",
@@ -30,8 +28,7 @@
       "package.json"
     ],
     "win": {
-      "target": "nsis",
-      "icon": "build/icon.png"
+      "target": "nsis"
     },
     "nsis": {
       "oneClick": false,

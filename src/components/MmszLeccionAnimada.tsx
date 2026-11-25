@@ -1,6 +1,3 @@
-// Autor: MMSZ (Mario Soto Zea)
-// Lección animada 100 % offline: funciona como un video, pero se genera con el contenido de la lección.
-// El código se escribe solo, una voz (de Windows) lo explica con subtítulos y al final se ejecuta.
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { mmszCrearEscenas } from '../mmszEscenas';
 import type { MmszRecuerdo } from '../types';
@@ -19,9 +16,8 @@ interface MmszProps {
 }
 
 const MMSZ_VELOCIDADES = [0.75, 1, 1.25, 1.5];
-const MMSZ_LETRAS_POR_SEGUNDO = 14; // ritmo aproximado de la voz (para calcular tiempos)
+const MMSZ_LETRAS_POR_SEGUNDO = 14;
 
-/* ---------- Colores de sintaxis sencillos ---------- */
 const MMSZ_PALABRAS: Record<MmszRunnableLang, string[]> = {
   python: ['def', 'return', 'if', 'elif', 'else', 'for', 'while', 'in', 'import', 'class', 'try', 'except', 'finally', 'and', 'or', 'not', 'True', 'False', 'None', 'break', 'continue', 'pass', 'lambda', 'self', 'print', 'range', 'len'],
   javascript: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'of', 'in', 'class', 'new', 'try', 'catch', 'finally', 'throw', 'true', 'false', 'null', 'undefined', 'switch', 'case', 'break', 'default', 'extends', 'this', 'console'],
@@ -33,15 +29,15 @@ function mmszColorear(mmszCodigo: string, mmszLang: MmszRunnableLang): ReactNode
   const mmszRegex = /(#.*$|\/\/.*$)|("(?:[^"\\\n]|\\.)*"?|'(?:[^'\\\n]|\\.)*'?|`[^`]*`?)|(\b\d+(?:\.\d+)?\b)|(\b[A-Za-z_]\w*\b)/gm;
   const mmszPartes: ReactNode[] = [];
   let mmszUltimo = 0;
-  let m: RegExpExecArray | null;
-  let k = 0;
-  while ((m = mmszRegex.exec(mmszCodigo))) {
-    if (m.index > mmszUltimo) mmszPartes.push(<Fragment key={k++}>{mmszCodigo.slice(mmszUltimo, m.index)}</Fragment>);
-    const mmszClase = m[1] ? 'c-com' : m[2] ? 'c-txt' : m[3] ? 'c-num' : mmszClaves.has(m[4]) ? 'c-key' : null;
-    mmszPartes.push(mmszClase ? <span key={k++} className={mmszClase}>{m[0]}</span> : <Fragment key={k++}>{m[0]}</Fragment>);
-    mmszUltimo = m.index + m[0].length;
+  let mmszM: RegExpExecArray | null;
+  let mmszK = 0;
+  while ((mmszM = mmszRegex.exec(mmszCodigo))) {
+    if (mmszM.index > mmszUltimo) mmszPartes.push(<Fragment key={mmszK++}>{mmszCodigo.slice(mmszUltimo, mmszM.index)}</Fragment>);
+    const mmszClase = mmszM[1] ? 'c-com' : mmszM[2] ? 'c-txt' : mmszM[3] ? 'c-num' : mmszClaves.has(mmszM[4]) ? 'c-key' : null;
+    mmszPartes.push(mmszClase ? <span key={mmszK++} className={mmszClase}>{mmszM[0]}</span> : <Fragment key={mmszK++}>{mmszM[0]}</Fragment>);
+    mmszUltimo = mmszM.index + mmszM[0].length;
   }
-  if (mmszUltimo < mmszCodigo.length) mmszPartes.push(<Fragment key={k++}>{mmszCodigo.slice(mmszUltimo)}</Fragment>);
+  if (mmszUltimo < mmszCodigo.length) mmszPartes.push(<Fragment key={mmszK++}>{mmszCodigo.slice(mmszUltimo)}</Fragment>);
   return mmszPartes;
 }
 
@@ -49,18 +45,17 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
   const mmszEscenas = useMemo(() => mmszCrearEscenas(mmszTitulo, mmszIntro, mmszLecturas, mmszRecuerdo), [mmszTitulo, mmszIntro, mmszLecturas, mmszRecuerdo]);
   const mmszHayVoz = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
-  const [mmszIndice, setMmszIndice] = useState(0);
-  const [mmszReproduciendo, setMmszReproduciendo] = useState(false);
-  const [mmszEmpezado, setMmszEmpezado] = useState(false);
-  const [mmszTerminado, setMmszTerminado] = useState(false);
-  const [mmszVelocidad, setMmszVelocidad] = useState(1);
-  const [mmszSilencio, setMmszSilencio] = useState(!mmszHayVoz);
-  const [mmszSubtitulos, setMmszSubtitulos] = useState(true);
-  const [mmszTipeados, setMmszTipeados] = useState(0);
-  const [mmszFrase, setMmszFrase] = useState(0);
-  const [mmszSalida, setMmszSalida] = useState<MmszRunResult | null>(null);
+  const [mmszIndice, mmszSetIndice] = useState(0);
+  const [mmszReproduciendo, mmszSetReproduciendo] = useState(false);
+  const [mmszEmpezado, mmszSetEmpezado] = useState(false);
+  const [mmszTerminado, mmszSetTerminado] = useState(false);
+  const [mmszVelocidad, mmszSetVelocidad] = useState(1);
+  const [mmszSilencio, mmszSetSilencio] = useState(!mmszHayVoz);
+  const [mmszSubtitulos, mmszSetSubtitulos] = useState(true);
+  const [mmszTipeados, mmszSetTipeados] = useState(0);
+  const [mmszFrase, mmszSetFrase] = useState(0);
+  const [mmszSalida, mmszSetSalida] = useState<MmszRunResult | null>(null);
 
-  // Lo que ya se avanzó dentro de la escena (para pausar y continuar donde iba).
   const mmszTipeadosRef = useRef(0);
   const mmszFraseRef = useRef(0);
   const mmszSalidaRef = useRef<MmszRunResult | null>(null);
@@ -70,36 +65,35 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
   mmszAlTerminarRef.current = mmszAlTerminar;
 
   useEffect(() => {
-    if (mmszLang === 'python' && mmszEscenas.some((e) => e.ejecutable)) mmszPreloadPython();
+    if (mmszLang === 'python' && mmszEscenas.some((mmszE) => mmszE.mmszEjecutable)) mmszPreloadPython();
   }, [mmszLang, mmszEscenas]);
 
-  function mmszIrAEscena(i: number, mmszSeguir = true) {
+  function mmszIrAEscena(mmszI: number, mmszSeguir = true) {
     mmszTipeadosRef.current = 0;
     mmszFraseRef.current = 0;
     mmszSalidaRef.current = null;
-    setMmszTipeados(0);
-    setMmszFrase(0);
-    setMmszSalida(null);
-    setMmszTerminado(false);
-    setMmszIndice(Math.max(0, Math.min(mmszEscenas.length - 1, i)));
+    mmszSetTipeados(0);
+    mmszSetFrase(0);
+    mmszSetSalida(null);
+    mmszSetTerminado(false);
+    mmszSetIndice(Math.max(0, Math.min(mmszEscenas.length - 1, mmszI)));
     if (mmszSeguir) {
-      setMmszEmpezado(true);
-      setMmszReproduciendo(true);
+      mmszSetEmpezado(true);
+      mmszSetReproduciendo(true);
     }
   }
 
-  // Motor de reproducción: escribe el código, narra las frases y ejecuta; cuando todo termina, pasa de escena.
   useEffect(() => {
     if (!mmszReproduciendo) return;
     let mmszCancelado = false;
     const mmszTimers: number[] = [];
-    const e = mmszEscena;
-    const mmszTotal = e.codigo?.length ?? 0;
-    const mmszDuracionVoz = (e.narracion.join(' ').length / MMSZ_LETRAS_POR_SEGUNDO) * 1000 / mmszVelocidad;
+    const mmszE = mmszEscena;
+    const mmszTotal = mmszE.mmszCodigo?.length ?? 0;
+    const mmszDuracionVoz = (mmszE.mmszNarracion.join(' ').length / MMSZ_LETRAS_POR_SEGUNDO) * 1000 / mmszVelocidad;
 
     let mmszTipeoListo = mmszTipeadosRef.current >= mmszTotal;
-    let mmszVozLista = mmszFraseRef.current >= e.narracion.length;
-    let mmszEjecucionLista = !e.ejecutable || mmszSalidaRef.current !== null;
+    let mmszVozLista = mmszFraseRef.current >= mmszE.mmszNarracion.length;
+    let mmszEjecucionLista = !mmszE.mmszEjecutable || mmszSalidaRef.current !== null;
 
     const mmszRevisar = () => {
       if (mmszCancelado || !mmszTipeoListo || !mmszVozLista || !mmszEjecucionLista) return;
@@ -107,8 +101,8 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
         window.setTimeout(() => {
           if (mmszCancelado) return;
           if (mmszIndice >= mmszEscenas.length - 1) {
-            setMmszReproduciendo(false);
-            setMmszTerminado(true);
+            mmszSetReproduciendo(false);
+            mmszSetTerminado(true);
             mmszAlTerminarRef.current();
           } else {
             mmszIrAEscena(mmszIndice + 1);
@@ -118,103 +112,99 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
     };
 
     const mmszEjecutar = () => {
-      if (!e.ejecutable || mmszSalidaRef.current) return;
-      mmszRunCode(mmszLang, e.codigo!).then((r) => {
+      if (!mmszE.mmszEjecutable || mmszSalidaRef.current) return;
+      mmszRunCode(mmszLang, mmszE.mmszCodigo!).then((mmszR) => {
         if (mmszCancelado) return;
-        mmszSalidaRef.current = r;
-        setMmszSalida(r);
+        mmszSalidaRef.current = mmszR;
+        mmszSetSalida(mmszR);
         mmszEjecucionLista = true;
         mmszRevisar();
       });
     };
 
-    // 1) Código que se escribe solo, a un ritmo que acompaña a la voz.
     if (!mmszTipeoListo) {
       const mmszPaso = Math.max(10, Math.min(45, (mmszDuracionVoz * 0.75) / Math.max(1, mmszTotal)));
-      const t = window.setInterval(() => {
+      const mmszT = window.setInterval(() => {
         mmszTipeadosRef.current = Math.min(mmszTotal, mmszTipeadosRef.current + 1);
-        setMmszTipeados(mmszTipeadosRef.current);
+        mmszSetTipeados(mmszTipeadosRef.current);
         if (mmszTipeadosRef.current >= mmszTotal) {
-          window.clearInterval(t);
+          window.clearInterval(mmszT);
           mmszTipeoListo = true;
           mmszEjecutar();
           mmszRevisar();
         }
       }, mmszPaso);
-      mmszTimers.push(t);
+      mmszTimers.push(mmszT);
     } else {
       mmszEjecutar();
     }
 
-    // 2) Narración frase por frase (o solo subtítulos si está en silencio).
     const mmszVoz = mmszHayVoz ? mmszVozEspanol() : undefined;
-    const mmszHablar = (i: number) => {
+    const mmszHablar = (mmszI: number) => {
       if (mmszCancelado) return;
-      if (i >= e.narracion.length) {
+      if (mmszI >= mmszE.mmszNarracion.length) {
         mmszVozLista = true;
         mmszRevisar();
         return;
       }
-      mmszFraseRef.current = i;
-      setMmszFrase(i);
-      const mmszTexto = e.narracion[i];
+      mmszFraseRef.current = mmszI;
+      mmszSetFrase(mmszI);
+      const mmszTexto = mmszE.mmszNarracion[mmszI];
       const mmszSiguiente = () => {
         if (mmszCancelado) return;
-        mmszFraseRef.current = i + 1;
-        mmszHablar(i + 1);
+        mmszFraseRef.current = mmszI + 1;
+        mmszHablar(mmszI + 1);
       };
       if (mmszSilencio || !mmszHayVoz) {
         mmszTimers.push(window.setTimeout(mmszSiguiente, (mmszTexto.length / MMSZ_LETRAS_POR_SEGUNDO) * 1000 / mmszVelocidad + 250));
         return;
       }
-      const u = new SpeechSynthesisUtterance(mmszTexto);
-      u.lang = mmszVoz?.lang ?? 'es-ES';
-      if (mmszVoz) u.voice = mmszVoz;
-      u.rate = mmszVelocidad;
-      u.onend = mmszSiguiente;
-      u.onerror = mmszSiguiente;
-      speechSynthesis.speak(u);
+      const mmszU = new SpeechSynthesisUtterance(mmszTexto);
+      mmszU.lang = mmszVoz?.lang ?? 'es-ES';
+      if (mmszVoz) mmszU.voice = mmszVoz;
+      mmszU.rate = mmszVelocidad;
+      mmszU.onend = mmszSiguiente;
+      mmszU.onerror = mmszSiguiente;
+      speechSynthesis.speak(mmszU);
     };
     if (!mmszVozLista) mmszHablar(mmszFraseRef.current);
     mmszRevisar();
 
     return () => {
       mmszCancelado = true;
-      mmszTimers.forEach((t) => {
-        window.clearTimeout(t);
-        window.clearInterval(t);
+      mmszTimers.forEach((mmszT) => {
+        window.clearTimeout(mmszT);
+        window.clearInterval(mmszT);
       });
       if (mmszHayVoz) speechSynthesis.cancel();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mmszReproduciendo, mmszIndice, mmszVelocidad, mmszSilencio]);
 
-  // Al salir de la página, se detiene la voz.
   useEffect(() => () => void (mmszHayVoz && speechSynthesis.cancel()), [mmszHayVoz]);
 
-  const mmszCodigoVisible = mmszEscena.codigo?.slice(0, mmszTipeados) ?? '';
-  const mmszEscribiendo = Boolean(mmszEscena.codigo) && mmszTipeados < (mmszEscena.codigo?.length ?? 0);
+  const mmszCodigoVisible = mmszEscena.mmszCodigo?.slice(0, mmszTipeados) ?? '';
+  const mmszEscribiendo = Boolean(mmszEscena.mmszCodigo) && mmszTipeados < (mmszEscena.mmszCodigo?.length ?? 0);
 
   return (
     <div className="mmsz-animada">
-      <div className={`mmsz-animada-escenario ${mmszEscena.codigo ? 'con-codigo' : 'solo-texto'}`}>
+      <div className={`mmsz-animada-escenario ${mmszEscena.mmszCodigo ? 'con-codigo' : 'solo-texto'}`}>
         <div className="mmsz-animada-escena" key={mmszIndice}>
           <div className="mmsz-animada-texto">
-            {mmszEscena.titular && <h2>{mmszEscena.titular}</h2>}
-            {mmszEscena.texto && (
+            {mmszEscena.mmszTitular && <h2>{mmszEscena.mmszTitular}</h2>}
+            {mmszEscena.mmszTexto && (
               <p>
-                {mmszEscena.texto.split('\n').map((linea, i) => (
-                  <span key={i} className="mmsz-animada-linea" style={{ animationDelay: `${i * 0.35}s` }}>
-                    <MmszEnLinea texto={linea} />
+                {mmszEscena.mmszTexto.split('\n').map((mmszLinea, mmszI) => (
+                  <span key={mmszI} className="mmsz-animada-linea" style={{ animationDelay: `${mmszI * 0.35}s` }}>
+                    <MmszEnLinea mmszTexto={mmszLinea} />
                   </span>
                 ))}
               </p>
             )}
           </div>
 
-          {mmszEscena.codigo && (
+          {mmszEscena.mmszCodigo && (
             <div className="mmsz-animada-codigo">
-              <div className="mmsz-arte-puntos">
+              <div className="mmsz-ventana-puntos">
                 <i /> <i /> <i />
                 <small>{mmszLang === 'cpp' ? 'main.cpp' : mmszLang === 'python' ? 'programa.py' : 'programa.js'}</small>
               </div>
@@ -222,11 +212,11 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
                 {mmszColorear(mmszCodigoVisible, mmszLang)}
                 <span className={`mmsz-animada-cursor ${mmszEscribiendo ? 'activo' : ''}`}>▍</span>
               </pre>
-              {mmszEscena.ejecutable && (
+              {mmszEscena.mmszEjecutable && (
                 <div className={`mmsz-animada-salida ${mmszSalida ? 'lista' : ''}`}>
                   <small>▶ Salida</small>
-                  <pre className={mmszSalida?.error ? 'err' : ''}>
-                    {mmszSalida ? mmszSalida.output || mmszSalida.error || '(sin salida)' : mmszEscribiendo ? '' : 'Ejecutando…'}
+                  <pre className={mmszSalida?.mmszError ? 'err' : ''}>
+                    {mmszSalida ? mmszSalida.mmszOutput || mmszSalida.mmszError || '(sin salida)' : mmszEscribiendo ? '' : 'Ejecutando…'}
                   </pre>
                 </div>
               )}
@@ -234,8 +224,8 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
           )}
         </div>
 
-        {mmszSubtitulos && mmszEmpezado && !mmszTerminado && mmszEscena.narracion[mmszFrase] && (
-          <div className="mmsz-animada-subtitulo">{mmszEscena.narracion[mmszFrase]}</div>
+        {mmszSubtitulos && mmszEmpezado && !mmszTerminado && mmszEscena.mmszNarracion[mmszFrase] && (
+          <div className="mmsz-animada-subtitulo">{mmszEscena.mmszNarracion[mmszFrase]}</div>
         )}
 
         {!mmszEmpezado && (
@@ -258,7 +248,6 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
         )}
       </div>
 
-      {/* ---------- Controles ---------- */}
       <div className="mmsz-animada-controles">
         <button onClick={() => mmszIrAEscena(mmszIndice - 1)} disabled={mmszIndice === 0} title="Escena anterior">
           ⏮
@@ -267,7 +256,7 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
           className="principal"
           onClick={() => {
             if (!mmszEmpezado || mmszTerminado) mmszIrAEscena(mmszTerminado ? 0 : mmszIndice);
-            else setMmszReproduciendo(!mmszReproduciendo);
+            else mmszSetReproduciendo(!mmszReproduciendo);
           }}
           title={mmszReproduciendo ? 'Pausar' : 'Reproducir'}
         >
@@ -278,12 +267,12 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
         </button>
 
         <div className="mmsz-animada-progreso">
-          {mmszEscenas.map((_, i) => (
+          {mmszEscenas.map((mmszSinUso, mmszI) => (
             <button
-              key={i}
-              className={i < mmszIndice || mmszTerminado ? 'vista' : i === mmszIndice ? 'actual' : ''}
-              onClick={() => mmszIrAEscena(i)}
-              title={`Escena ${i + 1}`}
+              key={mmszI}
+              className={mmszI < mmszIndice || mmszTerminado ? 'vista' : mmszI === mmszIndice ? 'actual' : ''}
+              onClick={() => mmszIrAEscena(mmszI)}
+              title={`Escena ${mmszI + 1}`}
             />
           ))}
         </div>
@@ -291,19 +280,19 @@ export default function MmszLeccionAnimada({ mmszTitulo, mmszIntro, mmszRecuerdo
           {mmszIndice + 1}/{mmszEscenas.length}
         </small>
 
-        <select value={mmszVelocidad} onChange={(e) => setMmszVelocidad(Number(e.target.value))} title="Velocidad">
-          {MMSZ_VELOCIDADES.map((v) => (
-            <option key={v} value={v}>
-              {v}x
+        <select value={mmszVelocidad} onChange={(mmszE) => mmszSetVelocidad(Number(mmszE.target.value))} title="Velocidad">
+          {MMSZ_VELOCIDADES.map((mmszV) => (
+            <option key={mmszV} value={mmszV}>
+              {mmszV}x
             </option>
           ))}
         </select>
         {mmszHayVoz && (
-          <button onClick={() => setMmszSilencio(!mmszSilencio)} title={mmszSilencio ? 'Activar voz' : 'Silenciar voz'}>
+          <button onClick={() => mmszSetSilencio(!mmszSilencio)} title={mmszSilencio ? 'Activar voz' : 'Silenciar voz'}>
             {mmszSilencio ? '🔇' : '🔊'}
           </button>
         )}
-        <button className={mmszSubtitulos ? 'activo' : ''} onClick={() => setMmszSubtitulos(!mmszSubtitulos)} title="Subtítulos">
+        <button className={mmszSubtitulos ? 'activo' : ''} onClick={() => mmszSetSubtitulos(!mmszSubtitulos)} title="Subtítulos">
           CC
         </button>
       </div>
