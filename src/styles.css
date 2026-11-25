@@ -225,7 +225,7 @@
 }
 .mmsz-tema:hover { border-color: var(--border-strong); }
 .mmsz-tema.activo { border-color: var(--brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 25%, transparent); }
-.mmsz-tema-muestra { display: flex; height: 54px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.mmsz-tema-muestra { display: flex; align-self: stretch; height: 54px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
 .mmsz-tema-muestra span { flex: 1; }
 .mmsz-tema-muestra span:last-child { flex: .6; }
 .mmsz-tema b { display: flex; justify-content: space-between; }
